@@ -13,4 +13,5 @@ def check_for_updates():
 if __name__ == "__main__":
     check_for_updates()
 
-    os.system("python3 main.py")
+    #os.system("python3 main.py")
+    import main
