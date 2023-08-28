@@ -1,5 +1,5 @@
 from . import extrato
-from . import categorias
+#from . import categorias
 from . import vendedor
 from . import login
 from . import config
