@@ -1,5 +1,5 @@
 vendedor: 3
 prod_sort: Curva ABC
 url_base: http://144.22.227.71:5000
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTMzMTM3NzB9.FLpbF25K44bSOg7kJTrhV53JSNSjKZiHO65bdeGHjLw
-versao: 1.0.0
+token: 0
+versao: 1.0.2
