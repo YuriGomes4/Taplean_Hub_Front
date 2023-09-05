@@ -151,18 +151,27 @@ def on_visible():
         save_temp = False
 
 
+    mudancas = sv_extrato.product_changes(addit)
+
+    # Função para extrair a data de cada mudança
+    def extrair_data(mudanca):
+        data = datetime.strptime(mudanca['date'], "%Y-%m-%dT%H:%M:%S.%f")
+        return data
+
+    # Classifique as mudanças com base na data
+    mudancas_ordenadas = sorted(mudancas, key=extrair_data, reverse=True)
+
+    # Agora 'mudancas_ordenadas' contém as mudanças ordenadas por data
 
     historico = []
 
-    mudancas = sv_extrato.product_changes(addit)
-
-    for mudanca in mudancas:
+    for mudanca in mudancas_ordenadas:
         data = datetime.strptime(mudanca['date'], "%Y-%m-%dT%H:%M:%S.%f")
         historico.append(
             Container(
                 Row(
                     [
-                        Text(f"{mudanca['change']}  "),
+                        Text(f"{mudanca['change']}", width=100),
                         Column(
                             [
                                 Text(f"Depois: {mudanca['new_value']}", text_align=TextAlign.LEFT, max_lines=1, selectable=True),
