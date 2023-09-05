@@ -1,3 +1,4 @@
+from datetime import datetime
 from flet import(
     Column,
     Text,
@@ -8,11 +9,18 @@ from flet import(
     Dropdown,
     dropdown,
     KeyboardType,
+    Tabs,
+    Tab,
+    ListView,
+    TextAlign,
+    MainAxisAlignment
 )
 
 import navigation
 import services
 from .main import transactions
+
+from services import extrato as sv_extrato
 
 save_temp = False
 
@@ -29,23 +37,6 @@ free_shipping_text = Text("")
 shipping_free_cost = Text(f"", selectable=True)
 sale_fee = Text(f"", selectable=True)
 
-
-for transaction in transactions:
-    if transaction['id'] == addit:
-        id.value = f"{transaction['id']}"
-        category_id.value = f"{transaction['category_id']}"
-        cost.value = f"{transaction['cost']}"
-        price.value = f"{transaction['price']}"
-        title.value = f"{transaction['title']}"
-        listing_type_id.value = f"{transaction['listing_type_id']}"
-        free_shipping = transaction['free_shipping']
-        if int(free_shipping) == 1:
-            free_shipping_text.value = "Sim"
-        else: 
-            free_shipping_text.value = "Não"
-        shipping_free_cost.value = f"{transaction['shipping_free_cost']}"
-        sale_fee.value = f"{transaction['sale_fee']}"
-
 def salvar_extrato(e):
 
 
@@ -59,67 +50,60 @@ def salvar_extrato(e):
 def onclick_item(e):
     navigation.ChangeScreen("12", e)
 
-tela = Column(
+detalhes = Column(
     [
         Container(
             Column(
                 [
-                    Row(
-                        [
-                            Text(f"MLB: "), id
-                        ]
-                    ),
-                    Row(
-                        [
-                            Text(f"Categoria: "), category_id
-                        ]
-                    ),
-                    Row(
-                        [
-                            Text(f"Custo: "), cost
-                        ]
-                    ),
-                    Row(
-                        [
-                            Text(f"Preço de venda: "), price
-                        ]
-                    ),
-                    Row(
-                        [
-                            Text(f"Título: "), title
-                        ]
-                    ),
-                    Row(
-                        [
-                            Text(f"Tipo de anúncio: "), listing_type_id
-                        ]
-                    ),
-                    Row(
-                        [
-                            Text(f"Frete grátis: "), free_shipping_text
-                        ]
-                    ),
-                    Row(
-                        [
-                            Text(f"Custo de frete: "), shipping_free_cost
-                        ]
-                    ),
-                    Row(
-                        [
-                            Text(f"Taxas de venda: "), sale_fee
-                        ]
-                    ),
-                    Row(
-                        [
+                    Row([Text(f"MLB: "), id]),
+                    Row([Text(f"Categoria: "), category_id]),
+                    Row([Text(f"Custo: "), cost]),
+                    Row([Text(f"Preço de venda: "), price]),
+                    Row([Text(f"Título: "), title]),
+                    Row([Text(f"Tipo de anúncio: "), listing_type_id]),
+                    Row([Text(f"Frete grátis: "), free_shipping_text]),
+                    Row([Text(f"Custo de frete: "), shipping_free_cost]),
+                    Row([Text(f"Taxas de venda: "), sale_fee]),
+                    Row([
                             FilledTonalButton("Salvar", on_click=salvar_extrato),
                             FilledTonalButton("Cancelar", on_click=navigation.BackScreen),
-                        ]
-                    ),
+                        ]),
                     
                 ]
             )
         )
     ],
+    visible=True
+)
+
+lista = ListView(
+            spacing=5,
+            #padding=20,
+            expand=True,
+            auto_scroll=False,
+            #vertical=True,
+        )
+
+
+tela = Column(
+    controls=[
+        Tabs(
+            selected_index=0,
+            animation_duration=300,
+            tabs=[
+                Tab(
+                    text="Detalhes",
+                    content=detalhes
+                ),
+                Tab(
+                    text="Historico de mudanças",
+                    content=lista
+                )
+            ],
+            expand=True
+        )
+    ],
+    expand=True,
     visible=False
 )
 
@@ -165,6 +149,39 @@ def on_visible():
                 sale_fee.value = transaction['sale_fee']
     else:
         save_temp = False
+
+
+
+    historico = []
+
+    mudancas = sv_extrato.product_changes(addit)
+
+    for mudanca in mudancas:
+        data = datetime.strptime(mudanca['date'], "%Y-%m-%dT%H:%M:%S.%f")
+        historico.append(
+            Container(
+                Row(
+                    [
+                        Text(f"{mudanca['change']}  "),
+                        Column(
+                            [
+                                Text(f"Depois: {mudanca['new_value']}", text_align=TextAlign.LEFT, max_lines=1, selectable=True),
+                                Text(f"Antes: {mudanca['old_value']}", text_align=TextAlign.LEFT, max_lines=1, selectable=True),
+                            ],
+                            expand=True,
+                            spacing=0,
+                            alignment=MainAxisAlignment.CENTER,
+                        ),
+                        Text(f"{data.day}/{data.month}/{data.year} - {data.hour}:{data.minute}")
+                    ],
+                    expand=True
+                ),
+                #on_click=onclick_item,
+                key=f"{mudanca['ref_id']}"
+            )
+        )
+
+    lista.controls = historico
 
 
     print(f"Opa: {addit}")

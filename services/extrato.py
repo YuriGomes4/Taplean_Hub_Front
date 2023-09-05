@@ -226,3 +226,23 @@ def prods_sort(new_sort):
 #C icons.EURO_SYMBOL
 #C icons.CLOSED_CAPTION_OFF
 #C icons.COPYRIGHT
+
+
+def product_changes(product_id):
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'x-access-token' : config.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/produto/changes/{product_id}"
+
+    response = requests.get(update_url, headers=headers)
+
+    if response.status_code == 200:
+        print("Mudanças listadas com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao listar as mudanças.")
+        return []
