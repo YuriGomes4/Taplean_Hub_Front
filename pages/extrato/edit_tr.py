@@ -36,6 +36,8 @@ free_shipping = 0
 free_shipping_text = Text("")
 shipping_free_cost = Text(f"", selectable=True)
 sale_fee = Text(f"", selectable=True)
+liquido = Text(f"", selectable=True)
+sales = Text(f"", selectable=True)
 
 def salvar_extrato(e):
 
@@ -55,15 +57,17 @@ detalhes = Column(
         Container(
             Column(
                 [
-                    Row([Text(f"MLB: "), id]),
-                    Row([Text(f"Categoria: "), category_id]),
-                    Row([Text(f"Custo: "), cost]),
-                    Row([Text(f"Preço de venda: "), price]),
-                    Row([Text(f"Título: "), title]),
-                    Row([Text(f"Tipo de anúncio: "), listing_type_id]),
-                    Row([Text(f"Frete grátis: "), free_shipping_text]),
-                    Row([Text(f"Custo de frete: "), shipping_free_cost]),
-                    Row([Text(f"Taxas de venda: "), sale_fee]),
+                    Row([Text(f"MLB:"), id]),
+                    Row([Text(f"Categoria:"), category_id]),
+                    Row([Text(f"Custo:"), cost]),
+                    Row([Text(f"Preço de venda:"), price]),
+                    Row([Text(f"Título:"), title]),
+                    Row([Text(f"Tipo de anúncio:"), listing_type_id]),
+                    Row([Text(f"Frete grátis:"), free_shipping_text]),
+                    Row([Text(f"Custo de frete:"), shipping_free_cost]),
+                    Row([Text(f"Taxas de venda:"), sale_fee]),
+                    Row([Text(f"Líquido: R$"), liquido]),
+                    Row([Text(f"Vendas:"), sales]),
                     Row([
                             FilledTonalButton("Salvar", on_click=salvar_extrato),
                             FilledTonalButton("Cancelar", on_click=navigation.BackScreen),
@@ -147,6 +151,8 @@ def on_visible():
                     free_shipping_text.value = "Não"
                 shipping_free_cost.value = transaction['shipping_free_cost']
                 sale_fee.value = transaction['sale_fee']
+                liquido.value = round(float(transaction['price']) - float(transaction['shipping_free_cost']) - float(transaction['sale_fee']) - float(transaction['cost']), 2)
+                sales.value = transaction['sales']
     else:
         save_temp = False
 

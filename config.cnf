@@ -1,5 +1,5 @@
-vendedor: 3
-prod_sort: Normal
-url_base: https://tapleanhub.ddnsfree.com
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTM4Nzg0NDR9.-UMQnLcCvqpW0DAelgN98sNd4ujYCHNATlcLKvY32A4
+vendedor: 4
+prod_sort: Curva ABC
+url_base: http://localhost:5000
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTQxODIzNzl9.s3dHMlbTvORlsO2du-VXjC6uC8g3R_zVjNnI-zSTeSE
 versao: 1.0.0

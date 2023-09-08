@@ -36,6 +36,7 @@ def modify_Produtos_row(row_id, new_values):
     }
 
     response = requests.post(update_url, headers=headers , json=update_data)
+    print(update_data)
 
     if response.status_code == 200:
         print("Produto atualizado com sucesso!")
