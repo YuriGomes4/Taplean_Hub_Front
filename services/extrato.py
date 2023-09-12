@@ -31,7 +31,7 @@ def modify_Produtos_row(row_id, new_values):
     update_url = f"{url_base}/api/v1/produto/update"
 
     headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        #'Content-Type': 'application/x-www-form-urlencoded',
         'x-access-token' : config.get('token'),
     }
 
