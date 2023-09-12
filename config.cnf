@@ -2,5 +2,5 @@ vendedor: 4
 prod_sort: Curva ABC
 url_base: https://tapleanhub.ddnsfree.com
 test_url_base: http://localhost:5000
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTQ1Mzk2Nzl9.--sevv9cuTxb5CmNZnbQBqsGQidi8apeJSV0ju7Hm0Q
-versao: 1.0.2
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTQ1NTgxMTV9._NfI5sGkZ7qgr5eR2QEYWGZ4swp28z_9KnmpGhbyBKw
+versao: 1.0.3

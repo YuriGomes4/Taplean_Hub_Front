@@ -57,6 +57,18 @@ def on_visible():
     print(len(vendas))
 
     for venda in vendas:
+        titulo = ""
+        first = True
+
+        for item in venda['order_items']:
+            if first:
+                titulo = item['title']
+                first = False
+            else:
+                if not(item['title'] in titulo):
+                    titulo = f"{titulo} + {item['title']}"
+
+
         extratos.append(
             Container(
                 Row(
@@ -67,7 +79,7 @@ def on_visible():
                         ),
                         Column(
                             [
-                                Text(venda['id'], text_align=TextAlign.LEFT, max_lines=1),
+                                Text(titulo, text_align=TextAlign.LEFT, max_lines=1),
                                 Text(venda['status'], text_align=TextAlign.LEFT, max_lines=1, selectable=True),
                             ],
                             expand=True,
