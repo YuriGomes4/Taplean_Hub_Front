@@ -1,9 +1,9 @@
 versao: 1.1.0
 url_base: https://tapleanhub.ddnsfree.com
 test_url_base: http://localhost:5000
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTQ2NDY5ODl9.K1Y9XLKqXUb2yuu2GOm10RzlBSkUDe_mDKOHyYlrNE0
-vendedor: 4
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTU0MDQ3OTB9.HwdXtw0JoxwVBeKIHAWGdFD913x7MEQJWSG65BjYLMg
+vendedor: 3
 prod_sort: Curva ABC
 procura: 
 tipo_procura: 
-data: 2023-9-4/2023-9-4
+data: False

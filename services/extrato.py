@@ -10,22 +10,18 @@ sort = ""
 sorted_prods = []
 
 
-def modify_Produtos_row(row_id, new_values):
+def modify_Produtos_row(row_id, export, update):
     url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    #update = {}
+
+    #for chave, valor in kwargs.items():
+    #    update[f'{chave}'] = valor
 
     update_data = {
         "id": row_id,
-        "updates": {
-            "category_id": new_values[0],
-            "cost": new_values[1],
-            "price": new_values[2],
-            "title": new_values[3],
-            "listing_type_id": new_values[4],
-            "free_shipping": new_values[5],
-            "shipping_free_cost": new_values[6],
-            "sale_fee": new_values[7]
-            # "seller": new_values[8]  # Se necessário
-        }
+        "export": export,
+        "updates": update
     }
 
     update_url = f"{url_base}/api/v1/produto/update"

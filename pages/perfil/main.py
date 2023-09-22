@@ -71,6 +71,13 @@ def seller_changed(e):
             services.config.set('vendedor', seller['id'])
             #services.config.set('prod_sort', "")
 
+def teste(e):
+    update = {
+        "title": "Controle Dualshock Com Fio Para Ps4 Feir"
+        #"price": 196
+    }
+    services.extrato.modify_Produtos_row('MLB2735399340', True, update)
+
 
 drop = Dropdown(on_change=seller_changed)
 
@@ -114,7 +121,7 @@ tela = Column(
                 directory_path,
             ]
         ),
-                Row(
+        Row(
             [
                 ElevatedButton(
                     "Limpar lista de vendas",
@@ -125,7 +132,7 @@ tela = Column(
                 directory_path,
             ]
         ),
-                Row(
+        Row(
             [
                 ElevatedButton(
                     "Calcular vendas nos produtos",
@@ -134,6 +141,16 @@ tela = Column(
                     disabled=page.web,
                 ),
                 directory_path,
+            ]
+        ),
+        Row(
+            [
+                ElevatedButton(
+                    "Teste",
+                    icon=icons.FOLDER_OPEN,
+                    on_click=teste,
+                    disabled=page.web,
+                ),
             ]
         ),
     ],

@@ -42,10 +42,19 @@ sales = Text(f"", selectable=True)
 def salvar_extrato(e):
 
 
-    new_values = [category_id.value, cost.value, price.value, title.value, listing_type_id.value, free_shipping, shipping_free_cost.value, sale_fee.value]
-    print("opa: ", id)
+    new_values = {
+        'category_id': category_id.value,
+        'cost': cost.value,
+        'price': price.value,
+        'title': title.value,
+        'listing_type_id': listing_type_id.value,
+        'free_shipping': free_shipping,
+        'shipping_free_cost': shipping_free_cost.value,
+        'sale_fee': sale_fee.value
+    }
+    #print("opa: ", id)
 
-    services.extrato.modify_Produtos_row(id.value, new_values)
+    services.extrato.modify_Produtos_row(id.value, False, new_values)
 
     navigation.BackScreen("")
 
