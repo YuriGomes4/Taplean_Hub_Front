@@ -44,24 +44,24 @@ directory_path = Text()
 
 
 def sync_prods(e):
-    services.extrato.sync_prods()
+    services.produtos.sync_prods()
 
 # hide all dialogs in overlay
 #page.overlay.extend([pick_files_dialog, save_file_dialog, get_directory_dialog])
 
 def remove_prods(e):
-    services.extrato.remove_prods()
+    services.produtos.remove_prods()
 
 opts = []
 
 def list_orders(e):
-    services.extrato.list_orders()
+    services.produtos.list_orders()
 
 def remove_orders(e):
-    services.extrato.remove_orders()
+    services.produtos.remove_orders()
 
 def sales_prods(e):
-    services.extrato.sales_prods()
+    services.produtos.sales_prods()
 
 
 def seller_changed(e):
@@ -76,7 +76,7 @@ def teste(e):
         "title": "Controle Dualshock Com Fio Para Ps4 Feir"
         #"price": 196
     }
-    services.extrato.modify_Produtos_row('MLB2735399340', True, update)
+    services.produtos.modify_Produtos_row('MLB2735399340', True, update)
 
 
 drop = Dropdown(on_change=seller_changed)

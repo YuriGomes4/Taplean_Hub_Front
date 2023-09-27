@@ -35,8 +35,8 @@ def main(page: Page):
 
     page.title = "Produtos"
 
-    pages.perfil.main.page = page
-    pages.perfil.main.page.overlay.extend([pages.perfil.main.pick_files_dialog, pages.perfil.main.save_file_dialog, pages.perfil.main.get_directory_dialog])
+    pages.configuracoes.main.page = page
+    pages.configuracoes.main.page.overlay.extend([pages.configuracoes.main.pick_files_dialog, pages.configuracoes.main.save_file_dialog, pages.configuracoes.main.get_directory_dialog])
 
     navigation.page = page
 
@@ -47,7 +47,7 @@ def main(page: Page):
     )
     page.navigation_bar = NavigationBar(
         destinations=[
-            NavigationDestination(icon=icons.PIE_CHART_OUTLINE_OUTLINED, selected_icon=icons.PIE_CHART, label="Gráficos"),
+            NavigationDestination(icon=icons.PIE_CHART_OUTLINE_OUTLINED, selected_icon=icons.PIE_CHART, label="Vendas"),
             NavigationDestination(icon=icons.RECEIPT_LONG_OUTLINED, selected_icon=icons.RECEIPT_LONG, label="Produtos"),
             #NavigationDestination(icon=icons.CATEGORY_OUTLINED, selected_icon=icons.CATEGORY, label="Categorias"),
             NavigationDestination(icon=icons.ACCOUNT_CIRCLE_OUTLINED, selected_icon=icons.ACCOUNT_CIRCLE, label="Configurações"),

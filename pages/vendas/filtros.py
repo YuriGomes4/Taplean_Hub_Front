@@ -21,7 +21,7 @@ import navigation
 import services
 from .main import transactions
 
-from services import extrato as sv_extrato
+from services import produtos as sv_extrato
 from services import config as sv_config
 
 save_temp = False

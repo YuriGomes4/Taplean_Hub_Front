@@ -67,7 +67,7 @@ def load_chart():
 
     transactions = []
 
-    transactions = services.extrato.get_all()
+    transactions = services.produtos.get_all()
 
     cats = []
     valores = []

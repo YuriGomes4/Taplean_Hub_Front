@@ -1,4 +1,4 @@
-from . import extrato
+from . import produtos
 #from . import categorias
 from . import vendedor
 from . import login

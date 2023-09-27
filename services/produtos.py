@@ -243,3 +243,102 @@ def product_changes(product_id):
     else:
         print("Falha ao listar as mudanças.")
         return []
+    
+def get_regras(product_id):
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'x-access-token' : config.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/produto/regras/{product_id}"
+
+    response = requests.get(update_url, headers=headers)
+
+    if response.status_code == 200:
+        print("Regras listadas com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao listar as regras.")
+        return []
+    
+def get_regra(regra_id):
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'Content-Type': 'application/json',
+        'x-access-token' : config.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/produto/regra/{regra_id}"
+
+    response = requests.get(update_url, headers=headers)
+
+    if response.status_code == 200:
+        print("Regra listada com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao listar a regra.")
+        return []
+    
+def add_regra(regra):
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    print(regra)
+
+    headers = {
+        'Content-Type': 'application/json',
+        'x-access-token' : config.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/produto/regra"
+
+    response = requests.post(update_url, headers=headers, json=regra)
+
+    #print(response.json())
+
+    if response.status_code == 200:
+        print("Regra adicionada com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao adicionar a regra.")
+        return []
+    
+def update_regra(regra_id, update):
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'Content-Type': 'application/json',
+        'x-access-token' : config.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/produto/regra/{regra_id}"
+
+    response = requests.put(update_url, headers=headers, json=update)
+
+    if response.status_code == 200:
+        print("Regra atualizada com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao atualizar a regra.")
+        return []
+    
+def delete_regra(regra_id):
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'Content-Type': 'application/json',
+        'x-access-token' : config.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/produto/regra/{regra_id}"
+
+    response = requests.delete(update_url, headers=headers)
+
+    if response.status_code == 200:
+        print("Regra deletada com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao deletar a regra.")
+        return []

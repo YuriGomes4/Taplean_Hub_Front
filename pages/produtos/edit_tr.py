@@ -13,14 +13,20 @@ from flet import(
     Tab,
     ListView,
     TextAlign,
-    MainAxisAlignment
+    MainAxisAlignment,
+    FontWeight,
+    CrossAxisAlignment,
+    ElevatedButton,
+    border,
+    margin,
+    padding
 )
 
 import navigation
 import services
 from .main import transactions
 
-from services import extrato as sv_extrato
+from services import produtos as sv_extrato
 
 save_temp = False
 
@@ -54,12 +60,17 @@ def salvar_extrato(e):
     }
     #print("opa: ", id)
 
-    services.extrato.modify_Produtos_row(id.value, False, new_values)
+    services.produtos.modify_Produtos_row(id.value, False, new_values)
 
     navigation.BackScreen("")
 
-def onclick_item(e):
+def onclick_regra(e):
     navigation.ChangeScreen("12", e)
+
+def onclick_deleteregra(e):
+    services.produtos.delete_regra(e.control.key)
+    on_visible()
+    navigation.refresh()
 
 detalhes = Column(
     [
@@ -89,7 +100,15 @@ detalhes = Column(
     visible=True
 )
 
-lista = ListView(
+tab_regras = ListView(
+            spacing=5,
+            #padding=20,
+            expand=True,
+            auto_scroll=False,
+            #vertical=True,
+        )
+
+lista_historico = ListView(
             spacing=5,
             #padding=20,
             expand=True,
@@ -109,8 +128,12 @@ tela = Column(
                     content=detalhes
                 ),
                 Tab(
+                    text="Regras",
+                    content=tab_regras
+                ),
+                Tab(
                     text="Historico de mudanças",
-                    content=lista
+                    content=lista_historico
                 )
             ],
             expand=True
@@ -143,7 +166,7 @@ def on_visible():
     if save_temp == False:
         addit = navigation.addit
         
-        all = services.extrato.get_all()
+        all = services.produtos.get_all()
 
         for transaction in all:
             if transaction['id'] == addit:
@@ -164,6 +187,92 @@ def on_visible():
                 sales.value = transaction['sales']
     else:
         save_temp = False
+
+
+    regras = sv_extrato.get_regras(addit)
+
+    print(regras)
+
+    lista_regras = []
+
+    try:
+
+        for regra in regras:
+
+            if regra['feito'] == False:
+
+                lista_regras.append(
+                    Container(
+                        Row(
+                            [
+                                Text(f"{regra['id']}  "),
+                                Column(
+                                    [
+                                        Text(f"ID", weight=FontWeight.BOLD),
+                                        Text(regra['ref_id_obj'])
+                                    ],
+                                    horizontal_alignment=CrossAxisAlignment.CENTER
+                                ),
+                                Column(
+                                    [
+                                        Text(f"Campo analisado", weight=FontWeight.BOLD),
+                                        Text(regra['coluna_obj'])
+                                    ],
+                                    horizontal_alignment=CrossAxisAlignment.CENTER
+                                ),
+                                Column(
+                                    [
+                                        Text(f"Analisador", weight=FontWeight.BOLD),
+                                        Text(regra['operador'])
+                                    ],
+                                    horizontal_alignment=CrossAxisAlignment.CENTER
+                                ),
+                                Column(
+                                    [
+                                        Text(f"Valor esperado", weight=FontWeight.BOLD),
+                                        Text(regra['valor_obj'])
+                                    ],
+                                    horizontal_alignment=CrossAxisAlignment.CENTER
+                                ),
+                                Column(
+                                    [
+                                        Text(f"Campo a ser alterado", weight=FontWeight.BOLD),
+                                        Text(regra['coluna_new'])
+                                    ],
+                                    horizontal_alignment=CrossAxisAlignment.CENTER
+                                ),
+                                Column(
+                                    [
+                                        Text(f"Valor a ser colocado", weight=FontWeight.BOLD),
+                                        Text(regra['valor_new'])
+                                    ],
+                                    horizontal_alignment=CrossAxisAlignment.CENTER
+                                ),
+                                Column(
+                                    [
+                                        ElevatedButton("Editar regra", icon="edit_rounded", on_click=onclick_regra, key=f"{addit}@@{regra['id']}"),
+                                        ElevatedButton("Deletar regra", icon="delete_rounded", on_click=onclick_deleteregra, key=regra['id']),
+                                    ]
+                                )
+                            ]
+                        ),
+                        border=border.only(bottom=border.BorderSide(1, "white")),
+                        padding=padding.symmetric(vertical=10)
+                    )
+                )
+
+        
+        lista_regras.append(
+            Container(
+                Row(
+                    [
+                        ElevatedButton("Adicionar regra", icon="add", on_click=onclick_regra, key=f"{addit}@@create")
+                    ]
+                )
+            )
+        )
+    except:
+        print("Erro ao mostrar regras")
 
 
     mudancas = sv_extrato.product_changes(addit)
@@ -205,7 +314,8 @@ def on_visible():
             )
         )
 
-    lista.controls = historico
+    tab_regras.controls = lista_regras
+    lista_historico.controls = historico
 
 
     print(f"Opa: {addit}")

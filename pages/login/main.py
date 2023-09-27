@@ -14,7 +14,7 @@ from flet import(
     Control,
 )
 
-from services import extrato as sv_extrato
+from services import produtos as sv_extrato
 from services import login as sv_login
 from services import config as sv_config
 import navigation

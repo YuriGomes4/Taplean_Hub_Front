@@ -13,7 +13,7 @@ from flet import(
     dropdown,
 )
 
-from services import extrato as sv_extrato
+from services import produtos as sv_extrato
 from services import config as sv_config
 import navigation
 
