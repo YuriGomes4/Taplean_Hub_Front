@@ -23,6 +23,8 @@ extratos = []
 transactions = []
 vendas = []
 
+texto_vendas = Text("Vendas: 0")
+
 def onclick_item(e):
     navigation.ChangeScreen("01", e)
     #pass
@@ -38,7 +40,7 @@ lista = ListView(
 
 tela = Column(
     [
-        Row([FilledTonalButton(text="Filtros", on_click=onclick_item)]),
+        Row([FilledTonalButton(text="Filtros", on_click=onclick_item), texto_vendas]),
         lista
     ],
     #alignment=MainAxisAlignment.SPACE_AROUND,
@@ -52,6 +54,8 @@ def on_visible():
     global extratos
     global lista
 
+    global texto_vendas
+
     print('on_visible Vendas')
 
     extratos = []
@@ -62,6 +66,7 @@ def on_visible():
     print(len(vendas))
 
     try: 
+        cont = 0
 
         for venda in vendas:
             titulo = ""
@@ -136,9 +141,12 @@ def on_visible():
                         key=f"{venda['id']}"
                     )
                 )
+                cont += 1
             else:
                 #print("Filtrado")
                 pass
+
+        texto_vendas.value = f"Vendas: {cont}"
     except:
         pass
 
