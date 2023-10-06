@@ -1,7 +1,7 @@
 versao: 1.2.1
 url_base: https://tapleanhub.ddnsfree.com
 test_url_base: http://localhost:5000
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTY2MTg1MTJ9.ZPNV_TeXMVxftFz1HDe_lHJcYSS9qUYkhblMz-QIzQc
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTY2MjU3NDF9.FJZcwaolH1MDS0w-VZQJDmxaFez1WCeXSNMn8I_CRxQ
 vendedor: 4
 prod_sort: Curva ABC
 procura: 
