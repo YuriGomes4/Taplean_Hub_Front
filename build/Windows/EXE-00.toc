@@ -65,7 +65,7 @@
  [],
  False,
  False,
- 1693252747,
+ 1696627482,
  [('runw.exe',
    'C:\\Users\\yuria\\OneDrive\\Documentos\\GitHub\\Taplean_Hub_Front\\wvenv\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\runw.exe',
    'EXECUTABLE')])
