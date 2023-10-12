@@ -3,17 +3,21 @@ config_file = "personal_prefs.cnf"
 def get_all():
     config_dict = {}
 
-    with open(config_file, 'r') as file:
-        for line in file:
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
+    try:
+        with open(config_file, 'r') as file:
+            for line in file:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
 
-            name, value = line.split(':', 1)
-            name = name.strip()
-            value = value.strip()
-            config_dict[name] = value
-        file.close()
+                name, value = line.split(':', 1)
+                name = name.strip()
+                value = value.strip()
+                config_dict[name] = value
+            file.close()
+    except:
+        with open(config_file, 'w') as file:
+            file.close()
 
     return config_dict
 

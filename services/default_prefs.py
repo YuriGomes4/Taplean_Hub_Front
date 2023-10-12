@@ -21,7 +21,6 @@ def get(name):
     data = get_all()
 
     try:
-        print("testeesees",data[name])
         return data[name]
     except:
         print("Variável não existe")
