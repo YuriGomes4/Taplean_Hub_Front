@@ -1,6 +1,6 @@
 versao: 1.2.3
-orig_url_base: https://tapleanhub.ddnsfree.com
-url_base: http://localhost:5000
+url_base: https://tapleanhub.ddnsfree.com
+test_url_base: http://localhost:5000
 token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YzljZTkxYS1lYmEyLTRiYWYtYWUzZi1jNjEwZjZhNmI2YTgiLCJleHAiOjE2OTcwODczNTJ9.CVcnxMcoTKWv_pW4QLCTj5JL_yMY7m4AI-viTY--k0g
 vendedor: 4
 prod_sort: Curva ABC
