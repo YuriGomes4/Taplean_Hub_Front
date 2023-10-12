@@ -1,13 +1,13 @@
 import requests
 
-from . import config, vendedor
+from . import personal_prefs, vendedor
 
 # Substitua estas informações pelas suas credenciais
-client_id = vendedor.get(config.get('vendedor')).client_ml
-client_secret = vendedor.get(config.get('vendedor')).secret_ml
-access_token = vendedor.get(config.get('vendedor')).tk_ml
-seller_id = vendedor.get(config.get('vendedor')).id_ml
-refresh_token = vendedor.get(config.get('vendedor')).refresh_tk_ml
+client_id = vendedor.get(personal_prefs.get('vendedor')).client_ml
+client_secret = vendedor.get(personal_prefs.get('vendedor')).secret_ml
+access_token = vendedor.get(personal_prefs.get('vendedor')).tk_ml
+seller_id = vendedor.get(personal_prefs.get('vendedor')).id_ml
+refresh_token = vendedor.get(personal_prefs.get('vendedor')).refresh_tk_ml
 #state = '2412345'
 
 def get_all_products():
@@ -17,11 +17,11 @@ def get_all_products():
     global seller_id
     global refresh_token
 
-    client_id = vendedor.get(config.get('vendedor')).client_ml
-    client_secret = vendedor.get(config.get('vendedor')).secret_ml
-    access_token = vendedor.get(config.get('vendedor')).tk_ml
-    seller_id = vendedor.get(config.get('vendedor')).id_ml
-    refresh_token = vendedor.get(config.get('vendedor')).refresh_tk_ml
+    client_id = vendedor.get(personal_prefs.get('vendedor')).client_ml
+    client_secret = vendedor.get(personal_prefs.get('vendedor')).secret_ml
+    access_token = vendedor.get(personal_prefs.get('vendedor')).tk_ml
+    seller_id = vendedor.get(personal_prefs.get('vendedor')).id_ml
+    refresh_token = vendedor.get(personal_prefs.get('vendedor')).refresh_tk_ml
 
     print(seller_id)
 
@@ -64,7 +64,7 @@ def get_all_products():
             response = requests.post('https://api.mercadolibre.com/oauth/token', headers=headers, data=data)
 
             try:
-                vendedor_db = vendedor.get(config.get('vendedor'))
+                vendedor_db = vendedor.get(personal_prefs.get('vendedor'))
                 vendedor_db.tk_ml = response.json()['access_token']
                 vendedor_db.refresh_tk_ml = response.json()['refresh_token']
                 vendedor.session.commit()

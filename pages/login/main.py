@@ -16,6 +16,7 @@ from flet import(
 
 from services import produtos as sv_extrato
 from services import login as sv_login
+from services import personal_prefs as sv_preferences
 from services import config as sv_config
 import navigation
 

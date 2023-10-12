@@ -68,8 +68,8 @@ def seller_changed(e):
     print(drop.value)
     for seller in services.vendedor.get_all():
         if seller['nome'] == drop.value:
-            services.config.set('vendedor', seller['id'])
-            #services.config.set('prod_sort', "")
+            services.personal_prefs.set('vendedor', seller['id'])
+            #services.preferences.set('prod_sort', "")
 
 def teste(e):
     update = {
@@ -166,7 +166,7 @@ def on_visible():
         opts.append(dropdown.Option(seller['nome']))
 
     drop.options = opts
-    drop.value = services.vendedor.get(services.config.get('vendedor'))['nome']
+    drop.value = services.vendedor.get(services.personal_prefs.get('vendedor'))['nome']
 
     navigation.refresh()
 

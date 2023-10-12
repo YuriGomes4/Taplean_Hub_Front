@@ -14,6 +14,7 @@ from flet import(
 )
 
 from services import produtos as sv_extrato
+from services import personal_prefs as sv_preferences
 from services import config as sv_config
 from services import vendas as sv_vendas
 import navigation
@@ -61,7 +62,7 @@ def on_visible():
     extratos = []
 
     #transactions = sv_extrato.get_all()
-    vendas = sv_vendas.get_all(sv_config.get('vendedor'))
+    vendas = sv_vendas.get_all(sv_preferences.get('vendedor'))
 
     print(len(vendas))
 
@@ -82,9 +83,9 @@ def on_visible():
                     if not(item['title'] in titulo):
                         titulo = f"{titulo} + {item['title']}"
 
-            procura = sv_config.get("procura")
-            tipo_procura = sv_config.get("tipo_procura")
-            data = str(sv_config.get("data"))
+            procura = sv_preferences.get("procura")
+            tipo_procura = sv_preferences.get("tipo_procura")
+            data = str(sv_preferences.get("data"))
 
             try:
                 if procura != "":
@@ -99,7 +100,7 @@ def on_visible():
                             filtrado = False
 
                 if data != "False":
-                    datas = str(sv_config.get("data")).split('/')
+                    datas = str(sv_preferences.get("data")).split('/')
 
                     data_temp = datas[0].split('-')
                     data1 = datetime(int(data_temp[0]), int(data_temp[1]), int(data_temp[2]))

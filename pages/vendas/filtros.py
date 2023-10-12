@@ -22,7 +22,7 @@ import services
 from .main import transactions
 
 from services import produtos as sv_extrato
-from services import config as sv_config
+from services import personal_prefs as sv_preferences
 
 save_temp = False
 
@@ -169,36 +169,36 @@ def aplicar_filtros(e):
     ok = True
 
     if check_procura.value == True and procura.value != "":
-        sv_config.set("procura", procura.value)
+        sv_preferences.set("procura", procura.value)
         #print(procura.value[0:3].lower())
         if procura.value[0:3].lower() == "mlb":
-            sv_config.set("tipo_procura", "item")
+            sv_preferences.set("tipo_procura", "item")
         else:
-            sv_config.set("tipo_procura", "venda")
+            sv_preferences.set("tipo_procura", "venda")
     else:
-        sv_config.set("procura", "")
-        sv_config.set("tipo_procura", "")
+        sv_preferences.set("procura", "")
+        sv_preferences.set("tipo_procura", "")
 
     if check_data.value == True:
         data1 = datetime.strptime(f"{ano_start.value}-{mes_start.value}-{dia_start.value} 00:00:00.0000", "%Y-%m-%d %H:%M:%S.%f")
         data2 = datetime.strptime(f"{ano_end.value}-{mes_end.value}-{dia_end.value} 00:00:00.0000", "%Y-%m-%d %H:%M:%S.%f")
 
         if data1 <= data2:
-            sv_config.set("data", f"{ano_start.value}-{mes_start.value}-{dia_start.value}/{ano_end.value}-{mes_end.value}-{dia_end.value}")
+            sv_preferences.set("data", f"{ano_start.value}-{mes_start.value}-{dia_start.value}/{ano_end.value}-{mes_end.value}-{dia_end.value}")
         else:
             navigation.notify("Data inicial maior que a data final!")
             ok = False
     else:
-        sv_config.set("data", "False")
+        sv_preferences.set("data", "False")
 
     
     if ok:
         navigation.BackScreen(e)
 
 def remover_filtros(e):
-    sv_config.set("procura", "")
-    sv_config.set("tipo_procura", "")
-    sv_config.set("data", "False")
+    sv_preferences.set("procura", "")
+    sv_preferences.set("tipo_procura", "")
+    sv_preferences.set("data", "False")
     navigation.BackScreen(e)
 
 
@@ -258,17 +258,17 @@ def on_visible():
 
     global save_temp
 
-    if sv_config.get("procura") != "":
+    if sv_preferences.get("procura") != "":
         check_procura.value = True
-        procura.value = sv_config.get("procura")
+        procura.value = sv_preferences.get("procura")
     else:
         check_procura.value = False
         procura.value = ""
 
-    if sv_config.get("data") != "False":
+    if sv_preferences.get("data") != "False":
         check_data.value = True
 
-        datas = str(sv_config.get("data")).split('/')
+        datas = str(sv_preferences.get("data")).split('/')
 
         data = datas[0].split('-')
 

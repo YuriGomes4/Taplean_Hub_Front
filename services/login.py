@@ -1,11 +1,11 @@
-from . import config
+from . import personal_prefs
 import navigation
 
 import requests
 
 def login(email, senha):
 
-    url_base = config.get('url_base')  # http://127.0.0.1:5000
+    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/auth/login"
 
@@ -21,17 +21,17 @@ def login(email, senha):
 
     if response.status_code == 201:
         print("Login aprovado!")
-        config.set('token', response.json()['token'])
+        personal_prefs.set('token', response.json()['token'])
         navigation.NavigationChange(e=None, screen="00")
     else:
         print("Usuário e/ou senha incorreto!")
         navigation.notify("Usuário e/ou senha incorreto!")
 
 def verify_access():
-    url_base = config.get('url_base')  # http://127.0.0.1:5000
+    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
-        'x-access-token' : config.get('token'),
+        'x-access-token' : personal_prefs.get('token'),
     }
 
     update_url = f"{url_base}/api/auth/verify"

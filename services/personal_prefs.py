@@ -1,4 +1,4 @@
-config_file = "config.cnf"
+config_file = "personal_prefs.cnf"
 
 def get_all():
     config_dict = {}

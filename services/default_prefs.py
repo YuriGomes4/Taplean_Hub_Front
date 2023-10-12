@@ -1,4 +1,4 @@
-config_file = "config.cnf"
+config_file = "default_prefs.cnf"
 
 def get_all():
     config_dict = {}
@@ -21,11 +21,10 @@ def get(name):
     data = get_all()
 
     try:
+        print("testeesees",data[name])
         return data[name]
     except:
-        from . import default_prefs
-
-        set(name, default_prefs.get(name))
+        print("Variável não existe")
 
 def write_config_file(config_data):
     with open(config_file, 'w') as file:

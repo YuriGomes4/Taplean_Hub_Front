@@ -14,6 +14,7 @@ from flet import(
 )
 
 from services import produtos as sv_extrato
+from services import personal_prefs as sv_preferences
 from services import config as sv_config
 import navigation
 
@@ -33,7 +34,7 @@ def load_prods(transactions):
     extratos = []
 
     for transaction in transactions:
-        if int(transaction['seller']) == int(sv_config.get('vendedor')):
+        if int(transaction['seller']) == int(sv_preferences.get('vendedor')):
             extratos.append(
                 Container(
                     Row(
@@ -66,7 +67,7 @@ def load_prods(transactions):
 
 def sort_changed(e):
     print(drop.value)
-    sv_config.set('prod_sort', drop.value)
+    sv_preferences.set('prod_sort', drop.value)
     load_prods(sv_extrato.prods_sort(drop.value))
 
 drop = Dropdown(on_change=sort_changed)
@@ -98,12 +99,12 @@ def on_visible():
     opts.append(dropdown.Option("Curva ABC"))
 
     drop.options = opts
-    drop.value = sv_config.get("prod_sort")
+    drop.value = sv_preferences.get("prod_sort")
 
 
     print('on_visible Extrato')
 
-    load_prods(transactions = sv_extrato.prods_sort(sv_config.get("prod_sort")))
+    load_prods(transactions = sv_extrato.prods_sort(sv_preferences.get("prod_sort")))
 
 #on_visible()
 navigation.paginas.append(
