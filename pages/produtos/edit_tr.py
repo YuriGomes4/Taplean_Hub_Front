@@ -195,6 +195,31 @@ def on_visible():
 
     lista_regras = []
 
+    colunas_dict = {
+        "ID Categoria" : "category_id",
+        "Custo" : "cost",
+        "Preço" : "price",
+        "Título" : "title",
+        "Tipo de anúncio" : "listing_type_id",
+        "Frete grátis" : "free_shipping",
+        "Custo de frete grátis" : "shipping_free_cost",
+        "Taxa de venda" : "sale_fee",
+        "Vendas" : "sales",
+        "Faturamento total" : "invoicing",
+    }
+
+    operacoes_dict = {
+        "Maior ou igual" : ">=",
+        "Maior" : ">",
+        "Menor ou igual" : "<=",
+        "Menor" : "<",
+        "Igual" : "==",
+        "Diferente" : "!=",
+    }
+
+    inverted_colunas = {v: k for k, v in colunas_dict.items()}
+    inverted_operacoes = {v: k for k, v in operacoes_dict.items()}
+
     try:
 
         for regra in regras:
@@ -216,14 +241,14 @@ def on_visible():
                                 Column(
                                     [
                                         Text(f"Campo analisado", weight=FontWeight.BOLD),
-                                        Text(regra['coluna_obj'])
+                                        Text(inverted_colunas[regra['coluna_obj']])
                                     ],
                                     horizontal_alignment=CrossAxisAlignment.CENTER
                                 ),
                                 Column(
                                     [
                                         Text(f"Analisador", weight=FontWeight.BOLD),
-                                        Text(regra['operador'])
+                                        Text(inverted_operacoes[regra['operador']])
                                     ],
                                     horizontal_alignment=CrossAxisAlignment.CENTER
                                 ),
@@ -237,7 +262,7 @@ def on_visible():
                                 Column(
                                     [
                                         Text(f"Campo a ser alterado", weight=FontWeight.BOLD),
-                                        Text(regra['coluna_new'])
+                                        Text(inverted_colunas[regra['coluna_new']])
                                     ],
                                     horizontal_alignment=CrossAxisAlignment.CENTER
                                 ),

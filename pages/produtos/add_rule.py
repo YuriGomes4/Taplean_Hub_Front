@@ -204,11 +204,16 @@ def on_visible():
         id_regra = addit
         regra = services.produtos.get_regra(id_regra)
 
+
+        inverted_colunas = {v: k for k, v in colunas_dict.items()}
+        inverted_operacoes = {v: k for k, v in operacoes_dict.items()}
+
+
         ref_id.value = regra['ref_id_obj']
-        coluna_obj.value = regra['coluna_obj']
-        operador.value = regra['operador']
+        coluna_obj.value = inverted_colunas[regra['coluna_obj']]
+        operador.value = inverted_operacoes[regra['operador']]
         valor_obj.value = regra['valor_obj']
-        coluna_new.value = regra['coluna_new']
+        coluna_new.value = inverted_colunas[regra['coluna_new']]
         valor_new.value = regra['valor_new']
 
     navigation.refresh()
