@@ -7,7 +7,7 @@ includes = []
 
 # Lista de arquivos ou outros recursos que você deseja incluir no executável.
 # Inclua aqui o seu arquivo de configuração (config.cfg).
-files = ["config.cnf"]  # Substitua pelo caminho correto para o seu arquivo config.cfg
+files = ["config.cnf", "default_prefs.cnf"]  # Substitua pelo caminho correto para o seu arquivo config.cfg
 
 # Opções do executável.
 options = {
