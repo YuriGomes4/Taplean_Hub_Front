@@ -1,6 +1,4 @@
 @echo off
-REM Ativar o ambiente virtual
-call .\wvenv\Scripts\activate
 
 REM Executar o script Python em segundo plano (sem janela vis vel)
-start /B python run.py
+start /B %~dp0\wvenv\Scripts\python.exe %~dp0\run.py
