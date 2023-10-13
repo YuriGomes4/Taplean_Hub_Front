@@ -1,10 +1,25 @@
 @echo off
 
-REM Executar a instala  o dos pacotes em segundo plano (sem janela vis vel)
-start /B %~dp0\wvenv\Scripts\python.exe -m pip install -r %~dp0\requirements.txt
+REM Defina o nome do ambiente virtual (venv)
+set VENV=wvenv
 
-REM Executar o script Python em segundo plano (sem janela vis vel)
-start /B %~dp0\wvenv\Scripts\python.exe %~dp0\run.py
+REM Crie o ambiente virtual
+python -m venv %VENV%
 
-REM Mantenha o prompt de comando aberto para visualiza  o (opcional)
-cmd /k
+REM Ativar o ambiente virtual
+call %VENV%\Scripts\activate
+
+REM Instale os pacotes do arquivo requirements.txt
+pip install -r requirements.txt
+
+REM Executar o script Python a partir do ambiente virtual
+python run.py
+
+REM Desativar o ambiente virtual
+deactivate
+
+REM Opcionalmente, voc  pode adicionar um atraso para visualizar mensagens (opcional)
+ping 127.0.0.1 -n 5 > nul
+
+REM Fechar o terminal (opcional)
+exit
