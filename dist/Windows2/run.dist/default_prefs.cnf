@@ -1,0 +1,8 @@
+url_base: https://tapleanhub.ddnsfree.com
+test_url_base: http://localhost:5000
+token: 0
+vendedor: 1
+prod_sort: Normal
+procura: 
+tipo_procura: 
+data: False
