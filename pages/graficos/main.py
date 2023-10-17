@@ -167,24 +167,11 @@ def load_chart():
                     ChartAxisLabel(
                         value=1,
                         label=Container(
-                            Column(
-                                [
-                                    Text(
-                                        f"{dia_da_semana[0]}",
-                                        size=16,
-                                        weight=FontWeight.BOLD,
-                                        color=colors.with_opacity(0.5, colors.ON_SURFACE),
-                                    ),
-                                    Row(
-                                        [
-                                            Text(f"{data_min.day}", size=16, weight=FontWeight.BOLD, color=colors.BLUE_GREY),
-                                            Text("e", size=16, weight=FontWeight.BOLD, color=colors.with_opacity(0.5, colors.ON_SURFACE)),
-                                            Text(f"{data_atual.day-6}", size=16, weight=FontWeight.BOLD, color=colors.PURPLE)
-                                        ]
-                                    )
-                                ],
-                                spacing=0,
-                                horizontal_alignment=CrossAxisAlignment.CENTER
+                            Text(
+                                f"{dia_da_semana[0]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
                             ),
                             margin=margin.only(top=10),
                         ),
@@ -192,24 +179,11 @@ def load_chart():
                     ChartAxisLabel(
                         value=2,
                         label=Container(
-                            Column(
-                                [
-                                    Text(
-                                        f"{dia_da_semana[1]}",
-                                        size=16,
-                                        weight=FontWeight.BOLD,
-                                        color=colors.with_opacity(0.5, colors.ON_SURFACE),
-                                    ),
-                                    Row(
-                                        [
-                                            Text(f"{data_min.day+1}", size=16, weight=FontWeight.BOLD, color=colors.BLUE_GREY),
-                                            Text("e", size=16, weight=FontWeight.BOLD, color=colors.with_opacity(0.5, colors.ON_SURFACE)),
-                                            Text(f"{data_atual.day-5}", size=16, weight=FontWeight.BOLD, color=colors.PURPLE)
-                                        ]
-                                    )
-                                ],
-                                spacing=0,
-                                horizontal_alignment=CrossAxisAlignment.CENTER
+                            Text(
+                                f"{dia_da_semana[1]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
                             ),
                             margin=margin.only(top=10),
                         ),
@@ -217,24 +191,11 @@ def load_chart():
                     ChartAxisLabel(
                         value=3,
                         label=Container(
-                            Column(
-                                [
-                                    Text(
-                                        f"{dia_da_semana[2]}",
-                                        size=16,
-                                        weight=FontWeight.BOLD,
-                                        color=colors.with_opacity(0.5, colors.ON_SURFACE),
-                                    ),
-                                    Row(
-                                        [
-                                            Text(f"{data_min.day+2}", size=16, weight=FontWeight.BOLD, color=colors.BLUE_GREY),
-                                            Text("e", size=16, weight=FontWeight.BOLD, color=colors.with_opacity(0.5, colors.ON_SURFACE)),
-                                            Text(f"{data_atual.day-4}", size=16, weight=FontWeight.BOLD, color=colors.PURPLE)
-                                        ]
-                                    )
-                                ],
-                                spacing=0,
-                                horizontal_alignment=CrossAxisAlignment.CENTER
+                            Text(
+                                f"{dia_da_semana[2]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
                             ),
                             margin=margin.only(top=10),
                         ),
@@ -242,24 +203,11 @@ def load_chart():
                     ChartAxisLabel(
                         value=4,
                         label=Container(
-                            Column(
-                                [
-                                    Text(
-                                        f"{dia_da_semana[3]}",
-                                        size=16,
-                                        weight=FontWeight.BOLD,
-                                        color=colors.with_opacity(0.5, colors.ON_SURFACE),
-                                    ),
-                                    Row(
-                                        [
-                                            Text(f"{data_min.day+3}", size=16, weight=FontWeight.BOLD, color=colors.BLUE_GREY),
-                                            Text("e", size=16, weight=FontWeight.BOLD, color=colors.with_opacity(0.5, colors.ON_SURFACE)),
-                                            Text(f"{data_atual.day-3}", size=16, weight=FontWeight.BOLD, color=colors.PURPLE)
-                                        ]
-                                    )
-                                ],
-                                spacing=0,
-                                horizontal_alignment=CrossAxisAlignment.CENTER
+                            Text(
+                                f"{dia_da_semana[3]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
                             ),
                             margin=margin.only(top=10),
                         ),
@@ -267,24 +215,11 @@ def load_chart():
                     ChartAxisLabel(
                         value=5,
                         label=Container(
-                            Column(
-                                [
-                                    Text(
-                                        f"{dia_da_semana[4]}",
-                                        size=16,
-                                        weight=FontWeight.BOLD,
-                                        color=colors.with_opacity(0.5, colors.ON_SURFACE),
-                                    ),
-                                    Row(
-                                        [
-                                            Text(f"{data_min.day+4}", size=16, weight=FontWeight.BOLD, color=colors.BLUE_GREY),
-                                            Text("e", size=16, weight=FontWeight.BOLD, color=colors.with_opacity(0.5, colors.ON_SURFACE)),
-                                            Text(f"{data_atual.day-2}", size=16, weight=FontWeight.BOLD, color=colors.PURPLE)
-                                        ]
-                                    )
-                                ],
-                                spacing=0,
-                                horizontal_alignment=CrossAxisAlignment.CENTER
+                            Text(
+                                f"{dia_da_semana[4]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
                             ),
                             margin=margin.only(top=10),
                         ),
@@ -292,24 +227,11 @@ def load_chart():
                     ChartAxisLabel(
                         value=6,
                         label=Container(
-                            Column(
-                                [
-                                    Text(
-                                        f"{dia_da_semana[5]}",
-                                        size=16,
-                                        weight=FontWeight.BOLD,
-                                        color=colors.with_opacity(0.5, colors.ON_SURFACE),
-                                    ),
-                                    Row(
-                                        [
-                                            Text(f"{data_min.day+5}", size=16, weight=FontWeight.BOLD, color=colors.BLUE_GREY),
-                                            Text("e", size=16, weight=FontWeight.BOLD, color=colors.with_opacity(0.5, colors.ON_SURFACE)),
-                                            Text(f"{data_atual.day-1}", size=16, weight=FontWeight.BOLD, color=colors.PURPLE)
-                                        ]
-                                    )
-                                ],
-                                spacing=0,
-                                horizontal_alignment=CrossAxisAlignment.CENTER
+                            Text(
+                                f"{dia_da_semana[5]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
                             ),
                             margin=margin.only(top=10),
                         ),
@@ -317,24 +239,11 @@ def load_chart():
                     ChartAxisLabel(
                         value=7,
                         label=Container(
-                            Column(
-                                [
-                                    Text(
-                                        f"{dia_da_semana[6]}",
-                                        size=16,
-                                        weight=FontWeight.BOLD,
-                                        color=colors.with_opacity(0.5, colors.ON_SURFACE),
-                                    ),
-                                    Row(
-                                        [
-                                            Text(f"{data_min.day+6}", size=16, weight=FontWeight.BOLD, color=colors.BLUE_GREY),
-                                            Text("e", size=16, weight=FontWeight.BOLD, color=colors.with_opacity(0.5, colors.ON_SURFACE)),
-                                            Text(f"{data_atual.day}", size=16, weight=FontWeight.BOLD, color=colors.PURPLE)
-                                        ]
-                                    )
-                                ],
-                                spacing=0,
-                                horizontal_alignment=CrossAxisAlignment.CENTER
+                            Text(
+                                f"{dia_da_semana[6]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
                             ),
                             margin=margin.only(top=10),
                         ),
@@ -354,6 +263,7 @@ def load_chart():
         )
     except:
         pass
+    print("TESTE")
     return chart
 
 chart = [None]
