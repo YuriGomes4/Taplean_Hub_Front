@@ -165,7 +165,7 @@ def load_chart():
                         value=1,
                         label=Container(
                             Text(
-                                f"{dia_da_semana[1]}",
+                                f"{dia_da_semana[0]}",
                                 size=16,
                                 weight=FontWeight.BOLD,
                                 color=colors.with_opacity(0.5, colors.ON_SURFACE),
@@ -177,7 +177,7 @@ def load_chart():
                         value=2,
                         label=Container(
                             Text(
-                                f"{dia_da_semana[2]}",
+                                f"{dia_da_semana[1]}",
                                 size=16,
                                 weight=FontWeight.BOLD,
                                 color=colors.with_opacity(0.5, colors.ON_SURFACE),
@@ -189,7 +189,7 @@ def load_chart():
                         value=3,
                         label=Container(
                             Text(
-                                f"{dia_da_semana[3]}",
+                                f"{dia_da_semana[2]}",
                                 size=16,
                                 weight=FontWeight.BOLD,
                                 color=colors.with_opacity(0.5, colors.ON_SURFACE),
@@ -201,7 +201,7 @@ def load_chart():
                         value=4,
                         label=Container(
                             Text(
-                                f"{dia_da_semana[4]}",
+                                f"{dia_da_semana[3]}",
                                 size=16,
                                 weight=FontWeight.BOLD,
                                 color=colors.with_opacity(0.5, colors.ON_SURFACE),
@@ -213,7 +213,7 @@ def load_chart():
                         value=5,
                         label=Container(
                             Text(
-                                f"{dia_da_semana[5]}",
+                                f"{dia_da_semana[4]}",
                                 size=16,
                                 weight=FontWeight.BOLD,
                                 color=colors.with_opacity(0.5, colors.ON_SURFACE),
@@ -225,7 +225,7 @@ def load_chart():
                         value=6,
                         label=Container(
                             Text(
-                                f"{dia_da_semana[6]}",
+                                f"{dia_da_semana[5]}",
                                 size=16,
                                 weight=FontWeight.BOLD,
                                 color=colors.with_opacity(0.5, colors.ON_SURFACE),
@@ -237,7 +237,7 @@ def load_chart():
                         value=7,
                         label=Container(
                             Text(
-                                f"{dia_da_semana[0]}",
+                                f"{dia_da_semana[6]}",
                                 size=16,
                                 weight=FontWeight.BOLD,
                                 color=colors.with_opacity(0.5, colors.ON_SURFACE),
