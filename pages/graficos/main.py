@@ -1,129 +1,293 @@
 from flet import(
     Column,
-    TextStyle,
+    Text,
     FontWeight,
     colors,
-    BoxShadow,
-    border,
+    Row,
+    Border,
+    BorderSide,
     Icon,
     icons,
-    Container,
-    PieChartEvent,
     margin,
-    IconButton,
-    PieChart,
-    PieChartSection
+    Container,
+    ChartAxis,
+    ChartAxisLabel,
+    ChartGridLines,
+    LineChart,
+    LineChartData,
+    LineChartDataPoint,
+    MainAxisAlignment,
+    alignment
 )
 
 import navigation
 import services
 
-chart = PieChart()
+from datetime import datetime, timedelta
 
-normal_radius = 80
-hover_radius = 90
-normal_title_style = TextStyle(
-    size=12, color=colors.WHITE, weight=FontWeight.BOLD
-)
-hover_title_style = TextStyle(
-    size=16,
-    color=colors.WHITE,
-    weight=FontWeight.BOLD,
-    shadow=BoxShadow(blur_radius=2, color=colors.BLACK54),
-)
-normal_badge_size = 40
-hover_badge_size = 50
-
-def badge(icon, size):
-    return Container(
-        Icon(icon,color=colors.BLACK),
-        width=size,
-        height=size,
-        border=border.all(1, colors.BROWN),
-        border_radius=size / 2,
-        bgcolor=colors.WHITE,
-    )
-
-def on_chart_event(e: PieChartEvent):
-    for idx, section in enumerate(chart.sections):
-        if idx == e.section_index:
-            section.radius = hover_radius
-            section.title_style = hover_title_style
-        else:
-            section.radius = normal_radius
-            section.title_style = normal_title_style
-    chart.update()
+from services import config as sv_config
+from services import vendas as sv_vendas
+from services import personal_prefs as sv_preferences
 
 def load_chart():
 
-    global transactions
-    global cats
-    global valores
-    global total
-    global secoes
 
-    global chart
-    #global tela
+    ano_atual = datetime.now().year
+    mes_atual = datetime.now().month
+    dia_atual = datetime.now().day
+    #data_min = data_max.day
 
-    transactions = []
+    ano_min = 0
+    mes_min = 0
+    dia_min = 0
 
-    transactions = services.produtos.get_all()
-
-    cats = []
-    valores = []
-    total = 0.0
-
-    secoes = []
-
-    for transaction in transactions:
-        if transaction.category_id == "DEBIT":
-            print(transaction.price)
-            total = total + float(str(transaction.valor).replace("-",""))
-
-    print("Total:", total)
-
-    for transaction in transactions:
-        if not(transaction.category_id in cats) and transaction.category_id == "DEBIT":
-            cats.append(transaction.category_id)
-            valores.append(float(str(transaction.valor).replace("-","")))
+    def is_bissexto(ano):
+        if (ano % 4 == 0 and ano % 100 != 0) or (ano % 400 == 0):
+            return True
         else:
-            if transaction.category_id == "DEBIT":
-                index = cats.index(transaction.category_id)
-                valores[index] = valores[index] + float(str(transaction.valor).replace("-",""))
+            return False
 
-    print(cats)
+    if dia_atual > 13:
+        dia_min = dia_atual - 13
+        mes_min = mes_atual
+        ano_min = ano_atual
+    else:
+        if mes_atual > 1:
+            mes_min = mes_atual-1
 
-    for ind in range(len(cats)):
-        secoes.append(
-            PieChartSection(
-                valores[ind],
-                title=f"{int((valores[ind] / total)*100)}%",
-                title_style=normal_title_style,
-                color=colors.BLUE,
-                radius=normal_radius,
-                badge=badge('add', normal_badge_size),
-                badge_position=0.98,
-            )
+            if mes_min in [1, 3, 5, 7, 8, 10, 12]:
+                dia_min = (dia_atual+31)-13
+            elif mes_min in [4, 6, 9, 11]:
+                dia_min = (dia_atual+30)-13
+            elif mes_min == 2:
+                ano_bi = is_bissexto(ano_atual)
+
+                if ano_bi:
+                    dia_min = (dia_atual+29)-13
+                else:
+                    dia_min = (dia_atual+28)-13
+            else:
+                print("Erro de caso")
+            
+            ano_min = ano_atual
+        else:
+            ano_min = ano_atual-1
+            mes_min = 12
+            dia_min = (dia_atual+31)-13
+
+    data_atual = datetime.strptime(f"{ano_atual}-{mes_atual}-{dia_atual} 23:59:59", "%Y-%m-%d %H:%M:%S")
+    data_min = datetime.strptime(f"{ano_min}-{mes_min}-{dia_min} 00:00:00", "%Y-%m-%d %H:%M:%S")
+
+    vendas = sv_vendas.get_all(sv_preferences.get('vendedor'), data_min, data_atual)
+
+    print(data_atual, data_min)
+
+    dias = [0] * 14
+
+    # Suponhamos que 'vendas' seja uma lista de objetos com a propriedade 'date_created'.
+    # data_min é a data inicial do intervalo.
+    # data_atual é a data final do intervalo.
+
+    for venda in vendas:
+        # Calcula a diferença em dias entre a data da venda e a data mínima.
+        diferenca = (datetime.strptime(venda["date_created"], "%Y-%m-%dT%H:%M:%S") - data_min).days
+
+        # Verifica se a venda ocorreu dentro do intervalo de 14 dias.
+        #if 0 <= diferenca <= 13:
+            # Incrementa o contador no elemento correspondente em 'dias'.
+        dias[diferenca] += 1
+
+    # O array 'dias' agora contém a quantidade de vendas para cada dia no intervalo.
+
+    semana = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"]
+    dia_da_semana = []
+
+    for i in range(7):
+        # Calcule a data do dia atual na sequência.
+        data_dia_atual = data_min + timedelta(days=i)
+        
+        # Obtenha o nome do dia da semana para a data atual.
+        dia_da_semana.append(semana[data_dia_atual.weekday()])
+        
+        #print(f"No {nome_dia_da_semana}, {data_dia_atual.date()}.")
+        #print(dias)
+
+    data_1 = [
+        LineChartData(
+            data_points=[
+                LineChartDataPoint(1, dias[0]),
+                LineChartDataPoint(2, dias[1]),
+                LineChartDataPoint(3, dias[2]),
+                LineChartDataPoint(4, dias[3]),
+                LineChartDataPoint(5, dias[4]),
+                LineChartDataPoint(6, dias[5]),
+                LineChartDataPoint(7, dias[6]),
+            ],
+            stroke_width=8,
+            color=colors.BLUE_GREY,
+            curved=False,
+            stroke_cap_round=True,
+        ),
+        LineChartData(
+            data_points=[
+                LineChartDataPoint(1, dias[7]),
+                LineChartDataPoint(2, dias[8]),
+                LineChartDataPoint(3, dias[9]),
+                LineChartDataPoint(4, dias[10]),
+                LineChartDataPoint(5, dias[11]),
+                LineChartDataPoint(6, dias[12]),
+                LineChartDataPoint(7, dias[13]),
+            ],
+            color=colors.PURPLE,
+            below_line_bgcolor=colors.with_opacity(0, colors.PURPLE),
+            stroke_width=8,
+            curved=False,
+            stroke_cap_round=True,
         )
+    ]
 
-
-    chart.sections=secoes
-    chart.sections_space=0
-    chart.center_space_radius=40
-    chart.on_chart_event=on_chart_event
-    chart.expand=False
-
+    try:
+    
+        chart = LineChart(
+            data_series=data_1,
+            horizontal_grid_lines=ChartGridLines(),
+            border=Border(
+                bottom=BorderSide(4, colors.with_opacity(0.5, colors.ON_SURFACE))
+            ),
+            left_axis=ChartAxis(
+                labels_size=40,
+                title=Text("Vendas"),
+                title_size=40
+            ),
+            bottom_axis=ChartAxis(
+                labels=[
+                    ChartAxisLabel(
+                        value=1,
+                        label=Container(
+                            Text(
+                                f"{dia_da_semana[1]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
+                            ),
+                            margin=margin.only(top=10),
+                        ),
+                    ),
+                    ChartAxisLabel(
+                        value=2,
+                        label=Container(
+                            Text(
+                                f"{dia_da_semana[2]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
+                            ),
+                            margin=margin.only(top=10),
+                        ),
+                    ),
+                    ChartAxisLabel(
+                        value=3,
+                        label=Container(
+                            Text(
+                                f"{dia_da_semana[3]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
+                            ),
+                            margin=margin.only(top=10),
+                        ),
+                    ),
+                    ChartAxisLabel(
+                        value=4,
+                        label=Container(
+                            Text(
+                                f"{dia_da_semana[4]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
+                            ),
+                            margin=margin.only(top=10),
+                        ),
+                    ),
+                    ChartAxisLabel(
+                        value=5,
+                        label=Container(
+                            Text(
+                                f"{dia_da_semana[5]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
+                            ),
+                            margin=margin.only(top=10),
+                        ),
+                    ),
+                    ChartAxisLabel(
+                        value=6,
+                        label=Container(
+                            Text(
+                                f"{dia_da_semana[6]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
+                            ),
+                            margin=margin.only(top=10),
+                        ),
+                    ),
+                    ChartAxisLabel(
+                        value=7,
+                        label=Container(
+                            Text(
+                                f"{dia_da_semana[0]}",
+                                size=16,
+                                weight=FontWeight.BOLD,
+                                color=colors.with_opacity(0.5, colors.ON_SURFACE),
+                            ),
+                            margin=margin.only(top=10),
+                        ),
+                    )
+                ],
+                labels_interval=1,
+                labels_size=32,
+            ),
+            tooltip_bgcolor=colors.with_opacity(0.8, colors.WHITE),
+            min_y=0,
+            #max_y=4,
+            min_x=1,
+            max_x=7,
+            # animate=5000,
+            #margin=margin.only(top=10),
+            expand=True,
+        )
+    except:
+        pass
+    print("TESTE")
     return chart
 
 tela = Column(
-    [load_chart()],
     expand=True,
-    visible=True
+    visible=False
 )
 
 def on_visible():
     global tela
-    tela.controls[0] = load_chart()
+    chart = []
+    try:
+        chart.append(load_chart())
+    except:
+        pass
+
+    tela.controls = [
+        Row(
+            [
+                Icon(name=icons.CIRCLE, color=colors.BLUE_GREY), Text("Semana passada"),
+                Container(margin=margin.only(left=20, top=60)),
+                Icon(name=icons.CIRCLE, color=colors.PURPLE), Text("Semana atual"),
+            ],
+            #expand=True,
+            alignment=MainAxisAlignment.CENTER
+        ),
+        Container(Row(chart), margin=margin.only(right=80, bottom=80), expand=True)
+    ]
     navigation.refresh()
 
 navigation.paginas.append(
@@ -131,6 +295,6 @@ navigation.paginas.append(
         'objeto': tela,
         'numero': '00',
         'vis_event': on_visible,
-        'titulo': "Produtos",
+        'titulo': f"{sv_config.get('versao')} - Gráficos",
     }
 )

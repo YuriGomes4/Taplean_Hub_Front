@@ -27,7 +27,7 @@ vendas = []
 texto_vendas = Text("Vendas: 0")
 
 def onclick_item(e):
-    navigation.ChangeScreen("01", e)
+    navigation.ChangeScreen("11", e)
     #pass
 
 lista = ListView(
@@ -61,8 +61,19 @@ def on_visible():
 
     extratos = []
 
-    #transactions = sv_extrato.get_all()
-    vendas = sv_vendas.get_all(sv_preferences.get('vendedor'))
+    data = str(sv_preferences.get("data"))
+
+    if data != "False":
+        datas = str(sv_preferences.get("data")).split('/')
+
+        data_temp = datas[0].split('-')
+        data1 = datetime(int(data_temp[0]), int(data_temp[1]), int(data_temp[2]))
+        data_temp = datas[1].split('-')
+        data2 = datetime(int(data_temp[0]), int(data_temp[1]), int(data_temp[2]), 23, 59, 59)
+
+        vendas = sv_vendas.get_all(sv_preferences.get('vendedor'), data1, data2)
+    else:
+        vendas = sv_vendas.get_all(sv_preferences.get('vendedor'))
 
     print(len(vendas))
 
@@ -85,7 +96,7 @@ def on_visible():
 
             procura = sv_preferences.get("procura")
             tipo_procura = sv_preferences.get("tipo_procura")
-            data = str(sv_preferences.get("data"))
+            #data = str(sv_preferences.get("data"))
 
             try:
                 if procura != "":
@@ -99,20 +110,20 @@ def on_visible():
                         if not(procura in str(venda['id'])):
                             filtrado = False
 
-                if data != "False":
-                    datas = str(sv_preferences.get("data")).split('/')
+                #if data != "False":
+                #    datas = str(sv_preferences.get("data")).split('/')
 
-                    data_temp = datas[0].split('-')
-                    data1 = datetime(int(data_temp[0]), int(data_temp[1]), int(data_temp[2]))
-                    data_temp = datas[1].split('-')
-                    data2 = datetime(int(data_temp[0]), int(data_temp[1]), int(data_temp[2]), 23, 59, 59)
+                #    data_temp = datas[0].split('-')
+                #    data1 = datetime(int(data_temp[0]), int(data_temp[1]), int(data_temp[2]))
+                #    data_temp = datas[1].split('-')
+                #    data2 = datetime(int(data_temp[0]), int(data_temp[1]), int(data_temp[2]), 23, 59, 59)
 
                     #print("hdakjshdjahkj")
 
-                    order_date = datetime.strptime(str(venda['date_created']), "%Y-%m-%dT%H:%M:%S")
+                #    order_date = datetime.strptime(str(venda['date_created']), "%Y-%m-%dT%H:%M:%S")
 
-                    if not(data1 <= order_date <= data2):
-                        filtrado = False
+                #    if not(data1 <= order_date <= data2):
+                #        filtrado = False
 
             except:
                 pass
@@ -161,7 +172,7 @@ def on_visible():
 navigation.paginas.append(
     {
         'objeto': tela,
-        'numero': '00',
+        'numero': '10',
         'vis_event': on_visible,
         'titulo': f"{sv_config.get('versao')} - Vendas",
     }

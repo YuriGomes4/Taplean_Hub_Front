@@ -110,7 +110,7 @@ def on_visible():
 navigation.paginas.append(
     {
         'objeto': tela,
-        'numero': '10',
+        'numero': '20',
         'vis_event': on_visible,
         'titulo': f"{sv_config.get('versao')} - Produtos",
     }

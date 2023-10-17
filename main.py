@@ -34,6 +34,7 @@ def main(page: Page):
     paginas = navigation.paginas
 
     page.title = "Produtos"
+    page.theme_mode = "DARK"
 
     pages.configuracoes.main.page = page
     pages.configuracoes.main.page.overlay.extend([pages.configuracoes.main.pick_files_dialog, pages.configuracoes.main.save_file_dialog, pages.configuracoes.main.get_directory_dialog])
@@ -47,10 +48,11 @@ def main(page: Page):
     )
     page.navigation_bar = NavigationBar(
         destinations=[
-            NavigationDestination(icon=icons.PIE_CHART_OUTLINE_OUTLINED, selected_icon=icons.PIE_CHART, label="Vendas"),
-            NavigationDestination(icon=icons.RECEIPT_LONG_OUTLINED, selected_icon=icons.RECEIPT_LONG, label="Produtos"),
+            NavigationDestination(icon=icons.PIE_CHART_OUTLINE_OUTLINED, selected_icon=icons.PIE_CHART_OUTLINE, label="Gráficos"),
+            NavigationDestination(icon=icons.RECEIPT_LONG_OUTLINED, selected_icon=icons.RECEIPT_LONG, label="Vendas"),
+            NavigationDestination(icon=icons.SHOPPING_CART_OUTLINED, selected_icon=icons.SHOPPING_CART, label="Produtos"),
             #NavigationDestination(icon=icons.CATEGORY_OUTLINED, selected_icon=icons.CATEGORY, label="Categorias"),
-            NavigationDestination(icon=icons.ACCOUNT_CIRCLE_OUTLINED, selected_icon=icons.ACCOUNT_CIRCLE, label="Configurações"),
+            NavigationDestination(icon=icons.ENGINEERING_OUTLINED, selected_icon=icons.ENGINEERING, label="Configurações"),
         ],
         on_change = navigation.NavigationChange,
     )

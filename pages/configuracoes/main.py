@@ -173,7 +173,7 @@ def on_visible():
 navigation.paginas.append(
     {
         'objeto': tela,
-        'numero': '20',
+        'numero': '30',
         'vis_event': on_visible,
         'titulo': f"{services.config.get('versao')} - Configurações",
     }

@@ -350,7 +350,7 @@ def on_visible():
 navigation.paginas.append(
     {
         'objeto': tela,
-        'numero': '11',
+        'numero': '21',
         'vis_event': on_visible,
         'titulo': "Detalhes do produto",
     }

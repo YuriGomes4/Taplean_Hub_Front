@@ -221,7 +221,7 @@ def on_visible():
 navigation.paginas.append(
     {
         'objeto': tela,
-        'numero': '12',
+        'numero': '22',
         'vis_event': on_visible,
         'titulo': "Adicionar/editar regra",
     }
