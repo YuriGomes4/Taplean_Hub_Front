@@ -18,7 +18,9 @@ from flet import(
     LineChartDataPoint,
     MainAxisAlignment,
     CrossAxisAlignment,
-    alignment
+    alignment,
+    Dropdown,
+    dropdown,
 )
 
 import navigation
@@ -354,31 +356,42 @@ def load_chart():
         pass
     return chart
 
+chart = [None]
+
 tela = Column(
-    expand=True,
-    visible=False
-)
-
-def on_visible():
-    global tela
-    chart = []
-    try:
-        chart.append(load_chart())
-    except:
-        pass
-
-    tela.controls = [
+    [
         Row(
             [
                 Icon(name=icons.CIRCLE, color=colors.BLUE_GREY), Text("Semana passada"),
                 Container(margin=margin.only(left=20, top=60)),
                 Icon(name=icons.CIRCLE, color=colors.PURPLE), Text("Semana atual"),
+                Dropdown(
+                    options=[
+                        dropdown.Option(text="Vendas"),
+                        dropdown.Option(text="Visitas")
+                    ]
+                )
             ],
             #expand=True,
             alignment=MainAxisAlignment.CENTER
         ),
         Container(Row(chart), margin=margin.only(right=80, bottom=80), expand=True)
-    ]
+    ],
+    expand=True,
+    visible=False
+)
+
+def on_visible():
+    global chart
+    #chart = []
+
+    try:
+        chart[0] = load_chart()
+    except:
+        pass
+
+
+
     navigation.refresh()
 
 navigation.paginas.append(

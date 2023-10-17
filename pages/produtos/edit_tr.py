@@ -65,7 +65,7 @@ def salvar_extrato(e):
     navigation.BackScreen("")
 
 def onclick_regra(e):
-    navigation.ChangeScreen("12", e)
+    navigation.ChangeScreen("22", e)
 
 def onclick_deleteregra(e):
     services.produtos.delete_regra(e.control.key)

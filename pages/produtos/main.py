@@ -26,7 +26,7 @@ transactions = []
 #print(len(transactions))
 
 def onclick_item(e):
-    navigation.ChangeScreen("11", e)
+    navigation.ChangeScreen("21", e)
     #pass
 
 def load_prods(transactions):
