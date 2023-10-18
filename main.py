@@ -1,74 +1,36 @@
-from flet import(
-    app,
-    Page,
-    AppBar,
-    colors,
-    NavigationBar,
-    Text,
-    icons,
-    NavigationDestination,
-    Column,
-    Container,
-    Row,
-    ElevatedButton,
-    FilePicker,
-    FilePickerResultEvent,
-    IconButton,
-    ListView,
-    alignment,
-    MainAxisAlignment,
-    Icon,
-    TextAlign,
-)
+from time import sleep
+import streamlit as st
+session_state = st.session_state
 
-import pages
+# Verifique se a chave "page" existe na variável de estado da sessão
+if "page" not in session_state:
+    session_state["page"] = "11111"
+
+from pages.login.main import numero as login_num
+from pages.login.main import load as login_load
+from pages.login.main import tela as login_tela
+
+from pages.configuracoes.main import numero as config_num
+from pages.configuracoes.main import load as config_load
+from pages.configuracoes.main import tela as config_tela
 
 import navigation
 
-import os
-import subprocess
+navigation.paginas[login_num] = login_load
+navigation.paginas[f"{login_num}tela"] = login_tela
+login_tela.empty()
 
+navigation.paginas[config_num] = config_load
+navigation.paginas[f"{config_num}tela"] = config_tela
+config_tela.empty()
 
-def main(page: Page):
+#login_load()
 
-    paginas = navigation.paginas
-
-    page.title = "Produtos"
-    page.theme_mode = "DARK"
-
-    pages.configuracoes.main.page = page
-    pages.configuracoes.main.page.overlay.extend([pages.configuracoes.main.pick_files_dialog, pages.configuracoes.main.save_file_dialog, pages.configuracoes.main.get_directory_dialog])
-
-    navigation.page = page
-
-    page.appbar = AppBar(
-        leading = None,
-        title=Text("Produtos"),
-        bgcolor=colors.INDIGO,
-    )
-    page.navigation_bar = NavigationBar(
-        destinations=[
-            NavigationDestination(icon=icons.PIE_CHART_OUTLINE_OUTLINED, selected_icon=icons.PIE_CHART_OUTLINE, label="Gráficos"),
-            NavigationDestination(icon=icons.RECEIPT_LONG_OUTLINED, selected_icon=icons.RECEIPT_LONG, label="Vendas"),
-            NavigationDestination(icon=icons.SHOPPING_CART_OUTLINED, selected_icon=icons.SHOPPING_CART, label="Produtos"),
-            #NavigationDestination(icon=icons.CATEGORY_OUTLINED, selected_icon=icons.CATEGORY, label="Categorias"),
-            NavigationDestination(icon=icons.ENGINEERING_OUTLINED, selected_icon=icons.ENGINEERING, label="Configurações"),
-        ],
-        on_change = navigation.NavigationChange,
-    )
-
-    #page.add(navigation.extrato_page, navigation.categorias_page, navigation.perfil_page)
-
-    page.navigation_bar.visible = False
-    page.appbar.visible = False
-
-    for pag in paginas:
-        try:
-            page.add(pag['objeto'])
-        except:
-            pass
-
+#def NavigationChange(screen):
+#    print("Mudou")
+#    session_state["page"] = screen
+#    navigation.alterar_pagina()
+    
+if session_state["page"] == "11111":
+    session_state["page"] = "@@"
     navigation.alterar_pagina()
-
-
-app(target=main)
