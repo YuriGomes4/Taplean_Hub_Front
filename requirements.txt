@@ -1,2 +1,3 @@
-flet
+streamlit
+plotly
 requests

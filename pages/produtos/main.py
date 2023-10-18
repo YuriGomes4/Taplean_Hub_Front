@@ -1,22 +1,9 @@
-from flet import(
-    Container,
-    Row,
-    Icon,
-    icons,
-    Column,
-    Text,
-    MainAxisAlignment,
-    TextAlign,
-    ListView,
-    colors,
-    Dropdown,
-    dropdown,
-)
+
 
 from services import produtos as sv_extrato
 from services import personal_prefs as sv_preferences
 from services import config as sv_config
-import navigation
+#import navigation
 
 extratos = []
 
@@ -25,8 +12,8 @@ extratos = []
 transactions = []
 #print(len(transactions))
 
-def onclick_item(e):
-    navigation.ChangeScreen("21", e)
+#def onclick_item(e):
+#    navigation.ChangeScreen("21", e)
     #pass
 
 def load_prods(transactions):
@@ -88,7 +75,7 @@ tela = Column(
     visible=False
 )
 
-def on_visible():
+def load():
     global transactions
     global extratos
     global lista
@@ -111,7 +98,7 @@ navigation.paginas.append(
     {
         'objeto': tela,
         'numero': '20',
-        'vis_event': on_visible,
-        'titulo': f"{sv_config.get('versao')} - Produtos",
+        'vis_event': load,
+        'titulo': f"Produtos",
     }
 )

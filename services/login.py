@@ -1,5 +1,7 @@
 from . import personal_prefs
+import streamlit as st
 import navigation
+#from main import NavigationChange
 
 import requests
 
@@ -22,10 +24,13 @@ def login(email, senha):
     if response.status_code == 201:
         print("Login aprovado!")
         personal_prefs.set('token', response.json()['token'])
-        navigation.NavigationChange(e=None, screen="00")
+        if st.session_state["page"] != "00":
+            st.session_state["page"] = "00"
+            navigation.alterar_pagina()
+        #NavigationChange(screen="00")
     else:
         print("Usuário e/ou senha incorreto!")
-        navigation.notify("Usuário e/ou senha incorreto!")
+        #navigation.notify("Usuário e/ou senha incorreto!")
 
 def verify_access():
     url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
@@ -41,4 +46,6 @@ def verify_access():
 
     if response.status_code == 200:
         print("Login aprovado!")
-        navigation.NavigationChange(e=None, screen="00")
+        if st.session_state["page"] != "00":
+            st.session_state["page"] = "00"
+            navigation.alterar_pagina()
