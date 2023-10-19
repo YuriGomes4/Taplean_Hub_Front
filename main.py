@@ -5,6 +5,7 @@ import streamlit as st
 config_file = "personal_prefs.cnf"
 
 from services import personal_prefs as sv_personal_prefs
+from services import config
 from services import default_prefs
 
 if not(os.path.exists(config_file)):
@@ -23,6 +24,10 @@ else:
 
 
 from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule
+
+st.set_page_config(
+    page_title=f"Tap Hub - {config.get('versao')}"
+)
 
 # Verifique se a chave "page" existe na variável de estado da sessão
 if "page" not in st.session_state:
