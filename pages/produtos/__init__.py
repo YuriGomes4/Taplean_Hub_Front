@@ -1,1 +1,0 @@
-from . import main, edit_tr, add_rule

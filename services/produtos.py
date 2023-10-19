@@ -186,13 +186,13 @@ def prods_sort(new_sort):
                 #print(prod_perc)
 
                 if prod_perc+perc_acum <= 0.8:
-                    produto['icone'] = "hdr_auto_outlined"
+                    produto['icone'] = "🇦🟢"
                     produto['color'] = "green"
                 elif prod_perc+perc_acum <= 0.95:
-                    produto['icone'] = "format_bold"
+                    produto['icone'] = "🇧🟡"
                     produto['color'] = "yellow"
                 else:
-                    produto['icone'] = "copyright"
+                    produto['icone'] = "🇨🔴"
                     produto['color'] = "red"
 
                 perc_acum = prod_perc+perc_acum
@@ -203,7 +203,7 @@ def prods_sort(new_sort):
             temp_prods = []
             for produto in produtos:
                 if int(produto['seller']) == int(personal_prefs.get('vendedor')):
-                    produto['icone'] = "add"
+                    produto['icone'] = "➕"
                     produto['color'] = "amber"
                     temp_prods.append(produto)
 

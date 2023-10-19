@@ -1,36 +1,37 @@
 from time import sleep
 import streamlit as st
-session_state = st.session_state
+
+from services import personal_prefs as sv_personal_prefs
+
+from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule
 
 # Verifique se a chave "page" existe na variável de estado da sessão
-if "page" not in session_state:
-    session_state["page"] = "11111"
+if "page" not in st.session_state:
+    st.session_state.page = "@@"
 
-from pages.login.main import numero as login_num
-from pages.login.main import load as login_load
-from pages.login.main import tela as login_tela
+if "produto" not in st.session_state:
+    st.session_state.produto = ""
 
-from pages.configuracoes.main import numero as config_num
-from pages.configuracoes.main import load as config_load
-from pages.configuracoes.main import tela as config_tela
+if "regra" not in st.session_state:
+    st.session_state.regra = "create"
 
-import navigation
+for key,value in sv_personal_prefs.get_all().items():
+    if f"{key}" not in st.session_state:
+        st.session_state[f"{key}"] = value
 
-navigation.paginas[login_num] = login_load
-navigation.paginas[f"{login_num}tela"] = login_tela
-login_tela.empty()
+login.verify_access()
 
-navigation.paginas[config_num] = config_load
-navigation.paginas[f"{config_num}tela"] = config_tela
-config_tela.empty()
+print(st.session_state.page)
 
-#login_load()
-
-#def NavigationChange(screen):
-#    print("Mudou")
-#    session_state["page"] = screen
-#    navigation.alterar_pagina()
-    
-if session_state["page"] == "11111":
-    session_state["page"] = "@@"
-    navigation.alterar_pagina()
+if st.session_state.page == "@@":
+    login.page()
+elif st.session_state.page == "00":
+    graficos.page()
+elif st.session_state.page == "10":
+    produtos.page()
+elif st.session_state.page == "11":
+    edit_produto.page()
+elif st.session_state.page == "12":
+    add_rule.page()
+elif st.session_state.page == "20":
+    configuracoes.page()
