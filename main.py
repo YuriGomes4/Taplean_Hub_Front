@@ -26,6 +26,7 @@ else:
 from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule
 
 st.set_page_config(
+    page_icon="images/Logo.png",
     page_title=f"Tap Hub - {config.get('versao')}"
 )
 

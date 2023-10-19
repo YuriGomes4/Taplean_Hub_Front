@@ -7,6 +7,8 @@ from services import vendas as sv_vendas
 import pandas as pd
 import numpy as np
 
+import plotly.express as px
+
 def page():
 
     ano_atual = datetime.now().year
@@ -96,15 +98,31 @@ def page():
     base()
 
     # Crie um array estruturado do NumPy com colunas nomeadas
-    data = np.array([(dias[7], dias[0]), (dias[8], dias[1]), (dias[9], dias[2]), (dias[10], dias[3]), (dias[11], dias[4]), (dias[12], dias[5]), (dias[13], dias[6])],dtype=[("X", "i4"), ("Y", "i4")])
+    #data = np.array([(dias[7], dias[0]), (dias[8], dias[1]), (dias[9], dias[2]), (dias[10], dias[3]), (dias[11], dias[4]), (dias[12], dias[5]), (dias[13], dias[6])],dtype=[("X", "i4"), ("Y", "i4")])
 
     # Crie o DataFrame com as colunas nomeadas
-    chart_data = pd.DataFrame(data, columns=['X', 'Y'])
+    #chart_data = pd.DataFrame(data, columns=['X', 'Y'])
 
     # Crie um dicionário para mapear os índices numéricos para texto
-    index_mapping = {i: f"{i}_{dia_da_semana[i]}" for i in range(7)}
+    #index_mapping = {i: f"{i}_{dia_da_semana[i]}" for i in range(7)}
 
     # Substitua os índices numéricos por texto
-    chart_data.index = chart_data.index.map(index_mapping)
+    #chart_data.index = chart_data.index.map(index_mapping)
 
-    st.line_chart(chart_data)
+    #st.line_chart(chart_data)
+
+    st.title("Gráficos")
+
+    tabs = st.tabs(["Vendas"])
+
+    data = {
+        'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
+        'Dia da semana': dia_da_semana * 2,
+        'Vendas': dias[7:14] + dias[0:7]
+    }
+
+    df = pd.DataFrame(data)
+
+    fig = px.line(df, x='Dia da semana', y='Vendas', color='Semana', title="Vendas semanais", markers=True, color_discrete_sequence=[px.colors.qualitative.Set1[8], px.colors.qualitative.Set1[0]])
+    tabs[0].plotly_chart(fig, use_container_width=True)
+    #fig.show()
