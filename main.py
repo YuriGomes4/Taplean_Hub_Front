@@ -1,7 +1,26 @@
+import os
 from time import sleep
 import streamlit as st
 
+config_file = "personal_prefs.cnf"
+
 from services import personal_prefs as sv_personal_prefs
+from services import default_prefs
+
+if not(os.path.exists(config_file)):
+
+    with open(config_file, 'w') as file:
+        file.close()
+
+    for key, value in default_prefs.get_all().items():
+        print("opdsa", key, value)
+        sv_personal_prefs.set(key, value)
+
+else:
+    for key, value in default_prefs.get_all().items():
+        if key not in sv_personal_prefs.get_all().keys():
+            sv_personal_prefs.set(key, value)
+
 
 from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule
 
