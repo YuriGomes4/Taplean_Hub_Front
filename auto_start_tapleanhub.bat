@@ -54,6 +54,7 @@ if '%1'=='ELEV' (del "%vbsGetPrivileges%" 1>nul 2>nul  &  shift /1)
 REM Run shell as admin (example) - put here code as you like
 powershell -Command ".\temp_start.bat"
 powershell -Command "cp %~dp0start_taphub.vbs 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup'"
+powershell -Command "rm .\start_taphub.vbs"
 echo Taplean Hub vai iniciar automaticamente com o seu computador.
 
 pause

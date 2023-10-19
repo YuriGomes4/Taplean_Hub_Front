@@ -16,4 +16,4 @@ REM Instale os pacotes do arquivo requirements.txt
 pip install -r requirements.txt
 
 REM Executar o script Python a partir do ambiente virtual
-streamlit run main.py --server.fileWatcherType none --server.headless true
+python run.py
