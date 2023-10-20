@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 from services import personal_prefs as sv_preferences
 from services import vendas as sv_vendas
-from services import temas
 
 import pandas as pd
 import numpy as np
@@ -125,7 +124,7 @@ def page():
 
     df = pd.DataFrame(data)
 
-    fig = px.line(df, x='Dia da semana', y='Vendas', color='Semana', title="Vendas semanais", markers=True, color_discrete_sequence=[temas.getTema()['sc'], temas.getTema()['pc']])
+    fig = px.line(df, x='Dia da semana', y='Vendas', color='Semana', title="Vendas semanais", markers=True, color_discrete_sequence=["#999999", st.get_option("theme.primaryColor")])
     fig.update_layout(
         dragmode=False
     )
