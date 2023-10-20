@@ -22,7 +22,6 @@ else:
         if key not in sv_personal_prefs.get_all().keys():
             sv_personal_prefs.set(key, value)
 
-
 from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule
 
 st.set_page_config(

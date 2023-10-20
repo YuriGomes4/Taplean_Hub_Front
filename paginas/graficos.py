@@ -3,11 +3,13 @@ from datetime import datetime, timedelta
 
 from services import personal_prefs as sv_preferences
 from services import vendas as sv_vendas
+from services import temas
 
 import pandas as pd
 import numpy as np
 
 import plotly.express as px
+
 
 def page():
 
@@ -69,7 +71,7 @@ def page():
 
     for venda in vendas:
         # Calcula a diferença em dias entre a data da venda e a data mínima.
-        diferenca = (datetime.strptime(venda["date_created"], "%Y-%m-%dT%H:%M:%S") - data_min).days
+        diferenca = (datetime.strptime(venda["date_closed"], "%Y-%m-%dT%H:%M:%S") - data_min).days
 
         # Verifica se a venda ocorreu dentro do intervalo de 14 dias.
         #if 0 <= diferenca <= 13:
@@ -118,11 +120,15 @@ def page():
     data = {
         'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
         'Dia da semana': dia_da_semana * 2,
-        'Vendas': dias[7:14] + dias[0:7]
+        'Vendas': dias[0:7] + dias[7:14]
     }
 
     df = pd.DataFrame(data)
 
-    fig = px.line(df, x='Dia da semana', y='Vendas', color='Semana', title="Vendas semanais", markers=True, color_discrete_sequence=[px.colors.qualitative.Set1[8], px.colors.qualitative.Set1[0]])
+    fig = px.line(df, x='Dia da semana', y='Vendas', color='Semana', title="Vendas semanais", markers=True, color_discrete_sequence=[temas.getTema()['sc'], temas.getTema()['pc']])
+    fig.update_layout(
+        dragmode=False
+    )
+    
     tabs[0].plotly_chart(fig, use_container_width=True)
     #fig.show()

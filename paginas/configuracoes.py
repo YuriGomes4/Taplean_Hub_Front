@@ -52,6 +52,8 @@ def page():
     for seller in services.vendedor.get_all():
         opts.append(seller['nome'])
 
+    st.title("Configurações")
+
     select_seller = st.selectbox("Vendedor", options=opts, index=int(services.personal_prefs.get('vendedor'))-1)
     if st.session_state.vendedor != select_seller:
         services.personal_prefs.set('vendedor', sellers[select_seller])
@@ -63,3 +65,10 @@ def page():
     st.button("Listar vendas", on_click=list_orders, key="list_orders")
     st.button("Limpar lista de vendas", on_click=remove_orders, key="remove_orders")
     st.button("Calcular vendas nos produtos", on_click=sales_prods, key="sales_prods")
+    #temas = ["Escuro", "Claro"]
+    #tema = st.selectbox("Tema", temas, index=temas.index(services.personal_prefs.get("tema")))
+    #if tema != services.personal_prefs.get("tema"):
+    #    services.personal_prefs.set("tema", tema)
+    #    services.temas.setTema(nomeTema=tema)
+    #    st.rerun()
+    #    st.rerun()
