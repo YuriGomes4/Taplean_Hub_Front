@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from services import personal_prefs as sv_preferences
 from services import vendas as sv_vendas
+from services import vendedor as sv_vendedor
 
 import pandas as pd
 import numpy as np
@@ -64,6 +65,8 @@ def page():
 
     dias = [0] * 14
 
+    dias_visitas = []
+
     # Suponhamos que 'vendas' seja uma lista de objetos com a propriedade 'date_created'.
     # data_min é a data inicial do intervalo.
     # data_atual é a data final do intervalo.
@@ -76,6 +79,9 @@ def page():
         #if 0 <= diferenca <= 13:
             # Incrementa o contador no elemento correspondente em 'dias'.
         dias[diferenca] += 1
+
+        # Lista para armazenar as datas intermediárias
+
 
     # O array 'dias' agora contém a quantidade de vendas para cada dia no intervalo.
 
@@ -114,7 +120,7 @@ def page():
 
     st.title("Gráficos")
 
-    tabs = st.tabs(["Vendas"])
+    tabs = st.tabs(["Vendas", "Visitas"])
 
     data = {
         'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
@@ -130,4 +136,33 @@ def page():
     )
     
     tabs[0].plotly_chart(fig, use_container_width=True)
-    #fig.show()
+    
+
+    if tabs[1].button("Carregar gráfico", use_container_width=True, type='primary'):
+        datas_intermediarias = []
+
+        # Loop para gerar as datas intermediárias
+        data_inicio = data_min
+        while data_inicio <= data_atual:
+            datas_intermediarias.append(data_inicio)
+            data_inicio += timedelta(days=1)
+
+        # Agora, a lista datas_intermediarias contém todas as datas entre data_inicio e data_fim.
+        for data in datas_intermediarias:
+            data_str = f"{data.year}-{data.month}-{f'0{data.day}' if len(str(data.day)) == 1 else data.day}"
+            dias_visitas.append(sv_vendedor.get_visitas(sv_preferences.get('vendedor'), data_str, data_str))
+
+        data = {
+            'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
+            'Dia da semana': dia_da_semana * 2,
+            'Visitas': dias_visitas[0:7] + dias_visitas[7:14]
+        }
+
+        df = pd.DataFrame(data)
+
+        fig = px.line(df, x='Dia da semana', y='Visitas', color='Semana', title="Visitas semanais", markers=True, color_discrete_sequence=["#999999", st.get_option("theme.primaryColor")])
+        fig.update_layout(
+            dragmode=False
+        )
+        
+        tabs[1].plotly_chart(fig, use_container_width=True)

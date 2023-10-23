@@ -2,24 +2,24 @@ import streamlit as st
 
 import services
 
-def sync_prods(e):
+def sync_prods():
     services.produtos.sync_prods()
 
 # hide all dialogs in overlay
 #page.overlay.extend([pick_files_dialog, save_file_dialog, get_directory_dialog])
 
-def remove_prods(e):
+def remove_prods():
     services.produtos.remove_prods()
 
 opts = []
 
-def list_orders(e):
+def list_orders():
     services.produtos.list_orders()
 
-def remove_orders(e):
+def remove_orders():
     services.produtos.remove_orders()
 
-def sales_prods(e):
+def sales_prods():
     services.produtos.sales_prods()
 
 #def seller_changed(e):

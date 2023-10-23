@@ -41,3 +41,26 @@ def get(id):
         print("Falha ao listar o Vendedor.")
 
     return response.json()['result']
+
+def get_visitas(id, date_from, date_to):
+    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
+
+    update_url = f"{url_base}/api/v1/vendedor/{id}/visitas"
+
+    headers = {
+        'x-access-token' : personal_prefs.get('token'),
+    }
+
+    params = {
+        'date_from': date_from,
+        'date_to': date_to,
+    }
+
+    response = requests.get(update_url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        print("Visitas listadas com sucesso!")
+    else:
+        print("Falha ao listar as visitas.")
+
+    return response.json()['result']
