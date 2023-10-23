@@ -73,7 +73,7 @@ def page():
 
     for venda in vendas:
         # Calcula a diferença em dias entre a data da venda e a data mínima.
-        diferenca = (datetime.strptime(venda["date_closed"], "%Y-%m-%dT%H:%M:%S") - data_min).days
+        diferenca = ((datetime.strptime(venda["date_closed"], "%Y-%m-%dT%H:%M:%S") + timedelta(hours=1)) - data_min).days
 
         # Verifica se a venda ocorreu dentro do intervalo de 14 dias.
         #if 0 <= diferenca <= 13:
