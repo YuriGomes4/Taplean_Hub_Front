@@ -9,6 +9,10 @@ import pandas as pd
 import numpy as np
 
 import plotly.express as px
+import plotly.graph_objects as go
+from urllib.request import urlopen
+
+import json
 
 
 def page():
@@ -120,7 +124,7 @@ def page():
 
     st.title("Gráficos")
 
-    tabs = st.tabs(["Vendas", "Visitas"])
+    tabs = st.tabs(["Vendas", "Visitas", "localização"])
 
     data = {
         'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
@@ -166,3 +170,116 @@ def page():
         )
         
         tabs[1].plotly_chart(fig, use_container_width=True)
+
+
+
+    #import plotly.express as px
+
+    estados_brasil = {
+        "Brasil": "BR",
+        "Acre": "AC",
+        "Alagoas": "AL",
+        "Amapá": "AP",
+        "Amazonas": "AM",
+        "Bahia": "BA",
+        "Ceará": "CE",
+        "Distrito Federal": "DF",
+        "Espírito Santo": "ES",
+        "Goiás": "GO",
+        "Maranhão": "MA",
+        "Mato Grosso": "MT",
+        "Mato Grosso do Sul": "MS",
+        "Minas Gerais": "MG",
+        "Pará": "PA",
+        "Paraíba": "PB",
+        "Paraná": "PR",
+        "Pernambuco": "PE",
+        "Piauí": "PI",
+        "Rio de Janeiro": "RJ",
+        "Rio Grande do Norte": "RN",
+        "Rio Grande do Sul": "RS",
+        "Rondônia": "RO",
+        "Roraima": "RR",
+        "Santa Catarina": "SC",
+        "São Paulo": "SP",
+        "Sergipe": "SE",
+        "Tocantins": "TO"
+    }
+
+
+    select_map = tabs[2].selectbox("Mapa", estados_brasil.keys())
+
+    todas_vendas = sv_vendas.get_all(sv_preferences.get('vendedor'))
+
+    if select_map == "Brasil":
+        procura = "state"
+        arquivo = "BR-Est.geojson"
+        filtrar = False
+        titulo = "Vendas totais por estado do Brasil"
+    else:
+        procura = "city"
+        arquivo = f"{estados_brasil[select_map]}.json"
+        filtrar = True
+        titulo = f"Vendas por cidade de {select_map}"
+
+    div_vendas = {}
+    
+    file = open(f'assets/{arquivo}', "r")
+    map = json.load(file)
+
+    #print(map)
+
+    #state_id_map = {}
+    for feature in map ['features']:
+        feature['id'] = feature['properties']['name']
+    #    state_id_map[feature['properties']['sigla']] = feature['id']
+        div_vendas[feature['properties']['name']] = 0
+
+    #print(state_id_map)
+
+    #estados_vendas
+
+    for venda in todas_vendas:
+        str_json = str(venda['shipping']). replace("None", '"None"').replace("',", '",').replace("':", '":').replace("']", '"]').replace("'}", '"}').replace("['", '["').replace("{'", '{"').replace(" '", ' "')
+        #print(str_json)
+        ship = json.loads(str_json)
+        if not(str(venda['shipping']).__contains__("not_found_shipping_for_order_id")):
+            if filtrar:
+                if str(ship['sender_address']['state']['id']).replace("BR-", "") == estados_brasil[select_map]:
+                        div_vendas[str(ship['sender_address'][procura]['name'])] += 1
+            else:
+                div_vendas[str(ship['sender_address'][procura]['name'])] += 1 
+
+    data = {
+        "Estados": div_vendas.keys(),
+        "Vendas": div_vendas.values(),
+    }
+
+    df = pd.DataFrame(data)
+
+    #print(df)
+
+    fig2 = px.choropleth(
+        df,
+        locations='Estados', # Spatial coordinates
+        color="Vendas",
+        geojson=map,
+        color_continuous_scale=["#ffb8b8", "#360000"],
+        range_color=[0, max(div_vendas.values()) if max(div_vendas.values()) > 0 else 3]
+    )
+
+    fig2.update_layout(
+        title_text = titulo,
+        #geo_scope='south america', # limite map scope to USA
+    )
+
+    fig2.update_geos(
+        fitbounds="locations",
+        visible=False,
+    )
+
+    tabs[2].plotly_chart(fig2, use_container_width=True)
+
+    df_sorted = df.sort_values(by='Vendas', ascending=False)
+
+    tabs[2].dataframe(df_sorted, hide_index=True, use_container_width=True)
