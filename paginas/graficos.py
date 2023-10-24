@@ -224,7 +224,7 @@ def page():
 
     div_vendas = {}
     
-    file = open(f'assets/{arquivo}', "r")
+    file = open(f'assets/{arquivo}', "r", encoding="utf-8")
     map = json.load(file)
 
     #print(map)
@@ -235,7 +235,7 @@ def page():
     #    state_id_map[feature['properties']['sigla']] = feature['id']
         div_vendas[feature['properties']['name']] = 0
 
-    #print(state_id_map)
+    #print(div_vendas)
 
     #estados_vendas
 
