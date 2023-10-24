@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import streamlit as st
 import services
 import pandas as pd
@@ -147,6 +147,27 @@ def page():
 
     historico = []
 
+    filtros = ["Todos"]
+
+    for mudanca in mudancas_ordenadas:
+        if mudanca['change'] not in filtros:
+            filtros.append(mudanca['change'])
+
+    col1, col2 = tab3.columns(2)
+
+    filtro = col1.selectbox("Filtrar por tipo", filtros)
+
+    today = datetime.now()
+    jan_1 = date(today.year, 1, 1)
+
+    d = col2.date_input(
+        "Filtrar por data",
+        (jan_1, today),
+        format="DD.MM.YYYY",
+    )
+
+    print(d[0].year)
+
     for mudanca in mudancas_ordenadas:
         data = datetime.strptime(mudanca['date'], "%Y-%m-%dT%H:%M:%S.%f")
 
@@ -174,4 +195,10 @@ def page():
 </div>
 """
         #tab3.markdown(f"**{mudanca['change']}**")
-        tab3.markdown(text, unsafe_allow_html=True)
+
+        d_datetime_0 = datetime.combine(d[0], datetime.min.time())
+        d_datetime_1 = datetime.combine(d[1], datetime.min.time())
+
+        if filtro == "Todos" or filtro == mudanca['change']:
+            if d_datetime_0 <= data <= d_datetime_1:
+                tab3.markdown(text, unsafe_allow_html=True)
