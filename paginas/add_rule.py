@@ -133,17 +133,65 @@ def page():
     coluna_obj = col1.selectbox("Campo analisado", colunas_dict.keys(), index=list(colunas_dict.keys()).index(coluna_obj) if coluna_obj != "" else 0)
     #st.text_input("Analisador", value=operador]),
     operador = col1.selectbox("Analisador", operacoes_dict.keys(), index=list(operacoes_dict.keys()).index(operador) if operador != "" else 0)
-    valor_obj = col1.text_input("Valor esperado", value=valor_obj)
+    vo_col1, vo_col2 = col1.columns(2)
+    valor_obj = vo_col1.text_input("Valor esperado", value=valor_obj)
+    v_obj_ck = vo_col2.checkbox("Valor atual +", key="v_obj_ck")
     #st.text_input("Campo a ser alterado", value=coluna_new),
     coluna_new = col1.selectbox("Campo a ser alterado", list_colunas_new, index=list_colunas_new.index(coluna_new) if coluna_new != "" else 0)
-    valor_new = col1.text_input("Valor a ser colocado", value=valor_new)
+    ve_col1, ve_col2 = col1.columns(2)
+    valor_new = ve_col1.text_input("Valor a ser colocado", value=valor_new)
+    v_new_ck = ve_col2.checkbox("Valor atual +", key="v_new_ck")
+
+    produto = st.session_state.produto
     
     cor = "red"
     #st.markdown(f"##### Regra {cont}")
-    st.markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{coluna_obj}</span> do produto for <span style="color: {cor}">{operador}</span> a <span style="color: {cor}">{valor_obj}</span>, o campo <span style="color: {cor}">{coluna_new}</span> será alterado para <span style="color: {cor}">{valor_new}</span></p>""", unsafe_allow_html=True)
+    st.markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{coluna_obj}</span> do produto for <span style="color: {cor}">{operador}</span> a <span style="color: {cor}">{f"({produto[colunas_dict[coluna_obj]]}+{valor_obj})" if v_obj_ck else valor_obj}</span>, o campo <span style="color: {cor}">{coluna_new}</span> será alterado para <span style="color: {cor}">{f"({produto[colunas_dict[coluna_new]]}+{valor_new})" if v_new_ck else valor_new}</span></p>""", unsafe_allow_html=True)
     
+
     if st.button("Salvar", type='primary', use_container_width=True):
         if controle_dados():
+
+            if v_obj_ck:
+                e_texto = False
+                for carac in str(valor_obj):
+                    if carac.isdigit():
+                        pass
+                        #return True
+                    elif carac == '.':
+                        pass
+                        #return True
+                    elif carac == ',':
+                        pass
+                        #return True
+                    else:
+                        e_texto = True
+
+                if not(e_texto):
+                    valor_obj = float(produto[colunas_dict[coluna_obj]])+float(valor_obj)
+                else:
+                    valor_obj = produto[colunas_dict[coluna_obj]]+valor_obj
+
+
+            if v_new_ck:
+                e_texto = False
+                for carac in str(valor_new):
+                    if carac.isdigit():
+                        pass
+                        #return True
+                    elif carac == '.':
+                        pass
+                        #return True
+                    elif carac == ',':
+                        pass
+                        #return True
+                    else:
+                        e_texto = True
+
+                if not(e_texto):
+                    valor_new = float(produto[colunas_dict[coluna_new]])+float(valor_new)
+                else:
+                    valor_new = produto[colunas_dict[coluna_new]]+valor_new
 
             dict_regra = {
                 "ref_id_obj": ref_id,
@@ -173,7 +221,6 @@ def page():
             st.session_state.page = "11"
             st.rerun()
 
-    produto = st.session_state.produto
 
     free_shipping = produto['free_shipping']
     if int(free_shipping) == 1:
