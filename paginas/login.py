@@ -1,12 +1,12 @@
 import streamlit as st
 
-from services import personal_prefs
+from services import default_prefs
 
 import requests
 
 def login(email, senha):
 
-    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
+    url_base = default_prefs.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/auth/login"
 
@@ -22,7 +22,7 @@ def login(email, senha):
 
     if response.status_code == 201:
         print("Login aprovado!")
-        personal_prefs.set('token', response.json()['token'])
+        st.session_state.cookie_manager.set('token', response.json()['token'])
         st.session_state.page = "00"
         st.rerun()
         #NavigationChange(screen="00")
@@ -30,10 +30,10 @@ def login(email, senha):
         print("Usuário e/ou senha incorreto!")
 
 def verify_access():
-    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
+    url_base = default_prefs.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
-        'x-access-token' : personal_prefs.get('token'),
+        'x-access-token' : str(st.session_state.cookie_manager.get('token')),
     }
 
     update_url = f"{url_base}/api/auth/verify"

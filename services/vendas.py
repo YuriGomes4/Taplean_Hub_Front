@@ -1,13 +1,14 @@
-from . import personal_prefs
+#from . import personal_prefs
+import streamlit as st
 
 import requests
 
 
 def get_all(seller_id, date_from=None, date_to=None):
-    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
+    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
-        'x-access-token' : personal_prefs.get('token'),
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
     update_url = f"{url_base}/api/v1/vendas/all/{seller_id}"

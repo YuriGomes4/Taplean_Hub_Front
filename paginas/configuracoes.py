@@ -54,10 +54,13 @@ def page():
 
     st.title("Configurações")
 
-    select_seller = st.selectbox("Vendedor", options=opts, index=int(services.personal_prefs.get('vendedor'))-1)
+    select_seller = st.selectbox("Vendedor", options=opts, index=int(st.session_state.cookie_manager.get('vendedor'))-1)
+    print(select_seller, st.session_state.vendedor)
     if st.session_state.vendedor != select_seller:
-        services.personal_prefs.set('vendedor', sellers[select_seller])
         st.session_state.vendedor = select_seller
+        st.session_state.cookie_manager.set('vendedor', sellers[st.session_state.vendedor])
+        st.session_state.cookie_manager.set('vendedor', sellers[st.session_state.vendedor])
+        #st.session_state.cookie_manager.set('vendedor', "sellers[st.session_state.vendedor]")
         st.rerun()
 
     st.button("Listar produtos", on_click=sync_prods, key="sync_prods")

@@ -39,6 +39,6 @@ def set(name, value):
 
 
 
-for key, value in get_all().items():
-    print(f'{key}: {value}')
+#for key, value in get_all().items():
+#    print(f'{key}: {value}')
 

@@ -1,6 +1,6 @@
 import webbrowser
 import streamlit as st
-from services import personal_prefs as sv_personal_prefs
+#from services import personal_prefs as st.session_state.cookie_manager
 from services import vendedor as sv_vendedor
 import requests
 
@@ -54,7 +54,7 @@ def page():
 
             if response.status_code == 200:
                 client_id = "8228774779066849"
-                redirect_uri = f"{sv_personal_prefs.get('url_base')}/api/v1/retornos/redirect"
+                redirect_uri = f"{st.session_state.cookie_manager.get('url_base')}/api/v1/retornos/redirect"
                 state = f"{seller_id}!!!{redirect_uri}"
                 url = f"https://auth.mercadolivre.com.br/authorization?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&state={state}"
                 webbrowser.open(url)

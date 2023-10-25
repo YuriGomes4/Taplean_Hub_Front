@@ -1,17 +1,18 @@
 import uuid
+import streamlit as st
 
-from . import personal_prefs
+#from . import st.session_state.cookie_manager
 
 import requests
 
 
 def get_all():
-    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
+    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/v1/vendedor/all"
 
     headers = {
-        'x-access-token' : personal_prefs.get('token'),
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
     response = requests.get(update_url, headers=headers)
@@ -25,12 +26,12 @@ def get_all():
     return tudo
 
 def get(id):
-    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
+    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/v1/vendedor/{id}"
 
     headers = {
-        'x-access-token' : personal_prefs.get('token'),
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
     response = requests.get(update_url, headers=headers)
@@ -43,12 +44,12 @@ def get(id):
     return response.json()['result']
 
 def get_visitas(id, date_from, date_to):
-    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
+    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/v1/vendedor/{id}/visitas"
 
     headers = {
-        'x-access-token' : personal_prefs.get('token'),
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
     params = {
@@ -66,14 +67,14 @@ def get_visitas(id, date_from, date_to):
     return response.json()['result']
 
 def register_seller(seller_id, nome):
-    url_base = personal_prefs.get('url_base')  # http://127.0.0.1:5000
+    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/v1/vendedor/register/{seller_id}"
 
-    #response = requests.post(f"{sv_personal_prefs.get('url_base')}/api/v1/vendedor/register/{seller_id}?nome={nome}")
+    #response = requests.post(f"{sv_st.session_state.cookie_manager.get('url_base')}/api/v1/vendedor/register/{seller_id}?nome={nome}")
 
     headers = {
-        'x-access-token' : personal_prefs.get('token'),
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
     params = {
