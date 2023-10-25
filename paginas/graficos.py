@@ -240,15 +240,38 @@ def page():
     #estados_vendas
 
     for venda in todas_vendas:
-        str_json = str(venda['shipping']). replace("None", '"None"').replace("',", '",').replace("':", '":').replace("']", '"]').replace("'}", '"}').replace("['", '["').replace("{'", '{"').replace(" '", ' "')
-        #print(str_json)
-        ship = json.loads(str_json)
+        #str_json = str(venda['shipping']).replace(str(venda['shipping'])[str(venda['shipping']).index("'comment'"):str(venda['shipping']).index("'id'")], ""). replace("None", '"None"').replace("',", '",').replace("':", '":').replace("']", '"]').replace("'}", '"}').replace("['", '["').replace("{'", '{"').replace(" '", ' "')
+
+        str_json = str(venda['shipping'])
+
+        while str_json.__contains__("'comment':"):
+            ind1 = str_json.index("'comment':")
+            ind2 = ind1+str_json[ind1:ind1+500].index("'id'")
+            str_json = str_json.replace(str_json[ind1:ind2], "")
+
+        fix_json = str_json.replace("None", '"None"').replace("',", '",').replace("':", '":').replace("']", '"]').replace("'}", '"}').replace("['", '["').replace("{'", '{"').replace(" '", ' "')
+            
+
+        print(fix_json)
+
+        correcao_mapa = {
+            "Bonfim Paulista": "Ribeirão Preto",
+            "Major Prado": "Santo Antônio do Aracanguá"
+        }
+
+        ship = json.loads(fix_json)
         if not(str(venda['shipping']).__contains__("not_found_shipping_for_order_id")):
             if filtrar:
-                if str(ship['sender_address']['state']['id']).replace("BR-", "") == estados_brasil[select_map]:
-                        div_vendas[str(ship['sender_address'][procura]['name'])] += 1
+                if str(ship['receiver_address']['state']['id']).replace("BR-", "") == estados_brasil[select_map]:
+                    if str(ship['receiver_address'][procura]['name']) in correcao_mapa.keys():
+                        div_vendas[correcao_mapa[str(ship['receiver_address'][procura]['name'])]] += 1
+                    else:
+                        div_vendas[str(ship['receiver_address'][procura]['name'])] += 1
             else:
-                div_vendas[str(ship['sender_address'][procura]['name'])] += 1 
+                if str(ship['receiver_address'][procura]['name']) in correcao_mapa.keys():
+                    div_vendas[correcao_mapa[str(ship['receiver_address'][procura]['name'])]] += 1
+                else:
+                    div_vendas[str(ship['receiver_address'][procura]['name'])] += 1
 
     data = {
         "Estados": div_vendas.keys(),
@@ -264,8 +287,9 @@ def page():
         locations='Estados', # Spatial coordinates
         color="Vendas",
         geojson=map,
-        color_continuous_scale=["#ffb8b8", "#360000"],
-        range_color=[0, max(div_vendas.values()) if max(div_vendas.values()) > 0 else 3]
+        color_continuous_scale=["#0f0888", "#b22c8f", "#f0814e", "#f1f622"],
+        range_color=[0, max(div_vendas.values())/2 if max(div_vendas.values())/2 > 3 else 3]
+        #range_color=[0, 15 if max(div_vendas.values()) > 0 else 3]
     )
 
     fig2.update_layout(

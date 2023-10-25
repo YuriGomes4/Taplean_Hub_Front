@@ -22,7 +22,7 @@ else:
         if key not in sv_personal_prefs.get_all().keys():
             sv_personal_prefs.set(key, value)
 
-from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule
+from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller
 
 st.set_page_config(
     page_icon="images/Logo.png",
@@ -38,6 +38,9 @@ if "produto" not in st.session_state:
 
 if "regra" not in st.session_state:
     st.session_state.regra = "create"
+
+if "seller_id" not in st.session_state:
+    st.session_state.seller_id = ""
 
 for key,value in sv_personal_prefs.get_all().items():
     if f"{key}" not in st.session_state:
@@ -59,3 +62,5 @@ elif st.session_state.page == "12":
     add_rule.page()
 elif st.session_state.page == "20":
     configuracoes.page()
+elif st.session_state.page == "21":
+    reg_seller.page()

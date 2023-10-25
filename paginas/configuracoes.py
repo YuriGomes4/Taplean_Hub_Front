@@ -65,6 +65,10 @@ def page():
     st.button("Listar vendas", on_click=list_orders, key="list_orders")
     st.button("Limpar lista de vendas", on_click=remove_orders, key="remove_orders")
     st.button("Calcular vendas nos produtos", on_click=sales_prods, key="sales_prods")
+    if st.button("Registrar novo vendedor", key="reg_seller"):
+        if st.session_state.page != "21":
+            st.session_state.page = "21"
+            st.rerun()
     #temas = ["Escuro", "Claro"]
     #tema = st.selectbox("Tema", temas, index=temas.index(services.personal_prefs.get("tema")))
     #if tema != services.personal_prefs.get("tema"):
