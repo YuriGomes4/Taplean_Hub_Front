@@ -34,6 +34,25 @@ st.set_page_config(
 cookie_manager = stx.CookieManager()
 st.session_state.cookie_manager = cookie_manager
 
+if cookie_manager.get("init") == None:
+    cookie_manager.set("init", "init", key="initcookie")
+    st.rerun()
+
+cookies = cookie_manager.get_all()
+#print(cookies)
+
+if cookies != {}:
+    for key, value in default_prefs.get_all().items():
+        if cookie_manager.get(key) != None:
+            print(f"{key} ja existe com o valor {cookie_manager.get(key)}")
+            if f"{key}" not in st.session_state:
+                st.session_state[f"{key}"] = cookie_manager.get(key)
+        else:
+            cookie_manager.set(key, value, key=f"key{key}{value}")
+            st.session_state[f"{key}"] = str(value)
+            print(f"Criado {key}")
+            st.rerun()
+
 # Verifique se a chave "page" existe na variável de estado da sessão
 if "page" not in st.session_state:
     st.session_state.page = "@@"
@@ -69,21 +88,5 @@ elif st.session_state.page == "20":
     configuracoes.page()
 elif st.session_state.page == "21":
     reg_seller.page()
-
-cookie_manager.set("init", "init", key="initcookie")
-
-cookies = cookie_manager.get_all()
-#print(cookies)
-
-if cookies != {}:
-    for key, value in default_prefs.get_all().items():
-        if cookie_manager.get(key) != None:
-            print(f"{key} ja existe com o valor {cookie_manager.get(key)}")
-            if f"{key}" not in st.session_state:
-                st.session_state[f"{key}"] = cookie_manager.get(key)
-        else:
-            cookie_manager.set(key, value, key=f"key{key}{value}")
-            st.session_state[f"{key}"] = str(value)
-            print(f"Criado {key}")
 
             
