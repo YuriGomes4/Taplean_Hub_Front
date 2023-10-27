@@ -1,10 +1,10 @@
 import uuid
 from operator import itemgetter
 import streamlit as st
-
-#from . import st.session_state.cookie_manager
-
 import requests
+
+from services import config
+from services import personal_prefs
 
 seller = 0
 sort = ""
@@ -12,7 +12,7 @@ sorted_prods = []
 
 
 def modify_Produtos_row(row_id, export, update):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     #update = {}
 
@@ -43,7 +43,7 @@ def modify_Produtos_row(row_id, export, update):
     return response
 
 def get_all():
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'x-access-token' : st.session_state.cookie_manager.get('token'),
@@ -71,9 +71,9 @@ def get_all_ids():
     return ids
 
 def sync_prods():
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
-    update_url = f"{url_base}/api/v1/produto/sync_ml/{st.session_state.cookie_manager.get('vendedor')}"
+    update_url = f"{url_base}/api/v1/produto/sync_ml/{personal_prefs.get('vendedor')}"
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -88,14 +88,14 @@ def sync_prods():
         print("Falha ao sincronizar os produtos.")
 
 def remove_prods():
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
-    update_url = f"{url_base}/api/v1/produto/remove_ml/{st.session_state.cookie_manager.get('vendedor')}"
+    update_url = f"{url_base}/api/v1/produto/remove_ml/{personal_prefs.get('vendedor')}"
 
     response = requests.get(update_url, headers=headers)
 
@@ -105,14 +105,14 @@ def remove_prods():
         print("Falha ao remover os produtos.")
 
 def sales_prods():
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
-    update_url = f"{url_base}/api/v1/produto/sales/{st.session_state.cookie_manager.get('vendedor')}"
+    update_url = f"{url_base}/api/v1/produto/sales/{personal_prefs.get('vendedor')}"
 
     response = requests.get(update_url, headers=headers)
 
@@ -122,14 +122,14 @@ def sales_prods():
         print("Falha ao atualizar os produtos.")
 
 def list_orders():
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
-    update_url = f"{url_base}/api/v1/vendas/list/{st.session_state.cookie_manager.get('vendedor')}"
+    update_url = f"{url_base}/api/v1/vendas/list/{personal_prefs.get('vendedor')}"
 
     response = requests.get(update_url, headers=headers)
 
@@ -139,14 +139,14 @@ def list_orders():
         print("Falha ao listar as vendas.")
 
 def remove_orders():
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
-    update_url = f"{url_base}/api/v1/vendas/remove/{st.session_state.cookie_manager.get('vendedor')}"
+    update_url = f"{url_base}/api/v1/vendas/remove/{personal_prefs.get('vendedor')}"
 
     response = requests.get(update_url, headers=headers)
 
@@ -164,9 +164,9 @@ def prods_sort(new_sort):
 
     produtos = get_all()
 
-    if sort != new_sort or seller != int(st.session_state.cookie_manager.get('vendedor')):
+    if sort != new_sort or seller != int(personal_prefs.get('vendedor')):
         sort = new_sort
-        seller = int(st.session_state.cookie_manager.get('vendedor'))
+        seller = int(personal_prefs.get('vendedor'))
 
         if sort == "Curva ABC":
 
@@ -175,7 +175,7 @@ def prods_sort(new_sort):
 
             temp_prods = []
             for produto in produtos:
-                if int(produto['seller']) == int(st.session_state.cookie_manager.get('vendedor')):
+                if int(produto['seller']) == int(personal_prefs.get('vendedor')):
                     #produto['icone'] = "hdr_auto_outlined"
                     temp_prods.append(produto)
                     total_inv = total_inv + produto['invoicing']
@@ -203,7 +203,7 @@ def prods_sort(new_sort):
         elif sort == "Normal":
             temp_prods = []
             for produto in produtos:
-                if int(produto['seller']) == int(st.session_state.cookie_manager.get('vendedor')):
+                if int(produto['seller']) == int(personal_prefs.get('vendedor')):
                     produto['icone'] = "➕"
                     produto['color'] = "amber"
                     temp_prods.append(produto)
@@ -227,7 +227,7 @@ def prods_sort(new_sort):
 
 
 def product_changes(product_id):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -246,7 +246,7 @@ def product_changes(product_id):
         return []
     
 def get_regras(product_id):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -265,7 +265,7 @@ def get_regras(product_id):
         return []
     
 def get_regra(regra_id):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/json',
@@ -284,7 +284,7 @@ def get_regra(regra_id):
         return []
     
 def add_regra(regra):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     print(regra)
 
@@ -307,7 +307,7 @@ def add_regra(regra):
         return []
     
 def update_regra(regra_id, update):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/json',
@@ -326,7 +326,7 @@ def update_regra(regra_id, update):
         return []
     
 def delete_regra(regra_id):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'Content-Type': 'application/json',

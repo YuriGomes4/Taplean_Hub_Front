@@ -49,17 +49,17 @@ def page():
 
     opts = []
 
-    for seller in services.vendedor.get_all():
-        opts.append(seller['nome'])
+    for seller in sellers.keys():
+        opts.append(seller)
 
     st.title("Configurações")
 
-    select_seller = st.selectbox("Vendedor", options=opts, index=int(st.session_state.cookie_manager.get('vendedor'))-1)
-    print(select_seller, st.session_state.vendedor)
-    if st.session_state.vendedor != select_seller:
-        st.session_state.vendedor = select_seller
-        st.session_state.cookie_manager.set('vendedor', sellers[st.session_state.vendedor])
-        st.session_state.cookie_manager.set('vendedor', sellers[st.session_state.vendedor])
+    select_seller = st.selectbox("Vendedor", options=opts, index=int(services.personal_prefs.get("vendedor"))-1)
+    print(select_seller, services.personal_prefs.get("vendedor"))
+    if services.personal_prefs.get("vendedor") != list(sellers.keys()).index(select_seller)+1:
+        services.personal_prefs.set("vendedor", list(sellers.keys()).index(select_seller)+1)
+        #st.session_state.cookie_manager.set('vendedor', sellers[services.personal_prefs.get("vendedor")])
+        #st.session_state.cookie_manager.set('vendedor', sellers[services.personal_prefs.get("vendedor")])
         #st.session_state.cookie_manager.set('vendedor', "sellers[st.session_state.vendedor]")
         st.rerun()
 

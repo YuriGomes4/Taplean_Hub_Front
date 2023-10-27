@@ -38,9 +38,3 @@ def set(name, value):
     config_data[name] = value
     write_config_file(config_data)
     return get(name)
-
-
-
-for key, value in get_all().items():
-    print(f'{key}: {value}')
-

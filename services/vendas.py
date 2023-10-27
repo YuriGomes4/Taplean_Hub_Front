@@ -1,11 +1,12 @@
 #from . import personal_prefs
 import streamlit as st
-
 import requests
+
+from services import config
 
 
 def get_all(seller_id, date_from=None, date_to=None):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     headers = {
         'x-access-token' : st.session_state.cookie_manager.get('token'),

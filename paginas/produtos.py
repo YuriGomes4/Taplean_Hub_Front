@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from services import produtos as sv_extrato
-#from services import personal_prefs as st.session_state.cookie_manager
+from services import personal_prefs as sv_personal_prefs
 from services import config as sv_config
 
 extratos = []
@@ -14,7 +14,7 @@ def load_prods(produtos):
     extratos = []
 
     for produto in produtos:
-        if int(produto['seller']) == int(st.session_state.cookie_manager.get('vendedor')):
+        if int(produto['seller']) == int(sv_personal_prefs.get('vendedor')):
             
             titulo = f"{produto['icone']} {produto['title']}"
 
@@ -52,11 +52,11 @@ def page():
 
     st.write("# Produtos")
 
-    select_sort = st.selectbox("Ordenação", sort_opts.keys(), index=sort_opts[st.session_state.prod_sort])
-    if st.session_state.prod_sort != select_sort:
-        st.session_state.cookie_manager.set('prod_sort', select_sort)
+    select_sort = st.selectbox("Ordenação", sort_opts.keys(), index=sort_opts[sv_personal_prefs.get("prod_sort")])
+    if sv_personal_prefs.get("prod_sort") != select_sort:
+        #st.session_state.cookie_manager.set('prod_sort', select_sort)
+        sv_personal_prefs.set("prod_sort", select_sort)
         load_prods(sv_extrato.prods_sort(select_sort))
-        st.session_state.prod_sort = select_sort
         st.rerun()
     else:
         load_prods(sv_extrato.prods_sort(select_sort))

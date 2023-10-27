@@ -5,9 +5,11 @@ import streamlit as st
 
 import requests
 
+from services import config
+
 
 def get_all():
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/v1/vendedor/all"
 
@@ -26,7 +28,7 @@ def get_all():
     return tudo
 
 def get(id):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/v1/vendedor/{id}"
 
@@ -44,7 +46,7 @@ def get(id):
     return response.json()['result']
 
 def get_visitas(id, date_from, date_to):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/v1/vendedor/{id}/visitas"
 
@@ -67,11 +69,11 @@ def get_visitas(id, date_from, date_to):
     return response.json()['result']
 
 def register_seller(seller_id, nome):
-    url_base = st.session_state.cookie_manager.get('url_base')  # http://127.0.0.1:5000
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
     update_url = f"{url_base}/api/v1/vendedor/register/{seller_id}"
 
-    #response = requests.post(f"{sv_st.session_state.cookie_manager.get('url_base')}/api/v1/vendedor/register/{seller_id}?nome={nome}")
+    #response = requests.post(f"{sv_config.get('url_base')}/api/v1/vendedor/register/{seller_id}?nome={nome}")
 
     headers = {
         'x-access-token' : st.session_state.cookie_manager.get('token'),

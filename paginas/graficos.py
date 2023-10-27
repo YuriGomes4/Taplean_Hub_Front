@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 #from services import personal_prefs as st.session_state.cookie_manager
 from services import vendas as sv_vendas
 from services import vendedor as sv_vendedor
+from services import personal_prefs as sv_personal_prefs
 
 import pandas as pd
 import numpy as np
@@ -63,7 +64,7 @@ def page():
     data_atual = datetime.strptime(f"{ano_atual}-{mes_atual}-{dia_atual} 23:59:59", "%Y-%m-%d %H:%M:%S")
     data_min = datetime.strptime(f"{ano_min}-{mes_min}-{dia_min} 00:00:00", "%Y-%m-%d %H:%M:%S")
 
-    vendas = sv_vendas.get_all(st.session_state.cookie_manager.get('vendedor'), data_min, data_atual)
+    vendas = sv_vendas.get_all(sv_personal_prefs.get('vendedor'), data_min, data_atual)
 
     print(data_atual, data_min)
 
@@ -154,7 +155,7 @@ def page():
         # Agora, a lista datas_intermediarias contém todas as datas entre data_inicio e data_fim.
         for data in datas_intermediarias:
             data_str = f"{data.year}-{data.month}-{f'0{data.day}' if len(str(data.day)) == 1 else data.day}"
-            dias_visitas.append(sv_vendedor.get_visitas(st.session_state.cookie_manager.get('vendedor'), data_str, data_str))
+            dias_visitas.append(sv_vendedor.get_visitas(sv_personal_prefs.get('vendedor'), data_str, data_str))
 
         data = {
             'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
@@ -209,7 +210,7 @@ def page():
 
     select_map = tabs[2].selectbox("Mapa", estados_brasil.keys())
 
-    todas_vendas = sv_vendas.get_all(st.session_state.cookie_manager.get('vendedor'))
+    todas_vendas = sv_vendas.get_all(sv_personal_prefs.get('vendedor'))
 
     if select_map == "Brasil":
         procura = "state"
