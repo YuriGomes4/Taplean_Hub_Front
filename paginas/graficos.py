@@ -257,7 +257,10 @@ def page():
 
         correcao_mapa = {
             "Bonfim Paulista": "Ribeirão Preto",
-            "Major Prado": "Santo Antônio do Aracanguá"
+            "Major Prado": "Santo Antônio do Aracanguá",
+            "Paruru": "Ibiúna",
+            "Primavera": "Rosana",
+            "Caruara": "Santos",
         }
 
         ship = json.loads(fix_json)
