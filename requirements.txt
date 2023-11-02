@@ -3,3 +3,4 @@ plotly
 requests
 scrapy
 extra-streamlit-components
+secure-smtplib

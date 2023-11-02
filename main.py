@@ -5,7 +5,7 @@ import extra_streamlit_components as stx
 
 config_file = "personal_prefs.cnf"
 
-from services import personal_prefs as sv_personal_prefs
+from services import personal_prefs as sv_personal_prefs, usuarios
 from services import config
 from services import default_prefs
 
@@ -24,7 +24,7 @@ from services import default_prefs
 #            sv_personal_prefs.set(key, value)
 
 
-from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller
+from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller, reset_senha, verif_email_1, verif_email_2, criar_conta, admin, edit_user
 
 st.set_page_config(
     page_icon="images/Logo.png",
@@ -74,19 +74,43 @@ login.verify_access()
 
 #print(st.session_state.page)
 
+def verificacoes():
+    if len(usuarios.ver_sellers()) > 0:
+        if str(sv_personal_prefs.get('vendedor')) not in usuarios.ver_sellers():
+            sv_personal_prefs.set('vendedor', usuarios.ver_sellers()[0])
+    else:
+        sv_personal_prefs.set('vendedor', "0")
+
 if st.session_state.page == "@@":
     login.page()
+elif st.session_state.page == "@1":
+    verif_email_1.page()
+elif st.session_state.page == "@2":
+    verif_email_2.page()
+elif st.session_state.page == "!!":
+    reset_senha.page()
+elif st.session_state.page == "$$":
+    criar_conta.page()
 elif st.session_state.page == "00":
+    verificacoes()
     graficos.page()
 elif st.session_state.page == "10":
+    verificacoes()
     produtos.page()
 elif st.session_state.page == "11":
     edit_produto.page()
 elif st.session_state.page == "12":
     add_rule.page()
 elif st.session_state.page == "20":
+    verificacoes()
     configuracoes.page()
 elif st.session_state.page == "21":
     reg_seller.page()
+elif st.session_state.page == "30":
+    verificacoes()
+    admin.page()
+elif st.session_state.page == "31":
+    edit_user.page()
+
 
             
