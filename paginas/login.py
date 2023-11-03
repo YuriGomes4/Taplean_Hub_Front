@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import json
 
-from services import config
+from services import config, usuarios
 from services import default_prefs
 
 def login(email, senha):
@@ -102,10 +102,13 @@ def verify_access():
                 preferences = json.loads(str(response.json()['result']).replace("'", '"'))
 
             if st.session_state.page == "@@":
-                if preferences['vendedor'] != "0":
+                if preferences['vendedor'] != "0" and usuarios.tenho_acesso("graficos_acessar"):
                     st.session_state.page = "00"
                 else:
-                    st.session_state.page = "20"
+                    if usuarios.tenho_acesso("configuracoes_acessar"):
+                        st.session_state.page = "20"
+                    else:
+                        st.session_state.page = "100"
 
             #print(preferences)
 

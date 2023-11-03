@@ -24,7 +24,7 @@ from services import default_prefs
 #            sv_personal_prefs.set(key, value)
 
 
-from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller, reset_senha, verif_email_1, verif_email_2, criar_conta, admin, edit_user
+from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller, reset_senha, verif_email_1, verif_email_2, criar_conta, admin, edit_user, sem_acesso
 
 st.set_page_config(
     page_icon="images/Logo.png",
@@ -111,6 +111,9 @@ elif st.session_state.page == "30":
     admin.page()
 elif st.session_state.page == "31":
     edit_user.page()
+elif st.session_state.page == "100":
+    verificacoes()
+    sem_acesso.page()
 
 
             
