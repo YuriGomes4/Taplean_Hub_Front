@@ -23,8 +23,7 @@ from services import default_prefs
 #        if key not in sv_personal_prefs.get_all().keys():
 #            sv_personal_prefs.set(key, value)
 
-
-from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller, reset_senha, verif_email_1, verif_email_2, criar_conta, admin, edit_user, sem_acesso
+from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller, reset_senha, verif_email_1, verif_email_2, criar_conta, admin, edit_user, sem_acesso, edit_seller
 
 st.set_page_config(
     page_icon="images/Logo.png",
@@ -81,6 +80,8 @@ def verificacoes():
     else:
         sv_personal_prefs.set('vendedor', "0")
 
+    #usuarios.pegar_permissoes()
+
 if st.session_state.page == "@@":
     login.page()
 elif st.session_state.page == "@1":
@@ -111,6 +112,8 @@ elif st.session_state.page == "30":
     admin.page()
 elif st.session_state.page == "31":
     edit_user.page()
+elif st.session_state.page == "32":
+    edit_seller.page()
 elif st.session_state.page == "100":
     verificacoes()
     sem_acesso.page()

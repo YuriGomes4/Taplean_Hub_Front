@@ -49,3 +49,11 @@ def page():
         exp.write(f"Token ML: {seller['tk_ml']}")
         exp.write(f"Token Tiny: {seller['tk_tiny']}")
         exp.write(f"Última atualização: {seller['last_updated']}")
+        col1, col2 = exp.columns(2)
+        if col1.button("Editar", type='primary', use_container_width=True, key=f"editar{seller['id']}"):
+            st.session_state.selleredit = seller['id']
+            if st.session_state.page != "32":
+                st.session_state.page = "32"
+                st.rerun()
+
+        col2.button("Deletar", type='secondary', use_container_width=True, key=f"deletar{seller['id_ml']}")

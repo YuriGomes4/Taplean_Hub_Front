@@ -96,6 +96,8 @@ def verify_access():
 
             response = requests.get(update_url, headers=headers)
 
+            usuarios.pegar_permissoes()
+
             if response.json()['result'] == None:
                 preferences = {}
             else:
@@ -163,9 +165,9 @@ def page():
             st.rerun()
     if st.button("Criar uma conta", type='secondary', use_container_width=True, key="criar conta"):
         if st.session_state.page != "@1":
-                if "tipo_verif_email" not in st.session_state:
-                    st.session_state.tipo_verif_email = "criar conta"
-                st.session_state.page = "@1"
-                st.rerun()
+            if "tipo_verif_email" not in st.session_state:
+                st.session_state.tipo_verif_email = "criar conta"
+            st.session_state.page = "@1"
+            st.rerun()
 
     #verify_access()

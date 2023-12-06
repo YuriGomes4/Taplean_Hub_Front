@@ -3,8 +3,7 @@ import random
 from time import sleep
 import streamlit as st
 from services import usuarios, vendedor
-
-
+ 
 def page():
     from .base import base
 

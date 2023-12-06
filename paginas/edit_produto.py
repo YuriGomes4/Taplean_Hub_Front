@@ -21,6 +21,7 @@ def page():
         abas.append("Regras")
     if usuarios.tenho_acesso('produtos_historico'):
         abas.append("Histórico")
+    abas.append("Qualidade")
 
     tabs = st.tabs(abas)
     #tabs_name["Detalhes"], tabs_name["Regras"], tabs_name["Histórico"] = st.tabs(["Detalhes", "Regras", "Histórico"])
@@ -226,3 +227,27 @@ def page():
             if filtro == "Todos" or filtro == mudanca['change']:
                 if d_datetime_0 <= data <= d_datetime_1:
                     tabs_name["Histórico"].markdown(text, unsafe_allow_html=True)
+
+    ######################################### - Qualidade
+
+    #tabs_name['Qualidade']
+    tags = str(produto['tags'])[1:-1].replace("'", "").split(",")
+    texto = """##### Tags do anúncio"""
+    for tag in tags:
+        texto += f"\n- {tag}"
+    tabs_name['Qualidade'].markdown(texto)
+    tabs_name['Qualidade'].write("")
+    exp = tabs_name['Qualidade'].expander("Sobre as tags")
+    exp.write("")
+    exp.markdown("""###### good_quality_thumbnail
+Explicação sobre essa tag""")
+    exp.write("")
+    exp.markdown("""###### extended_warranty_eligible
+Produto elegível para garantia extendida.""")
+    exp.write("")
+    exp.markdown("""###### immediate_payment
+Explicação sobre essa tag""")
+    exp.write("")
+    exp.markdown("""###### cart_eligible
+Produto elegível para catálogo.""")
+    exp.write("")

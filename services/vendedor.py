@@ -91,3 +91,27 @@ def register_seller(seller_id, nome):
         print("Falha ao cadastrar o vendedor.")
 
     return response
+
+def mudar_permissoes(seller, permissoes):
+
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/vendedor/permissions"
+
+    params = {
+        'seller': seller,
+        'permissoes': str(permissoes)
+    }
+
+    response = requests.put(update_url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        print("Permissões atualizadas.")
+        return True
+    else:
+        print("Falha ao atualizar as permissões.")
+        return False

@@ -45,7 +45,7 @@ def ver_usuario(usuario=None):
     else:
         print("Falha ao listar o usuário.")
 
-def ver_permissoes(usuario=None):
+def pegar_permissoes(usuario=None):
 
     url_base = config.get('url_base')  # http://127.0.0.1:5000
 
@@ -67,9 +67,9 @@ def ver_permissoes(usuario=None):
     if response.status_code == 200:
         #print(f"asda{str(response.json()['result'])}sdas")
         if str(response.json()['result']) != "" and str(response.json()['result']) != "None":
-            return json.loads(str(response.json()['result']).replace("'", '"'))
+            st.session_state.minhaspermissoes = json.loads(str(response.json()['result']).replace("'", '"'))
         else:
-            return {}
+            st.session_state.minhaspermissoes = {}
     else:
         print("Falha ao listar as permissões.")
 
@@ -98,7 +98,10 @@ def mudar_permissoes(usuario, permissoes):
         return False
     
 def tenho_acesso(acesso):
-    permissoes = ver_permissoes()
+    try:
+        permissoes = st.session_state.minhaspermissoes
+    except:
+        permissoes = {}
     if acesso.__contains__("_"):
         linha = acesso.split("_")
         try:

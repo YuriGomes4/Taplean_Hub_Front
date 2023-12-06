@@ -183,17 +183,24 @@ def prods_sort(new_sort):
             temp_prods = sorted(temp_prods, key=itemgetter('invoicing'), reverse=True)
 
             for produto in temp_prods:
-                prod_perc = produto['invoicing']/total_inv
+                invc = produto['invoicing']
+                if invc > 0 and total_inv > 0:
+                    prod_perc = invc/total_inv
+                else:
+                    prod_perc = 1
                 #print(prod_perc)
 
                 if prod_perc+perc_acum <= 0.8:
-                    produto['icone'] = "🇦🟢"
+                    #produto['icone'] = "🇦🟢"
+                    produto['icone'] = "A"
                     produto['color'] = "green"
                 elif prod_perc+perc_acum <= 0.95:
-                    produto['icone'] = "🇧🟡"
+                    #produto['icone'] = "🇧🟡"
+                    produto['icone'] = "B"
                     produto['color'] = "yellow"
                 else:
-                    produto['icone'] = "🇨🔴"
+                    #produto['icone'] = "🇨🔴"
+                    produto['icone'] = "C"
                     produto['color'] = "red"
 
                 perc_acum = prod_perc+perc_acum
