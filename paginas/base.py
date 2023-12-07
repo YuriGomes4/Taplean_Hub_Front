@@ -17,6 +17,12 @@ def base():
             if st.session_state.page != "10":
                 st.session_state.page = "10"
                 st.rerun()
+
+    if usuarios.tenho_acesso('anuncios_acessar'):
+        if st.sidebar.button("Anúncios", use_container_width=True, type="secondary"):
+            if st.session_state.page != "40":
+                st.session_state.page = "40"
+                st.rerun()
     
     if usuarios.tenho_acesso('configuracoes_acessar'):
         if st.sidebar.button("Configurações", use_container_width=True, type="secondary"):

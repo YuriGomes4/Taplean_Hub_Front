@@ -47,6 +47,9 @@ def page():
             "produtos_regras": "nao",
             "produtos_historico": "nao",
         },
+        "anuncios":{
+            "anuncios_acessar": "nao",
+        },
         "configuracoes": {
             "configuracoes_acessar": "nao",
             "configuracoes_listar produtos": "nao",
