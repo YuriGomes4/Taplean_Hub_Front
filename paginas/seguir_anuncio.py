@@ -197,6 +197,10 @@ def page():
                         ticktext=df['Dia'][::10]  # Usa os textos correspondentes aos dias selecionados
                     )
                 )
+                fig.update_traces(
+                    hovertext=df['Visitas'],
+                    hovertemplate="Visitas: %{hovertext}<extra></extra>"
+                )
                 fig.update_xaxes(
                     showspikes=True,
                     spikecolor="gray",
