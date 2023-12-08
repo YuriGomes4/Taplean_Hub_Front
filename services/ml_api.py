@@ -3,6 +3,8 @@ import requests
 
 BASE_URL = 'https://api.mercadolibre.com'
 
+LIMIT_REQ = 30
+
 def ver_anuncio(mlb):
 
     params = {
@@ -33,7 +35,7 @@ def ver_categoria(categoria):
     response = requests.get(url)
     return response.json()
 
-def ver_visitas(mlb, dias, intervalo, termino):
+def ver_visitas_intervalo(mlb, dias, intervalo, termino):
     url = f'{BASE_URL}/items/{mlb}/visits/time_window?last={dias}&unit={intervalo}&ending={termino}'
 
     count = 0
@@ -46,7 +48,23 @@ def ver_visitas(mlb, dias, intervalo, termino):
             sleep(1)
         count += 1
 
-        if count >= 15:
+        if count >= LIMIT_REQ:
+            break
+
+def ver_visitas(mlb, date_from, date_to):
+    url = f'{BASE_URL}/items/visits?ids={mlb}&date_from={date_from}T00:00:00Z&date_to={date_to}T23:59:59Z'
+
+    count = 0
+    while True:
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            sleep(1)
+        count += 1
+
+        if count >= LIMIT_REQ:
             break
 
 def ver_seller(id):
@@ -54,3 +72,25 @@ def ver_seller(id):
 
     response = requests.get(url)
     return response.json()
+
+def taxa_venda(price, listing_type_id, category_id):
+    url = f'{BASE_URL}/sites/MLB/listing_prices'
+
+    params = {
+        "price": price,
+        "listing_type_id": listing_type_id,
+        "category_id": category_id,
+    }
+
+    response = requests.get(url, params=params)
+
+    return response.json()['sale_fee_amount']
+
+def custo_frete_gratis(mlb):
+    url = f'{BASE_URL}/items/{mlb}/shipping_options'
+    params = {'zip_code': '04913000'}
+    response = requests.get(url, params=params)
+
+    #print(response.json())
+
+    return response.json()['options'][0]['list_cost']

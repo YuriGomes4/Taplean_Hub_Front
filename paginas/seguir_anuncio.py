@@ -16,67 +16,70 @@ def page():
     if col2.button("Procurar"):
         response = requests.get(url)
 
-        #response = requests.get("https://produto.mercadolivre.com.br/MLB-3821119448-fone-de-ouvido-bluetooth-sem-fio-tws-microfone-todos-celular-_JM")
+    response = requests.get("https://produto.mercadolivre.com.br/MLB-1148161273-etiqueta-anvisa-para-manipulaco-de-alimentos-_JM#polycard_client=recommendations_home_navigation-trend-recommendations&reco_backend=machinalis-homes-pdp-boos&reco_client=home_navigation-trend-recommendations&reco_item_pos=2&reco_backend_type=function&reco_id=a81cd0b2-3d35-4de8-9aab-d2309c21c5de")
 
-        tipo = ml_api.tipos_anuncios()
+    tipo = ml_api.tipos_anuncios()
 
-        logistica = {
-            "xd_drop_off": "Mercado Envios Agência",
-            "cross_docking": "Mercado Envios Coleta",
-            "self_service": "Mercado Envios Flex",
-            "fulfillment": "Mercado Envios Fulfillment",
-            "drop_off": "Mercado Envios Agência",
-        }
+    logistica = {
+        "xd_drop_off": "Mercado Envios Agência",
+        "cross_docking": "Mercado Envios Coleta",
+        "self_service": "Mercado Envios Flex",
+        "fulfillment": "Mercado Envios Fulfillment",
+        "drop_off": "Mercado Envios Agência",
+    }
 
-        if response.status_code == 200:
-            # Obtém o conteúdo HTML da página como uma string
-            html_content = response.text
+    if response.status_code == 200:
+        # Obtém o conteúdo HTML da página como uma string
+        html_content = response.text
 
-            ind = 0
-            item = ""
-            inicio = int(html_content.index('"item_id":'))+10
-            while True:
-                if html_content[inicio+ind] == ",":
-                    break
-                else:
-                    item += html_content[inicio+ind]
-                    ind += 1
+        ind = 0
+        item = ""
+        inicio = int(html_content.index('"item_id":'))+10
+        while True:
+            if html_content[inicio+ind] == ",":
+                break
+            else:
+                item += html_content[inicio+ind]
+                ind += 1
 
-            mlb = item.replace('"', '')
+        mlb = item.replace('"', '')
 
-            item = ""
+        item = ""
 
-            inicio = int(html_content.index('<span class="ui-pdp-subtitle">'))+15
-            while True:
-                if html_content[inicio+ind] == "<":
-                    break
-                else:
-                    item += html_content[inicio+ind]
-                    ind += 1
+        inicio = int(html_content.index('<span class="ui-pdp-subtitle">'))+15
+        while True:
+            if html_content[inicio+ind] == "<":
+                break
+            else:
+                item += html_content[inicio+ind]
+                ind += 1
 
-            txt_range_vendas = item.replace('Novo  |  +', '').replace(' vendidos', '').replace('mil', '000').replace('+', '').replace('Novo','')
+        txt_range_vendas = item.replace('Novo  |  +', '').replace(' vendidos', '').replace('mil', '000').replace('+', '').replace('Novo','')
 
-            range_vendas = int(txt_range_vendas) if txt_range_vendas != "" else 0
+        range_vendas = int(txt_range_vendas) if txt_range_vendas != "" else 0
 
-            print(range_vendas)
+        #print(range_vendas)
 
-            #st.write(ml_api.ver_anuncio(mlb))
+        #st.write(ml_api.ver_anuncio(mlb))
 
-            produto = ml_api.ver_anuncio(mlb)
+        produto = ml_api.ver_anuncio(mlb)
 
-            #response_img = requests.get(produto["pictures"][0]["secure_url"])
+        #response_img = requests.get(produto["pictures"][0]["secure_url"])
 
-            #thumb = Image.open(BytesIO(response_img.content))
+        #thumb = Image.open(BytesIO(response_img.content))
 
-            st.markdown(f"#### {produto['title']}")
+        st.markdown(f"### {produto['title']}")
+        st.write(f"")
+        st.write(f"")
+        left_co, cent_co,last_co = st.columns((1,4,1))
+        with cent_co:
+            st.image(produto["pictures"][0]["secure_url"], use_column_width=True)
+        st.write(f"---------------------------------")
+        st.markdown("#### Informações")
+        st.write(f"")
+        #st.write(f"")
+        with st.expander("Sobre o anúncio"):
             st.write(f"")
-            st.write(f"")
-            left_co, cent_co,last_co = st.columns((1,4,1))
-            with cent_co:
-                st.image(produto["pictures"][0]["secure_url"], use_column_width=True)
-            st.write(f"")
-            st.write(f"")
-            #st.write(f"")
             st.write(f"MLB: {produto['id']}")
             st.write(f"Título: {produto['title']}")
             st.write(f"Preço: R$ {str(produto['price']).replace('.', ',')}")
@@ -103,7 +106,51 @@ def page():
 
             st.write(f"Catálogo: {'Sim' if produto['catalog_listing'] == True else 'Não'}")
 
+        #st.write(f"---------------------------------")
+
+        with st.expander("Vendas"):
+        #st.write(f"")
+            st.write(f"")
+
             st.write(f"Range de vendas: {'+'+str(range_vendas) if range_vendas > 0 else 'Indisponível'}")
+
+            data_criacao = datetime.strptime(produto['date_created'], "%Y-%m-%dT%H:%M:%S.%fZ").date()
+            st.write(f"Data de criação: {data_criacao}")
+
+            tempo_vida = (datetime.now().date()-data_criacao).days
+            st.write(f"Tempo de vida: {tempo_vida} dias")
+
+            st.write(f"Média de vendas por dia: {round(range_vendas/tempo_vida, 2)} vendas")
+
+            visitas_totais = int(ml_api.ver_visitas(mlb, data_criacao, datetime.now().date())[0]['total_visits']) if tempo_vida <= 365 else 0
+            st.write(f"Total de visitas: {visitas_totais if visitas_totais > 0 else 'Indisponível'}")
+
+            media_conversao = range_vendas/visitas_totais if visitas_totais > 0 else 0
+            st.write(f"Taxa de conversão média: {str(round(media_conversao, 2)*100)+'%' if media_conversao > 0 else 'Indisponível'}")
+
+        #st.write(f"---------------------------------")
+
+        with st.expander("Valores"):
+        #st.write(f"")
+            st.write(f"")
+
+            taxa_venda = ml_api.taxa_venda(produto['price'], produto['listing_type_id'], produto['category_id'])
+            st.write(f"Taxa de venda: R$ {str(taxa_venda).replace('.', ',')}")
+
+            custo_frete_gratis = ml_api.custo_frete_gratis(mlb) if produto['shipping']['free_shipping'] else 0
+            st.write(f"Custo de entrega grátis: R$ {str(custo_frete_gratis).replace('.', ',')}")
+
+            liquido = round(float(produto['price']) - custo_frete_gratis - taxa_venda, 2)
+            st.write(f"Recebimento bruto: R$ {str(liquido).replace('.', ',')}")
+
+            st.write(f"Faturamento total estimado: R$ {str(round(range_vendas*float(produto['price']), 2)).replace('.', ',')}")
+            st.write(f"Faturamento bruto total estimado: R$ {str(round(range_vendas*liquido, 2)).replace('.', ',')}")
+
+        #st.write(f"---------------------------------")
+
+        with st.expander("Sobre o vendedor"):
+        #st.write(f"")
+            st.write(f"")
 
             st.write(f"Seller ID: {produto['seller_id']}")
 
@@ -113,12 +160,17 @@ def page():
 
             st.write(f"Loja oficial: {'Não' if produto['official_store_id'] == None else produto['official_store_id']}")
 
+        st.write(f"---------------------------------")
+
+        st.markdown("#### Gráficos")
+        st.write(f"")
+
 
         #print(f'{datetime.now().year}-{datetime.now().month}-{datetime.now().day}')
 
         with st.spinner('Carregando gráfico de visitas'):
 
-            visitas = ml_api.ver_visitas(produto['id'], 30, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}')
+            visitas = ml_api.ver_visitas_intervalo(produto['id'], 30, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}')
 
             dias = []
             visitas_dia = []
