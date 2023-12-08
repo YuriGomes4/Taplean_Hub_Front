@@ -115,12 +115,12 @@ def page():
                 st.write(f"Range de vendas: {'+'+str(range_vendas) if range_vendas > 0 else 'Indisponível'}")
 
                 data_criacao = datetime.strptime(produto['date_created'], "%Y-%m-%dT%H:%M:%S.%fZ").date()
-                st.write(f"Data de criação: {data_criacao}")
+                st.write(f"Data de criação: {data_criacao.day}/{data_criacao.month}/{data_criacao.year}")
 
                 tempo_vida = (datetime.now().date()-data_criacao).days
                 st.write(f"Tempo de vida: {tempo_vida} dias")
 
-                st.write(f"Média de vendas por dia: {round(range_vendas/tempo_vida, 2)} vendas")
+                st.write(f"Média de vendas por dia: {str(round(range_vendas/tempo_vida, 2))+' vendas' if range_vendas > 0 else 'Indisponível'}")
 
                 visitas_totais = int(ml_api.ver_visitas(mlb, data_criacao, datetime.now().date())[0]['total_visits']) if tempo_vida <= 365 else 0
                 st.write(f"Total de visitas: {visitas_totais if visitas_totais > 0 else 'Indisponível'}")
@@ -138,13 +138,13 @@ def page():
                 st.write(f"Taxa de venda: R$ {str(taxa_venda).replace('.', ',')}")
 
                 custo_frete_gratis = ml_api.custo_frete_gratis(mlb) if produto['shipping']['free_shipping'] else 0
-                st.write(f"Custo de entrega grátis: R$ {str(custo_frete_gratis).replace('.', ',')}")
+                st.write(f"Custo de entrega grátis: R$ {str(round(custo_frete_gratis, 2)).replace('.', ',')}")
 
                 liquido = round(float(produto['price']) - custo_frete_gratis - taxa_venda, 2)
                 st.write(f"Recebimento bruto: R$ {str(liquido).replace('.', ',')}")
 
-                st.write(f"Faturamento total estimado: R$ {str(round(range_vendas*float(produto['price']), 2)).replace('.', ',')}")
-                st.write(f"Faturamento bruto total estimado: R$ {str(round(range_vendas*liquido, 2)).replace('.', ',')}")
+                st.write(f"Faturamento total estimado: {'R$ '+str(round(range_vendas*float(produto['price']), 2)).replace('.', ',') if range_vendas > 0 else 'Indisponível'}")
+                st.write(f"Faturamento bruto total estimado: {'R$ '+str(round(range_vendas*liquido, 2)).replace('.', ',') if range_vendas > 0 else 'Indisponível'}")
 
             #st.write(f"---------------------------------")
 
@@ -176,7 +176,8 @@ def page():
                 visitas_dia = []
 
                 for data in visitas:
-                    dias.append(data['date'])
+                    date = datetime.strptime(data['date'], "%Y-%m-%dT%H:%M:%SZ").date()
+                    dias.append(f"{date.day}/{date.month}/{date.year}")
                     visitas_dia.append(data['total'])
 
                 data = {
@@ -188,7 +189,20 @@ def page():
 
                 fig = px.line(df, x='Dia', y='Visitas', title="Visitas dos últimos 30 dias", markers=True, color_discrete_sequence=[st.get_option("theme.primaryColor")])
                 fig.update_layout(
-                    dragmode=False
+                    dragmode=False,
+                    hovermode='x',
+                    xaxis=dict(
+                        tickmode='array',
+                        tickvals=df.index[::10],  # Mostra os dias de 10 em 10
+                        ticktext=df['Dia'][::10]  # Usa os textos correspondentes aos dias selecionados
+                    )
+                )
+                fig.update_xaxes(
+                    showspikes=True,
+                    spikecolor="gray",
+                    spikesnap="data",
+                    spikemode="across",
+                    spikedash="dash",
                 )
                 
                 st.plotly_chart(fig, use_container_width=True)
