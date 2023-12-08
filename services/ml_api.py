@@ -48,3 +48,9 @@ def ver_visitas(mlb, dias, intervalo, termino):
 
         if count >= 15:
             break
+
+def ver_seller(id):
+    url = f'{BASE_URL}/users/{id}'
+
+    response = requests.get(url)
+    return response.json()

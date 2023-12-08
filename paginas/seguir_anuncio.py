@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import streamlit as st
 
 from services import ml_api
@@ -16,7 +16,7 @@ def page():
     if col2.button("Procurar"):
         response = requests.get(url)
 
-        #response = requests.get("https://produto.mercadolivre.com.br/MLB-4081568982-perfume-banderas-queen-of-seduction-lively-muse-80ml-5-amostras-de-brinde-_JM#reco_item_pos=3&reco_backend=item_decorator&reco_backend_type=function&reco_client=home_navigation-history&reco_id=c3726e38-9fd0-4eda-8434-f410045b1d5c&c_id=/home/navigation/element&c_uid=c1af9076-4e9d-436a-8269-88d7da1f7717")
+        #response = requests.get("https://produto.mercadolivre.com.br/MLB-3821119448-fone-de-ouvido-bluetooth-sem-fio-tws-microfone-todos-celular-_JM")
 
         tipo = ml_api.tipos_anuncios()
 
@@ -44,6 +44,22 @@ def page():
 
             mlb = item.replace('"', '')
 
+            item = ""
+
+            inicio = int(html_content.index('<span class="ui-pdp-subtitle">'))+15
+            while True:
+                if html_content[inicio+ind] == "<":
+                    break
+                else:
+                    item += html_content[inicio+ind]
+                    ind += 1
+
+            txt_range_vendas = item.replace('Novo  |  +', '').replace(' vendidos', '').replace('mil', '000').replace('+', '').replace('Novo','')
+
+            range_vendas = int(txt_range_vendas) if txt_range_vendas != "" else 0
+
+            print(range_vendas)
+
             #st.write(ml_api.ver_anuncio(mlb))
 
             produto = ml_api.ver_anuncio(mlb)
@@ -70,7 +86,7 @@ def page():
             st.write(f"Entrega grátis: {'Sim' if produto['shipping']['free_shipping'] else 'Não'}")
             st.write(f"Logística: {logistica[produto['shipping']['logistic_type']]}")
             saude = float(str(produto["health"])) if str(produto["health"]) != "None" else 0
-            styled_text = f'<span>Saúde do anúncio: </span><span style="color: {("green" if saude > 0 else "red")};">{str(int(saude*100))+"%" if saude > 0 else ""}</span>'
+            styled_text = f'<span>Saúde do anúncio: </span><span style="color: {("green" if saude > 0 else "red")};">{str(int(saude*100))+"%" if saude > 0 else "Indisponível"}</span>'
             st.markdown(styled_text, unsafe_allow_html=True)
 
             categoria = ml_api.ver_categoria(produto['category_id'])
@@ -85,33 +101,44 @@ def page():
 
             st.write(f'Categoria: {caminho_cat}')
 
-            #print(datetime.now().year)
+            st.write(f"Catálogo: {'Sim' if produto['catalog_listing'] == True else 'Não'}")
 
-            #print(f'{datetime.now().year}-{datetime.now().month}-{datetime.now().day}')
+            st.write(f"Range de vendas: {'+'+str(range_vendas) if range_vendas > 0 else 'Indisponível'}")
 
-            with st.spinner('Carregando gráfico de visitas'):
+            st.write(f"Seller ID: {produto['seller_id']}")
 
-                visitas = ml_api.ver_visitas(produto['id'], 30, "day", f'{datetime.now().year}-{datetime.now().month}-{datetime.now().day}')
+            seller = ml_api.ver_seller(produto['seller_id'])
 
-                dias = []
-                visitas_dia = []
+            st.write(f"Nome da loja: {seller['nickname']}")
 
-                for data in visitas:
-                    dias.append(data['date'])
-                    visitas_dia.append(data['total'])
+            st.write(f"Loja oficial: {'Não' if produto['official_store_id'] == None else produto['official_store_id']}")
 
-                data = {
-                    'Dia': dias,
-                    'Visitas': visitas_dia
-                }
 
-                df = pd.DataFrame(data)
+        #print(f'{datetime.now().year}-{datetime.now().month}-{datetime.now().day}')
 
-                fig = px.line(df, x='Dia', y='Visitas', title="Visitas dos últimos 30 dias", markers=True, color_discrete_sequence=[st.get_option("theme.primaryColor")])
-                fig.update_layout(
-                    dragmode=False
-                )
-                
-                st.plotly_chart(fig, use_container_width=True)
+        with st.spinner('Carregando gráfico de visitas'):
+
+            visitas = ml_api.ver_visitas(produto['id'], 30, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}')
+
+            dias = []
+            visitas_dia = []
+
+            for data in visitas:
+                dias.append(data['date'])
+                visitas_dia.append(data['total'])
+
+            data = {
+                'Dia': dias,
+                'Visitas': visitas_dia
+            }
+
+            df = pd.DataFrame(data)
+
+            fig = px.line(df, x='Dia', y='Visitas', title="Visitas dos últimos 30 dias", markers=True, color_discrete_sequence=[st.get_option("theme.primaryColor")])
+            fig.update_layout(
+                dragmode=False
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
 
 
