@@ -88,6 +88,8 @@ def page():
                         posicao_anuncio = ml_api.posicao_anuncio(termo, mlb)
                         st.markdown(f'Posição do anúncio: {str(posicao_anuncio)+"º" if posicao_anuncio > 0 else "Não encontrado"} em "{termo}"', help="O anúncio é procurado entre os primeiros 1000 resultados da busca com a pesquisa que você escreveu.")
                     st.write(f"Preço: R$ {str(produto['price']).replace('.', ',')}")
+                    desconto = float(produto['original_price'])-float(produto['price']) if produto['original_price'] != None else produto['price']+1
+                    st.write(f"Desconto: {round((desconto/produto['original_price'] if produto['original_price'] != None else 0)*100)}%")
                     styled_text = f'<span>Status: </span><span style="color: {("green" if produto["status"] == "active" else "orange")};">{("Ativo" if produto["status"] == "active" else "Pausado")}</span>'
                     st.markdown(styled_text, unsafe_allow_html=True)
                     st.write(f"Tipo do anúncio: {tipo[produto['listing_type_id']]}")
