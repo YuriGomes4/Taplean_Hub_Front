@@ -94,3 +94,32 @@ def custo_frete_gratis(mlb):
     #print(response.json())
 
     return response.json()['options'][0]['list_cost']
+
+def posicao_anuncio(termo, mlb):
+    url = f'{BASE_URL}/sites/MLB/search'
+
+    offset = 0
+
+    params = {
+        "q": termo,
+        "offset": offset
+    }
+
+    response = requests.get(url, params=params)
+
+    pos = 1
+    if int(response.json()['paging']['total']) > 0:
+        while True:
+
+            for item in response.json()['results']:
+                if item['id'] == mlb:
+                    return pos
+                else:
+                    pos += 1
+
+            if pos-1 >= int(response.json()['paging']['total']) or pos-1 >= 1000:
+                return 0
+            else:
+                offset += 50
+
+            response = requests.get(url, params=params)

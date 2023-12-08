@@ -153,7 +153,7 @@ def page():
     email = st.text_input("Email")
     senha = st.text_input("Senha", type="password")
 
-    if st.button("ENTRAR", type="primary", use_container_width=True, key="entrar"):
+    if st.button("ENTRAR", type="primary", use_container_width=True, key="entrar") or senha:
         login(email, senha)
     
     st.write("")

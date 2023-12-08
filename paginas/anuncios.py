@@ -19,3 +19,4 @@ def page():
     if st.button("Seguir anúncio", type='primary', use_container_width=True):
         if st.session_state.page != "41":
             st.session_state.page = "41"
+            st.rerun()
