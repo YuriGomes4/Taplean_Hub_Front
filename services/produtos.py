@@ -1,3 +1,4 @@
+from datetime import datetime
 import uuid
 from operator import itemgetter
 import streamlit as st
@@ -37,6 +38,8 @@ def modify_Produtos_row(row_id, export, update):
 
     if response.status_code == 200:
         print("Produto atualizado com sucesso!")
+        st.session_state.produto_alterado = True
+        st.session_state.produto_alterado_data = update_data
     else:
         print("Falha ao atualizar o produto.")
 
@@ -55,11 +58,10 @@ def get_all():
 
     if response.status_code == 200:
         print("Produtos listados com sucesso!")
+        return response.json()['result']
     else:
         print("Falha ao listar os produtos.")
-
-    tudo = response.json()['result']
-    return tudo
+        return []
 
 #transactions = get_all()
 
@@ -164,7 +166,7 @@ def prods_sort(new_sort):
 
     produtos = get_all()
 
-    if sort != new_sort or seller != int(personal_prefs.get('vendedor')):
+    if sort != new_sort or seller != int(personal_prefs.get('vendedor')) or st.session_state.produto_alterado == True:
         sort = new_sort
         seller = int(personal_prefs.get('vendedor'))
 
@@ -215,7 +217,7 @@ def prods_sort(new_sort):
                     produto['color'] = "amber"
                     temp_prods.append(produto)
 
-            sorted_prods = produtos
+            sorted_prods = temp_prods
         else:
             print("Erro ao ordenar lista de produtos: Ordenação não reconhecida")
 

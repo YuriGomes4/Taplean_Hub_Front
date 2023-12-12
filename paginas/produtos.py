@@ -1,3 +1,4 @@
+from time import sleep
 import streamlit as st
 import pandas as pd
 
@@ -102,4 +103,13 @@ def page():
         load_prods(sv_extrato.prods_sort(select_sort))
         st.rerun()
     else:
-        load_prods(sv_extrato.prods_sort(select_sort))
+        if "produto_alterado" in st.session_state:
+            if st.session_state.produto_alterado == True:
+                load_prods(sv_extrato.prods_sort(select_sort))
+                st.session_state.produto_alterado = False
+                st.rerun()
+            else:
+                load_prods(sv_extrato.prods_sort(select_sort))
+        else:
+            load_prods(sv_extrato.prods_sort(select_sort))
+

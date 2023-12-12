@@ -48,6 +48,7 @@ def page():
 
         tabs_name["Detalhes"].write(f"MLB: {produto['id']}"),
         tabs_name["Detalhes"].write(f"Categoria: {produto['category_id']}"),
+        print(produto['cost'])
         custo = tabs_name["Detalhes"].number_input("Custo", value=float(produto['cost']))
         #tabs_name["Detalhes"].write(f"Custo: {produto['cost']}"),
         tabs_name["Detalhes"].write(f"Preço de venda: {produto['price']}"),
@@ -101,6 +102,14 @@ def page():
             "Taxa de venda" : "sale_fee",
             "Vendas" : "sales",
             "Faturamento total" : "invoicing",
+            "Preço" : "preco",
+            "Posição" : "posicao",
+            "Logística" : "logistica",
+            "Status" : "status",
+            "Saúde" : "saude",
+            "Tipo" : "tipo",
+            "Desconto" : "desconto",
+            "Frete grátis" : "frete_gratis",
         }
 
         operacoes_dict = {
@@ -121,14 +130,6 @@ def page():
 
             if regra['feito'] == False:
 
-                text = f"""
-
-    | Campo analisado | Analisador | Valor esperado | Campo a ser alterado | Valor a ser colocado |
-    |----------|----------|----------|----------|----------|
-    | {inverted_colunas[regra["coluna_obj"]]} | {inverted_operacoes[regra["operador"]]} | {regra["valor_obj"]} | {inverted_colunas[regra["coluna_new"]]} | {regra["valor_new"]} |
-    """
-
-                #tabs_name["Regras"].markdown(text)
                 cor = "red"
                 tabs_name["Regras"].markdown(f"##### Regra {cont}")
                 tabs_name["Regras"].markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{inverted_colunas[regra["coluna_obj"]]}</span> do produto for <span style="color: {cor}">{inverted_operacoes[regra["operador"]]}</span> a <span style="color: {cor}">{regra["valor_obj"]}</span>, o campo <span style="color: {cor}">{inverted_colunas[regra["coluna_new"]]}</span> será alterado para <span style="color: {cor}">{regra["valor_new"]}</span></p>""", unsafe_allow_html=True)

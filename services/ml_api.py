@@ -65,7 +65,7 @@ def ver_visitas(mlb, date_from, date_to):
         count += 1
 
         if count >= LIMIT_REQ:
-            break
+            return 0
 
 def ver_seller(id):
     url = f'{BASE_URL}/users/{id}'
@@ -92,8 +92,15 @@ def custo_frete_gratis(mlb):
     response = requests.get(url, params=params)
 
     #print(response.json())
-
-    return response.json()['options'][0]['list_cost']
+    count = 0
+    while True:
+        if response.status_code == 200:
+            return response.json()['options'][0]['list_cost']
+        else:
+            count += 1
+            if count >= LIMIT_REQ:
+                return 130000
+            sleep(0.2)
 
 def posicao_anuncio(termo, mlb):
     url = f'{BASE_URL}/sites/MLB/search'

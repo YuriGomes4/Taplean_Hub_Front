@@ -1,5 +1,7 @@
 import streamlit as st
 import services
+from services import anuncio
+from services import ml_api
 
 def page():
     from .base import base
@@ -10,6 +12,27 @@ def page():
     id_regra = ""
 
     st.title("Adicionar regra" if st.session_state.regra == "create" else "Editar regra")
+
+    tipos = ml_api.tipos_anuncios()
+
+    logistica = {
+        "xd_drop_off": "Mercado Envios Agência",
+        "cross_docking": "Mercado Envios Coleta",
+        "self_service": "Mercado Envios Flex",
+        "fulfillment": "Mercado Envios Fulfillment",
+        "drop_off": "Mercado Envios Agência",
+    }
+
+    colunas_dict_anuncio = {
+        "Preço" : "preco",
+        "Posição" : "posicao",
+        "Logística" : "logistica",
+        "Status" : "status",
+        "Saúde" : "saude",
+        "Tipo" : "tipo",
+        "Desconto" : "desconto",
+        "Frete grátis" : "frete_gratis",
+    }
 
     colunas_dict = {
         "ID Categoria" : "category_id",
@@ -49,11 +72,13 @@ def page():
 
 
         inverted_colunas = {v: k for k, v in colunas_dict.items()}
+        inverted_colunas_anuncio = {v: k for k, v in colunas_dict_anuncio.items()}
         inverted_operacoes = {v: k for k, v in operacoes_dict.items()}
 
 
         ref_id = regra['ref_id_obj']
-        coluna_obj = inverted_colunas[regra['coluna_obj']]
+        coluna_obj = inverted_colunas[regra['coluna_obj']] if regra['tabela_obj'] == "produtos" else inverted_colunas_anuncio[regra['coluna_obj']]
+        print(coluna_obj)
         operador = inverted_operacoes[regra['operador']]
         valor_obj = regra['valor_obj']
         coluna_new = inverted_colunas[regra['coluna_new']]
@@ -128,18 +153,47 @@ def page():
 
     col1, col2 = st.columns(2)
 
-    ref_id = col1.text_input("ID", value=ref_id, disabled=True)
+    tipo = col1.selectbox("Analisar", ["O mesmo produto","Um anúncio seguido"], index=["produtos", "anuncio"].index(regra['tabela_obj']) if st.session_state.regra != "create" else 0)
+    #ref_id = col1.text_input("ID", value=ref_id, disabled=True if tipo == "O mesmo produto" else False)
+    if tipo == "O mesmo produto":
+        opcoes = [product_id]
+        n_editar = True
+    else:
+        anuns = anuncio.ver_anuncios()
+        anuns_bd = {}
+        ops_dict = {}
+        opcoes = []
+        for anun in anuns:
+            opcoes.append(anun['titulo'])
+            ops_dict[anun['titulo']] = anun['id']
+            anuns_bd[anun['id']] = anun
+        n_editar = False
+        colunas_dict_obj = {
+            "Preço" : "preco",
+            "Posição" : "posicao",
+            "Logística" : "logistica",
+            "Status" : "status",
+            "Saúde" : "saude",
+            "Tipo" : "tipo",
+            "Desconto" : "desconto",
+            "Frete grátis" : "frete_gratis",
+        }
+    ref_id = col1.selectbox("ID" if tipo == "O mesmo produto" else "Anúncio", opcoes, disabled=n_editar, index=0 if tipo == "O mesmo produto" else opcoes.index(anun['titulo']))
     #st.text_input("Campo analisado", value=coluna_obj]),
-    coluna_obj = col1.selectbox("Campo analisado", colunas_dict.keys(), index=list(colunas_dict.keys()).index(coluna_obj) if coluna_obj != "" else 0)
+    coluna_obj = col1.selectbox("Campo analisado", colunas_dict.keys() if tipo == "O mesmo produto" else colunas_dict_obj.keys(), index=list(colunas_dict.keys() if regra['tabela_obj'] == "produtos" else colunas_dict_anuncio.keys()).index(coluna_obj) if coluna_obj != "" else 0)
     #st.text_input("Analisador", value=operador]),
     operador = col1.selectbox("Analisador", operacoes_dict.keys(), index=list(operacoes_dict.keys()).index(operador) if operador != "" else 0)
     vo_col1, vo_col2 = col1.columns(2)
     valor_obj = vo_col1.text_input("Valor esperado", value=valor_obj)
+    vo_col2.write("")
+    vo_col2.write("")
     v_obj_ck = vo_col2.checkbox("Valor atual +", key="v_obj_ck")
     #st.text_input("Campo a ser alterado", value=coluna_new),
     coluna_new = col1.selectbox("Campo a ser alterado", list_colunas_new, index=list_colunas_new.index(coluna_new) if coluna_new != "" else 0)
     ve_col1, ve_col2 = col1.columns(2)
     valor_new = ve_col1.text_input("Valor a ser colocado", value=valor_new)
+    ve_col2.write("")
+    ve_col2.write("")
     v_new_ck = ve_col2.checkbox("Valor atual +", key="v_new_ck")
 
     produto = st.session_state.produto
@@ -194,13 +248,13 @@ def page():
                     valor_new = produto[colunas_dict[coluna_new]]+valor_new
 
             dict_regra = {
-                "ref_id_obj": ref_id,
-                "tabela_obj": "produtos",
-                "coluna_obj": colunas_dict[coluna_obj],
+                "ref_id_obj": product_id if tipo == "O mesmo produto" else ops_dict[ref_id],
+                "tabela_obj": "produtos" if tipo == "O mesmo produto" else "anuncio",
+                "coluna_obj": colunas_dict[coluna_obj] if tipo == "O mesmo produto" else colunas_dict_obj[coluna_obj],
                 "valor_obj": valor_obj,
                 "operador": operacoes_dict[operador],
                 "funcao": "alterar_produto",
-                "ref_id_new": ref_id,
+                "ref_id_new": product_id,
                 "tabela_new": "produtos",
                 "coluna_new": colunas_dict[coluna_new],
                 "valor_new": valor_new,
@@ -230,16 +284,43 @@ def page():
 
     liquido = round(float(produto['price']) - float(produto['shipping_free_cost']) - float(produto['sale_fee']) - float(produto['cost']), 2)
 
-    col2.markdown("#### Informações do produto")
-    col2.write(f"MLB: {produto['id']}"),
-    col2.write(f"Categoria: {produto['category_id']}"),
-    col2.write(f"Custo: {produto['cost']}")
-    #col2.write(f"Custo: {produto['cost']}"),
-    col2.write(f"Preço de venda: {produto['price']}"),
-    col2.write(f"Título: {produto['title']}"),
-    col2.write(f"Tipo de anúncio: {produto['listing_type_id']}"),
-    col2.write(f"Frete grátis: {free_shipping_text}"),
-    col2.write(f"Custo de frete: {produto['shipping_free_cost']}"),
-    col2.write(f"Taxas de venda: {produto['sale_fee']}"),
-    col2.write(f"Líquido: R$ {liquido}"),
-    col2.write(f"Vendas: {produto['sales']}"),
+    if tipo == "O mesmo produto":
+        info_tabs = col2.tabs(["Produto"])
+    else:
+        info_tabs = col2.tabs(["Produto", "Anúncio"])
+
+        anun_s = anuns_bd[ops_dict[ref_id]]
+
+        info_tabs[1].markdown("#### Informações do anúncio")
+        info_tabs[1].write(f"ID: {anun_s['id'].split('$')[1]}")
+        #info_tabs[1].write(f"Categoria: {produto['category_id']}")
+        #info_tabs[1].write(f"Custo: {produto['cost']}")
+        info_tabs[1].write(f"Título: {anun_s['titulo']}")
+        info_tabs[1].write(f"Desconto: {round(anun_s['desconto'], 2)}")
+        styled_text = f'<span>Status: </span><span style="color: {("green" if anun_s["status"] == "active" else "orange")};">{("Ativo" if anun_s["status"] == "active" else "Pausado")}</span>'
+        info_tabs[1].markdown(styled_text, unsafe_allow_html=True)
+        info_tabs[1].write(f"Preço de venda: {anun_s['preco']}")
+        info_tabs[1].write(f"Tipo de anúncio: {tipos[anun_s['tipo']]}")
+        info_tabs[1].write(f"Frete grátis: {'Sim' if anun_s['frete_gratis'] else 'Não'}")
+        info_tabs[1].write(f'Posição do anúncio: {str(anun_s["posicao"])+"º" if anun_s["posicao"] > 0 else "Não encontrado"} em "{anun_s["termo"]}"'),
+        info_tabs[1].write(f"Logística: {logistica[anun_s['logistica']]}")
+        saude = anun_s["saude"] if str(anun_s["saude"]) != "None" else 0
+        styled_text = f'<span>Saúde do anúncio: </span><span style="color: {("green" if saude > 0 else "red")};">{str(int(saude*100))+"%" if saude > 0 else "Indisponível"}</span>'
+        info_tabs[1].markdown(styled_text, unsafe_allow_html=True)
+        #info_tabs[1].write(f"Taxas de venda: {produto['sale_fee']}"),
+        #info_tabs[1].write(f"Líquido: R$ {liquido}"),
+        #info_tabs[1].write(f"Vendas: {produto['sales']}"),
+
+    info_tabs[0].markdown("#### Informações do produto")
+    info_tabs[0].write(f"MLB: {produto['id']}"),
+    info_tabs[0].write(f"Categoria: {produto['category_id']}"),
+    info_tabs[0].write(f"Custo: {produto['cost']}")
+    #info_tabs[0].write(f"Custo: {produto['cost']}"),
+    info_tabs[0].write(f"Preço de venda: {produto['price']}"),
+    info_tabs[0].write(f"Título: {produto['title']}"),
+    info_tabs[0].write(f"Tipo de anúncio: {tipos[produto['listing_type_id']]}"),
+    info_tabs[0].write(f"Frete grátis: {free_shipping_text}"),
+    info_tabs[0].write(f"Custo de frete: {produto['shipping_free_cost']}"),
+    info_tabs[0].write(f"Taxas de venda: {produto['sale_fee']}"),
+    info_tabs[0].write(f"Líquido: R$ {liquido}"),
+    info_tabs[0].write(f"Vendas: {produto['sales']}"),

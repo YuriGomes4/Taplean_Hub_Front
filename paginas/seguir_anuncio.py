@@ -9,6 +9,8 @@ import pandas as pd
 
 import plotly.express as px
 
+from services import anuncio
+
 def page():
     st.title("Seguir anúncio")
 
@@ -224,7 +226,13 @@ def page():
                         
                         st.plotly_chart(fig, use_container_width=True)
 
-                        break
+                    def seguir():
+                        #print("foi")
+                        anuncio.seguir_anuncio(mlb, termo)
+
+                    st.button("Seguir esse anúncio", use_container_width=True, type='primary', key='seguir_anuncio', on_click=seguir)
+
+                    break
                 else:
                     count =+ 1
 
