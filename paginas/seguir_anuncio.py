@@ -107,15 +107,7 @@ def page():
                         styled_text = f'<span>Saúde do anúncio: </span><span style="color: {("green" if saude > 0 else "red")};">{str(int(saude*100))+"%" if saude > 0 else "Indisponível"}</span>'
                         st.markdown(styled_text, unsafe_allow_html=True)
 
-                        categoria = ml_api.ver_categoria(produto['category_id'])
-
-                        caminho_cat = ""
-
-                        for index, item in enumerate(categoria['path_from_root']):
-                            if index == (len(categoria['path_from_root'])-1):
-                                caminho_cat += item['name']
-                            else:
-                                caminho_cat += item['name'] + " > "
+                        categoria, caminho_cat = ml_api.ver_categoria(produto['category_id'])
 
                         st.write(f'Categoria: {caminho_cat}')
 

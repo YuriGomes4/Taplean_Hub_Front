@@ -33,7 +33,18 @@ def ver_categoria(categoria):
     url = f'{BASE_URL}/categories/{categoria}'
 
     response = requests.get(url)
-    return response.json()
+
+    cat = response.json()
+
+    caminho_cat = ""
+
+    for index, item in enumerate(cat['path_from_root']):
+        if index == (len(cat['path_from_root'])-1):
+            caminho_cat += item['name']
+        else:
+            caminho_cat += item['name'] + " > "
+
+    return response.json(), caminho_cat
 
 def ver_visitas_intervalo(mlb, dias, intervalo, termino):
     url = f'{BASE_URL}/items/{mlb}/visits/time_window?last={dias}&unit={intervalo}&ending={termino}'

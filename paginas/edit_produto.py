@@ -1,9 +1,12 @@
 from datetime import datetime, date
+import json
 import streamlit as st
 import services
 import pandas as pd
 
 from services import usuarios
+from services import ml_api
+from services import produtos
 
 def page():
     from .base import base
@@ -22,6 +25,7 @@ def page():
     if usuarios.tenho_acesso('produtos_historico'):
         abas.append("Histórico")
     abas.append("Qualidade")
+    abas.append("Anotações")
 
     tabs = st.tabs(abas)
     #tabs_name["Detalhes"], tabs_name["Regras"], tabs_name["Histórico"] = st.tabs(["Detalhes", "Regras", "Histórico"])
@@ -35,29 +39,39 @@ def page():
 
     ######################################### - Detalhes
 
+    tipos = ml_api.tipos_anuncios()
+
     if "Detalhes" in tabs_name.keys():
 
         free_shipping = produto['free_shipping']
-        if int(free_shipping) == 1:
-            free_shipping_text = "Sim"
-        else: 
-            free_shipping_text = "Não"
+        free_shipping_text = "Sim" if int(free_shipping) == 1 else "Não"
+        print(free_shipping_text, free_shipping)
 
         liquido = round(float(produto['price']) - float(produto['shipping_free_cost']) - float(produto['sale_fee']) - float(produto['cost']), 2)
 
+        export = False
+
 
         tabs_name["Detalhes"].write(f"MLB: {produto['id']}"),
-        tabs_name["Detalhes"].write(f"Categoria: {produto['category_id']}"),
-        print(produto['cost'])
+        categoria, caminho_cat = ml_api.ver_categoria(produto['category_id'])
+        tabs_name["Detalhes"].write(f"Título: {produto['title']}"),
+        tabs_name["Detalhes"].write(f"Categoria: {caminho_cat} ({categoria['id']})"),
+        styled_text = f'<span>Status: </span><span style="color: {("green" if produto["status"] == "active" else "orange")};">{("Ativo" if produto["status"] == "active" else "Pausado")}</span>'
+        tabs_name["Detalhes"].markdown(styled_text, unsafe_allow_html=True)
         custo = tabs_name["Detalhes"].number_input("Custo", value=float(produto['cost']))
         #tabs_name["Detalhes"].write(f"Custo: {produto['cost']}"),
-        tabs_name["Detalhes"].write(f"Preço de venda: {produto['price']}"),
-        tabs_name["Detalhes"].write(f"Título: {produto['title']}"),
-        tabs_name["Detalhes"].write(f"Tipo de anúncio: {produto['listing_type_id']}"),
-        tabs_name["Detalhes"].write(f"Frete grátis: {free_shipping_text}"),
-        tabs_name["Detalhes"].write(f"Custo de frete: {produto['shipping_free_cost']}"),
-        tabs_name["Detalhes"].write(f"Taxas de venda: {produto['sale_fee']}"),
-        tabs_name["Detalhes"].write(f"Líquido: R$ {liquido}"),
+        tabs_name["Detalhes"].write(f"Preço de venda: R$ {str(produto['price']).replace('.', ',')}"),
+        tabs_name["Detalhes"].write(f"Tipo de anúncio: {tipos[produto['listing_type_id']]}"),
+        frete_gratis = tabs_name["Detalhes"].selectbox(f"Frete grátis", ["Sim", "Não"], index=["Sim", "Não"].index(free_shipping_text)),
+        if frete_gratis != free_shipping_text:
+            export = True
+        else:
+            export = False
+        tabs_name["Detalhes"].write(f"Custo de frete: R$ {str(produto['shipping_free_cost']).replace('.', ',')}"),
+        tabs_name["Detalhes"].write(f"Taxas de venda: R$ {str(produto['sale_fee']).replace('.', ',')}"),
+        styled_text = f'<span>Líquido: </span><span style="color: {("green" if liquido > 0 else "red")};">R$ {str(liquido).replace(".", ",")}</span>'
+        tabs_name["Detalhes"].markdown(styled_text, unsafe_allow_html=True)
+        #tabs_name["Detalhes"].write(f"Líquido: R$ {liquido}"),
         tabs_name["Detalhes"].write(f"Vendas: {produto['sales']}"),
         if tabs_name["Detalhes"].button("Salvar", type='primary', use_container_width=True):
 
@@ -67,18 +81,13 @@ def page():
                 'price': produto['price'],
                 'title': produto['title'],
                 'listing_type_id': produto['listing_type_id'],
-                'free_shipping': free_shipping,
+                'free_shipping': 1 if frete_gratis == "Sim" else 0,
                 'shipping_free_cost': produto['shipping_free_cost'],
                 'sale_fee': produto['sale_fee'],
             }
 
-            services.produtos.modify_Produtos_row(produto['id'], False, new_values)
+            services.produtos.modify_Produtos_row(produto['id'], export, new_values)
 
-            if st.session_state.page != "10":
-                st.session_state.page = "10"
-                st.rerun()
-
-        if tabs_name["Detalhes"].button("Cancelar", type='secondary', use_container_width=True):
             if st.session_state.page != "10":
                 st.session_state.page = "10"
                 st.rerun()
@@ -252,3 +261,31 @@ Explicação sobre essa tag""")
     exp.markdown("""###### cart_eligible
 Produto elegível para catálogo.""")
     exp.write("")
+
+    if "Anotações" in tabs_name.keys():
+        if produto['notes'] != "" and produto['notes'] != None:
+            notes = json.loads(produto['notes'].replace('"', '').replace("'", '"'))
+        else:
+            notes = {}
+
+
+        s_priv_notes = notes[st.session_state.user_id] if st.session_state.user_id in notes.keys() else ""
+        priv_notes = tabs_name["Anotações"].text_area("Anotações privadas", height=300, value=s_priv_notes, help="Só você pode ver essas anotações.")
+        s_prod_notes = notes['produto'] if 'produto' in notes.keys() else ""
+        prod_notes = tabs_name["Anotações"].text_area("Anotações do produto", height=300, value=s_prod_notes, help="Todos que tiverem acesso a esse produto poderão ver essas anotações.")
+
+        def save_notes():
+            produtos.modify_Produtos_row(produto['id'], False, {'notes': str({'produto': prod_notes, st.session_state.user_id: priv_notes})})
+
+        if priv_notes != s_priv_notes:
+            save_notes()
+            s_priv_notes = priv_notes
+
+        if prod_notes != s_prod_notes:
+            save_notes()
+            s_prod_notes = prod_notes
+
+    if st.button("Voltar para os produtos", type='secondary', use_container_width=True):
+        if st.session_state.page != "10":
+            st.session_state.page = "10"
+            st.rerun()

@@ -56,6 +56,105 @@ def page():
         "Diferente" : "!=",
     }
 
+    colunas_opcoes = {
+        "preco": {
+            "name": "Preço",
+            "input": "float_input",
+            "relative_value": True,
+        },
+        "posicao": {
+            "name": "Posição",
+            "input": "int_input",
+            "relative_value": True,
+        },
+        "logistica": {
+            "name": "Logística",
+            "input": "selectbox",
+            "relative_value": False,
+            "options": logistica.values()
+        },
+        "status": {
+            "name": "Status",
+            "input": "selectbox",
+            "relative_value": False,
+            "options": ["Ativo", "Pausado"]
+        },
+        "saude": {
+            "name": "Saúde",
+            "input": "int_input",
+            "relative_value": True,
+        },
+        "tipo": {
+            "name": "Tipo",
+            "input": "selectbox",
+            "relative_value": False,
+            "options": tipos.values()
+        },
+        "desconto": {
+            "name": "Desconto",
+            "input": "float_input",
+            "relative_value": True,
+        },
+        "frete_gratis": {
+            "name": "Frete grátis",
+            "input": "selectbox",
+            "relative_value": False,
+            "options": ["Sim", "Não"]
+        },
+        "category_id": {
+            "name": "ID Categoria",
+            "input": "text_input",
+            "relative_value": False,
+        },
+        "cost": {
+            "name": "Custo",
+            "input": "float_input",
+            "relative_value": True,
+        },
+        "price": {
+            "name": "Preço",
+            "input": "float_input",
+            "relative_value": True,
+        },
+        "title": {
+            "name": "Título",
+            "input": "text_input",
+            "relative_value": False,
+        },
+        "listing_type_id": {
+            "name": "Tipo",
+            "input": "selectbox",
+            "relative_value": False,
+            "options": tipos.values()
+        },
+        "free_shipping": {
+            "name": "Frete grátis",
+            "input": "selectbox",
+            "relative_value": False,
+            "options": ["Sim", "Não"]
+        },
+        "shipping_free_cost": {
+            "name": "Custo de frete grátis",
+            "input": "float_input",
+            "relative_value": True,
+        },
+        "sale_fee": {
+            "name": "Taxa de venda",
+            "input": "float_input",
+            "relative_value": True,
+        },
+        "sales": {
+            "name": "Vendas",
+            "input": "int_input",
+            "relative_value": True,
+        },
+        "invoicing": {
+            "name": "Faturamento",
+            "input": "float_input",
+            "relative_value": True,
+        },
+    }
+
     colunas = []
     operacoes = []
 
@@ -78,7 +177,6 @@ def page():
 
         ref_id = regra['ref_id_obj']
         coluna_obj = inverted_colunas[regra['coluna_obj']] if regra['tabela_obj'] == "produtos" else inverted_colunas_anuncio[regra['coluna_obj']]
-        print(coluna_obj)
         operador = inverted_operacoes[regra['operador']]
         valor_obj = regra['valor_obj']
         coluna_new = inverted_colunas[regra['coluna_new']]
@@ -183,24 +281,65 @@ def page():
     coluna_obj = col1.selectbox("Campo analisado", colunas_dict.keys() if tipo == "O mesmo produto" else colunas_dict_obj.keys(), index=list(colunas_dict.keys() if regra['tabela_obj'] == "produtos" else colunas_dict_anuncio.keys()).index(coluna_obj) if coluna_obj != "" else 0)
     #st.text_input("Analisador", value=operador]),
     operador = col1.selectbox("Analisador", operacoes_dict.keys(), index=list(operacoes_dict.keys()).index(operador) if operador != "" else 0)
-    vo_col1, vo_col2 = col1.columns(2)
-    valor_obj = vo_col1.text_input("Valor esperado", value=valor_obj)
-    vo_col2.write("")
-    vo_col2.write("")
-    v_obj_ck = vo_col2.checkbox("Valor atual +", key="v_obj_ck")
+    
+    campo_v_obj = colunas_opcoes[colunas_dict[coluna_obj] if tipo == "O mesmo produto" else colunas_dict_obj[coluna_obj]]
+    
+    if campo_v_obj['relative_value']:
+        vo_col1, vo_col2 = col1.columns(2)
+    else:
+        vo_col1 = col1
+    
+    match campo_v_obj['input']:
+        case "int_input":
+            valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=int(0 if valor_obj == '' else valor_obj), step=0, key="obj")
+        case "float_input":
+            valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=float(0 if valor_obj == '' else valor_obj), key="obj")
+        case "selectbox":
+            valor_obj = vo_col1.selectbox(campo_v_obj['name']+" analisado", campo_v_obj['options'], key="obj")
+        case "text_input":
+            valor_obj = vo_col1.text_input(campo_v_obj['name']+" analisado", value=valor_obj, key="obj")
+    
+    if campo_v_obj['relative_value']:
+        vo_col2.write("")
+        vo_col2.write("")
+        v_obj_ck = vo_col2.checkbox("Valor atual +", key="v_obj_ck")
+    else:
+        v_obj_ck = 0
+    
     #st.text_input("Campo a ser alterado", value=coluna_new),
     coluna_new = col1.selectbox("Campo a ser alterado", list_colunas_new, index=list_colunas_new.index(coluna_new) if coluna_new != "" else 0)
-    ve_col1, ve_col2 = col1.columns(2)
-    valor_new = ve_col1.text_input("Valor a ser colocado", value=valor_new)
-    ve_col2.write("")
-    ve_col2.write("")
-    v_new_ck = ve_col2.checkbox("Valor atual +", key="v_new_ck")
+    
+    campo_v_new = colunas_opcoes[colunas_dict[coluna_new]]
+
+    if campo_v_new['relative_value']:
+        ve_col1, ve_col2 = col1.columns(2)
+    else:
+        ve_col1 = col1
+    
+    #valor_new = ve_col1.text_input("Valor a ser colocado", value=valor_new)
+
+    match campo_v_new['input']:
+        case "int_input":
+            valor_new = ve_col1.number_input(campo_v_new['name']+" analisado", value=int(0 if valor_new == '' else valor_new), step=0, key="new")
+        case "float_input":
+            valor_new = ve_col1.number_input(campo_v_new['name']+" analisado", value=float(0 if valor_new == '' else valor_new), key="new")
+        case "selectbox":
+            valor_new = ve_col1.selectbox(campo_v_new['name']+" analisado", campo_v_new['options'], key="new")
+        case "text_input":
+            valor_new = ve_col1.text_input(campo_v_new['name']+" analisado", value=valor_new, key="new")
+
+    if campo_v_new['relative_value']:
+        ve_col2.write("")
+        ve_col2.write("")
+        v_new_ck = ve_col2.checkbox("Valor atual +", key="v_new_ck")
+    else:
+        v_new_ck = 0
 
     produto = st.session_state.produto
     
     cor = "red"
     #st.markdown(f"##### Regra {cont}")
-    st.markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{coluna_obj}</span> do produto for <span style="color: {cor}">{operador}</span> a <span style="color: {cor}">{f"({produto[colunas_dict[coluna_obj]]}+{valor_obj})" if v_obj_ck else valor_obj}</span>, o campo <span style="color: {cor}">{coluna_new}</span> será alterado para <span style="color: {cor}">{f"({produto[colunas_dict[coluna_new]]}+{valor_new})" if v_new_ck else valor_new}</span></p>""", unsafe_allow_html=True)
+    st.markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{coluna_obj}</span> do {"produto" if tipo == "O mesmo produto" else "anúncio"} for <span style="color: {cor}">{operador}</span> a <span style="color: {cor}">{f"({produto[colunas_dict[coluna_obj]]}+{valor_obj})" if v_obj_ck else valor_obj}</span>, o campo <span style="color: {cor}">{coluna_new}</span> {"" if tipo == "O mesmo produto" else "do produto"} será alterado para <span style="color: {cor}">{f"({produto[colunas_dict[coluna_new]]}+{valor_new})" if v_new_ck else valor_new}</span></p>""", unsafe_allow_html=True)
     
 
     if st.button("Salvar", type='primary', use_container_width=True):
