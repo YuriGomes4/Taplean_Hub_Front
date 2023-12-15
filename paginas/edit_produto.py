@@ -1,8 +1,9 @@
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import json
 import streamlit as st
 import services
 import pandas as pd
+import plotly.express as px
 
 from services import usuarios
 from services import ml_api
@@ -20,12 +21,13 @@ def page():
     abas = []
 
     abas.append("Detalhes")
+    abas.append("Gráficos")
     if usuarios.tenho_acesso('produtos_regras'):
         abas.append("Regras")
-    if usuarios.tenho_acesso('produtos_historico'):
-        abas.append("Histórico")
     abas.append("Qualidade")
     abas.append("Anotações")
+    if usuarios.tenho_acesso('produtos_historico'):
+        abas.append("Histórico")
 
     tabs = st.tabs(abas)
     #tabs_name["Detalhes"], tabs_name["Regras"], tabs_name["Histórico"] = st.tabs(["Detalhes", "Regras", "Histórico"])
@@ -36,6 +38,11 @@ def page():
     for aba in abas:
         tabs_name[aba] = tabs[count]
         count += 1
+
+    if st.button("Voltar para os produtos", type='secondary', use_container_width=True):
+        if st.session_state.page != "10":
+            st.session_state.page = "10"
+            st.rerun()
 
     ######################################### - Detalhes
 
@@ -50,7 +57,6 @@ def page():
         liquido = round(float(produto['price']) - float(produto['shipping_free_cost']) - float(produto['sale_fee']) - float(produto['cost']), 2)
 
         export = False
-
 
         tabs_name["Detalhes"].write(f"MLB: {produto['id']}"),
         categoria, caminho_cat = ml_api.ver_categoria(produto['category_id'])
@@ -285,7 +291,128 @@ Produto elegível para catálogo.""")
             save_notes()
             s_prod_notes = prod_notes
 
-    if st.button("Voltar para os produtos", type='secondary', use_container_width=True):
-        if st.session_state.page != "10":
-            st.session_state.page = "10"
-            st.rerun()
+    ######################################### - Gráficos
+            
+    tempo_opcoes = {
+        "Última semana": {'dias': 7, 'intervalo': 1},
+        "Último mês": {'dias': 30, 'intervalo': 10},
+        "Últimos 2 meses": {'dias': 60, 'intervalo': 30},
+        "Últimos 3 meses": {'dias': 90, 'intervalo': 30},
+        "Personalizado": {}
+    }
+
+    tempo_padrao = "Última semana"
+
+    tempo_atual = tabs_name['Gráficos'].selectbox("Período analisado", tempo_opcoes.keys(), index=list(tempo_opcoes.keys()).index(tempo_padrao))
+        
+    if tempo_atual != "Personalizado":
+        tempo_gf = tempo_opcoes[tempo_atual]['dias']
+        ending_gf = f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}'
+        intervalo_gf = tempo_opcoes[tempo_atual]['intervalo']
+    else:
+
+        
+        date_min = today - timedelta(days=150)
+
+        d = tabs_name['Gráficos'].date_input(
+            "Filtrar por data",
+            (today - timedelta(days=30), today),
+            min_value=date_min,
+            max_value=today,
+            format="DD/MM/YYYY",
+            key="grafico"
+        )
+
+        try:
+            entre_d = (d[1] - d[0]).days
+
+            tempo_gf = entre_d
+            ending_gf = f"{d[1].year}-{d[1].month}-{d[1].day}"
+            intervalo_gf = round(entre_d/7) if entre_d/7 > 1 else 1
+        except:
+            entre_d = 3
+
+            tempo_gf = entre_d
+            ending_gf = today
+            intervalo_gf = 1
+    
+
+    visitas = produtos.ver_visitas_intervalo(produto['id'], tempo_gf, ending_gf)
+    vendas = produtos.ver_vendas_intervalo(produto['id'], tempo_gf, ending_gf)
+
+    dias = []
+
+    visitas_dia = []
+    vendas_dia = []
+    conversao_dia = []
+
+    total_vendas = 0
+    total_visitas = 0
+    media_conversao = 0
+
+    try:
+
+        total_conv = 0
+
+        for n in range(len(vendas)):
+            date_s = datetime.strptime(vendas[n]['date'], "%Y-%m-%dT%H:%M:%SZ").date()
+            dias.append(f"{date_s.day}/{date_s.month}/{date_s.year}")
+            try:
+                visitas_hoje = visitas[n]['total']
+            except:
+                visitas_hoje = 0
+
+            vendas_hoje = vendas[n]['total']
+            if vendas_hoje > 0 and visitas_hoje > 0:
+                conversao_hoje = round((vendas_hoje/visitas_hoje)*100, 2)
+            else:
+                conversao_hoje = 0
+            
+            visitas_dia.append(visitas_hoje)
+            vendas_dia.append(vendas_hoje)
+            conversao_dia.append(conversao_hoje)
+
+            total_visitas += visitas_hoje
+            total_vendas += vendas_hoje
+            total_conv += conversao_hoje
+
+        media_conversao = total_conv/len(vendas)
+
+
+        data = {
+            'Vendas X Visitas': ["Visitas"] * len(dias) + ["Taxa de conversão"] * len(dias) + ["Vendas"] * len(dias),
+            'Dia': dias * 3,
+            'Vendas e visitas': visitas_dia + conversao_dia + vendas_dia,
+        }
+
+        df = pd.DataFrame(data)
+
+        fig = px.line(df, x='Dia', y='Vendas e visitas', color='Vendas X Visitas', title=f"Vendas e visitas dos últimos {tempo_gf} dias" if tempo_atual != "Personalizado" else f"Vendas e visitas do dia {d[0].day}/{d[0].month}/{d[0].year} até {d[1].day}/{d[1].month}/{d[1].year}", markers=True, color_discrete_sequence=["#999999", "purple", st.get_option("theme.primaryColor")])
+        fig.update_layout(
+            dragmode=False,
+            hovermode='x unified',
+            xaxis=dict(
+                tickmode='array',
+                tickvals=df.index[::intervalo_gf],  # Mostra os dias de 10 em 10
+                ticktext=df['Dia'][::intervalo_gf]  # Usa os textos correspondentes aos dias selecionados
+            )
+        )
+        fig.update_traces(mode="markers+lines", hovertemplate=None)
+        fig.update_xaxes(
+            showspikes=True,
+            spikecolor="gray",
+            spikesnap="data",
+            spikemode="across",
+            spikedash="dash",
+        )
+        
+        tabs_name['Gráficos'].plotly_chart(fig, use_container_width=True)
+
+        tabs_name['Gráficos'].markdown("##### No período")
+        tabs_name['Gráficos'].write("")
+        tabs_name['Gráficos'].write(f"Total de VENDAS: {total_vendas}")
+        tabs_name['Gráficos'].write(f"Total de VISITAS: {total_visitas}")
+        tabs_name['Gráficos'].write(f"Média de taxa de conversão: {round(media_conversao, 2)}%")
+    
+    except:
+        pass

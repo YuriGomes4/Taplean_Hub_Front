@@ -352,3 +352,51 @@ def delete_regra(regra_id):
     else:
         print("Falha ao deletar a regra.")
         return []
+    
+def ver_visitas_intervalo(mlb, dias, termino):
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
+    }
+
+    params = {
+        'last': dias,
+        'ending': termino
+    }
+
+    update_url = f"{url_base}/api/v1/produto/{mlb}/visits/time_window"
+
+    response = requests.get(update_url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        print("Visitas listadas com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao listar as visitas do item.")
+        return None
+
+def ver_vendas_intervalo(mlb, dias, termino):
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
+    }
+
+    params = {
+        'last': dias,
+        'ending': termino
+    }
+
+    update_url = f"{url_base}/api/v1/produto/{mlb}/sales/time_window"
+
+    response = requests.get(update_url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        print("Vendas listadas com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao listar as vendas do item.")
+        return None

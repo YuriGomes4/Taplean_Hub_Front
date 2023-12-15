@@ -3,7 +3,7 @@ import requests
 
 BASE_URL = 'https://api.mercadolibre.com'
 
-LIMIT_REQ = 30
+LIMIT_REQ = 40
 
 def ver_anuncio(mlb):
 
