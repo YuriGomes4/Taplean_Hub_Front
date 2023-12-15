@@ -275,7 +275,7 @@ def page():
                         ind2 = ind1+str_json[ind1:ind1+500].index("'id'")
                         str_json = str_json.replace(str_json[ind1:ind2], "")
 
-                    fix_json = str_json.replace("None", '"None"').replace("',", '",').replace("':", '":').replace("']", '"]').replace("'}", '"}').replace("['", '["').replace("{'", '{"').replace(" '", ' "')
+                    fix_json = str_json.replace(": None", ': "None"').replace("',", '",').replace("':", '":').replace("']", '"]').replace("'}", '"}').replace("['", '["').replace("{'", '{"').replace(" '", ' "')
                         
 
                     #print(fix_json)
@@ -287,8 +287,10 @@ def page():
                         "Primavera": "Rosana",
                         "Caruara": "Santos",
                     }
-
-                    ship = json.loads(fix_json)
+                    try: 
+                        ship = json.loads(fix_json)
+                    except:
+                        print(str_json)
                     if not(str(venda['shipping']).__contains__("not_found_shipping_for_order_id")):
                         if filtrar:
                             if str(ship['receiver_address']['state']['id']).replace("BR-", "") == estados_brasil[select_map]:
