@@ -20,84 +20,83 @@ def page():
 
     if str(personal_prefs.get('vendedor')) != "0":
 
-        ano_atual = datetime.now().year
-        mes_atual = datetime.now().month
-        dia_atual = datetime.now().day
-        #data_min = data_max.day
+        #ano_atual = datetime.now().year
+        #mes_atual = datetime.now().month
+        #dia_atual = datetime.now().day
 
-        ano_min = 0
-        mes_min = 0
-        dia_min = 0
+        #ano_min = 0
+        #mes_min = 0
+        #dia_min = 0
 
-        def is_bissexto(ano):
-            if (ano % 4 == 0 and ano % 100 != 0) or (ano % 400 == 0):
-                return True
-            else:
-                return False
+        #def is_bissexto(ano):
+        #    if (ano % 4 == 0 and ano % 100 != 0) or (ano % 400 == 0):
+        #        return True
+        #    else:
+        #        return False
 
-        if dia_atual > 13:
-            dia_min = dia_atual - 13
-            mes_min = mes_atual
-            ano_min = ano_atual
-        else:
-            if mes_atual > 1:
-                mes_min = mes_atual-1
+        #if dia_atual > 13:
+        #    dia_min = dia_atual - 13
+        #    mes_min = mes_atual
+        #    ano_min = ano_atual
+        #else:
+        #    if mes_atual > 1:
+        #        mes_min = mes_atual-1
 
-                if mes_min in [1, 3, 5, 7, 8, 10, 12]:
-                    dia_min = (dia_atual+31)-13
-                elif mes_min in [4, 6, 9, 11]:
-                    dia_min = (dia_atual+30)-13
-                elif mes_min == 2:
-                    ano_bi = is_bissexto(ano_atual)
+        #        if mes_min in [1, 3, 5, 7, 8, 10, 12]:
+        #            dia_min = (dia_atual+31)-13
+        #        elif mes_min in [4, 6, 9, 11]:
+        #            dia_min = (dia_atual+30)-13
+        #        elif mes_min == 2:
+        #            ano_bi = is_bissexto(ano_atual)
 
-                    if ano_bi:
-                        dia_min = (dia_atual+29)-13
-                    else:
-                        dia_min = (dia_atual+28)-13
-                else:
-                    print("Erro de caso")
+        #            if ano_bi:
+        #                dia_min = (dia_atual+29)-13
+        #            else:
+        #                dia_min = (dia_atual+28)-13
+        #        else:
+        #            print("Erro de caso")
                 
-                ano_min = ano_atual
-            else:
-                ano_min = ano_atual-1
-                mes_min = 12
-                dia_min = (dia_atual+31)-13
+        #        ano_min = ano_atual
+        #    else:
+        #        ano_min = ano_atual-1
+        #        mes_min = 12
+        #        dia_min = (dia_atual+31)-13
 
-        data_atual = datetime.strptime(f"{ano_atual}-{mes_atual}-{dia_atual} 23:59:59", "%Y-%m-%d %H:%M:%S")
-        data_min = datetime.strptime(f"{ano_min}-{mes_min}-{dia_min} 00:00:00", "%Y-%m-%d %H:%M:%S")
+        #data_atual = datetime.strptime(f"{ano_atual}-{mes_atual}-{dia_atual} 23:59:59", "%Y-%m-%d %H:%M:%S")
+        #data_min = datetime.strptime(f"{ano_min}-{mes_min}-{dia_min} 00:00:00", "%Y-%m-%d %H:%M:%S")
 
-        vendas = sv_vendas.get_all(sv_personal_prefs.get('vendedor'), data_min, data_atual)
+        #vendas = sv_vendas.get_all(sv_personal_prefs.get('vendedor'), data_min, data_atual)
 
-        print(data_atual, data_min)
+        #print(data_atual, data_min)
 
-        dias = [0] * 14
+        #dias = [0] * 14
 
-        dias_visitas = []
+        #dias_visitas = []
 
-        # Suponhamos que 'vendas' seja uma lista de objetos com a propriedade 'date_created'.
-        # data_min é a data inicial do intervalo.
-        # data_atual é a data final do intervalo.
-
-        for venda in vendas:
+        #for venda in vendas:
             # Calcula a diferença em dias entre a data da venda e a data mínima.
-            diferenca = ((datetime.strptime(venda["date_closed"], "%Y-%m-%dT%H:%M:%S") + timedelta(hours=1)) - data_min).days
+        #    diferenca = ((datetime.strptime(venda["date_closed"], "%Y-%m-%dT%H:%M:%S") + timedelta(hours=1)) - data_min).days
 
             # Verifica se a venda ocorreu dentro do intervalo de 14 dias.
             #if 0 <= diferenca <= 13:
                 # Incrementa o contador no elemento correspondente em 'dias'.
-            dias[diferenca] += 1
+        #    dias[diferenca] += 1
 
             # Lista para armazenar as datas intermediárias
 
 
         # O array 'dias' agora contém a quantidade de vendas para cada dia no intervalo.
 
+        from .base import base
+
+        base()
+
         semana = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"]
         dia_da_semana = []
 
         for i in range(7):
             # Calcule a data do dia atual na sequência.
-            data_dia_atual = data_min + timedelta(days=i)
+            data_dia_atual = (datetime.today() - timedelta(days=6)) + timedelta(days=i)
             
             # Obtenha o nome do dia da semana para a data atual.
             dia_da_semana.append(semana[data_dia_atual.weekday()])
@@ -105,11 +104,7 @@ def page():
             #print(f"No {nome_dia_da_semana}, {data_dia_atual.date()}.")
             #print(dias)
 
-        from .base import base
-
         print(dia_da_semana)
-
-        base()
 
         # Crie um array estruturado do NumPy com colunas nomeadas
         #data = np.array([(dias[7], dias[0]), (dias[8], dias[1]), (dias[9], dias[2]), (dias[10], dias[3]), (dias[11], dias[4]), (dias[12], dias[5]), (dias[13], dias[6])],dtype=[("X", "i4"), ("Y", "i4")])
@@ -129,8 +124,8 @@ def page():
 
         if usuarios.tenho_acesso('graficos_vendas'):
             abas.append("Vendas")
-        if usuarios.tenho_acesso('graficos_visitas'):
-            abas.append("Visitas")
+        #if usuarios.tenho_acesso('graficos_visitas'):
+        #    abas.append("Visitas")
         if usuarios.tenho_acesso('graficos_localizacao'):
             abas.append("Localização")
 
@@ -149,52 +144,68 @@ def page():
 
             if "Vendas" in tabs_name.keys():
 
+                vendas = sv_vendas.ver_vendas_intervalo(sv_personal_prefs.get('vendedor'), 13, f"{datetime.today().year}-{datetime.today().month}-{datetime.today().day}")
+
+                vendas_dia = []
+
+                for dia in vendas:
+                    vendas_dia.append(dia['total'])
+
                 data = {
                     'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
                     'Dia da semana': dia_da_semana * 2,
-                    'Vendas': dias[0:7] + dias[7:14]
+                    'Vendas': vendas_dia[0:7] + vendas_dia[7:14]
                 }
 
                 df = pd.DataFrame(data)
 
                 fig = px.line(df, x='Dia da semana', y='Vendas', color='Semana', title="Vendas semanais", markers=True, color_discrete_sequence=["#999999", st.get_option("theme.primaryColor")])
                 fig.update_layout(
-                    dragmode=False
+                    dragmode=False,
+                    hovermode="x unified"
+                )
+                fig.update_traces(mode="markers+lines", hovertemplate=None)
+                fig.update_xaxes(
+                    showspikes=True,
+                    spikecolor="gray",
+                    spikesnap="data",
+                    spikemode="across",
+                    spikedash="dash",
                 )
                 
                 tabs_name["Vendas"].plotly_chart(fig, use_container_width=True)
                 
 
-            if "Visitas" in tabs_name.keys():
+            #if "Visitas" in tabs_name.keys():
 
-                if tabs_name["Visitas"].button("Carregar gráfico", use_container_width=True, type='primary'):
-                    datas_intermediarias = []
+            #    if tabs_name["Visitas"].button("Carregar gráfico", use_container_width=True, type='primary'):
+            #        datas_intermediarias = []
 
                     # Loop para gerar as datas intermediárias
-                    data_inicio = data_min
-                    while data_inicio <= data_atual:
-                        datas_intermediarias.append(data_inicio)
-                        data_inicio += timedelta(days=1)
+            #        data_inicio = data_min
+            #        while data_inicio <= data_atual:
+            #            datas_intermediarias.append(data_inicio)
+            #            data_inicio += timedelta(days=1)
 
                     # Agora, a lista datas_intermediarias contém todas as datas entre data_inicio e data_fim.
-                    for data in datas_intermediarias:
-                        data_str = f"{data.year}-{data.month}-{f'0{data.day}' if len(str(data.day)) == 1 else data.day}"
-                        dias_visitas.append(sv_vendedor.get_visitas(sv_personal_prefs.get('vendedor'), data_str, data_str))
+            #        for data in datas_intermediarias:
+            #            data_str = f"{data.year}-{data.month}-{f'0{data.day}' if len(str(data.day)) == 1 else data.day}"
+            #            dias_visitas.append(sv_vendedor.get_visitas(sv_personal_prefs.get('vendedor'), data_str, data_str))
 
-                    data = {
-                        'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
-                        'Dia da semana': dia_da_semana * 2,
-                        'Visitas': dias_visitas[0:7] + dias_visitas[7:14]
-                    }
+            #        data = {
+            #            'Semana': ["Semana passada"] * 7 + ["Semana atual"] * 7,
+            #            'Dia da semana': dia_da_semana * 2,
+            #            'Visitas': dias_visitas[0:7] + dias_visitas[7:14]
+            #        }
 
-                    df = pd.DataFrame(data)
+            #        df = pd.DataFrame(data)
 
-                    fig = px.line(df, x='Dia da semana', y='Visitas', color='Semana', title="Visitas semanais", markers=True, color_discrete_sequence=["#999999", st.get_option("theme.primaryColor")])
-                    fig.update_layout(
-                        dragmode=False
-                    )
+            #        fig = px.line(df, x='Dia da semana', y='Visitas', color='Semana', title="Visitas semanais", markers=True, color_discrete_sequence=["#999999", st.get_option("theme.primaryColor")])
+            #        fig.update_layout(
+            #            dragmode=False
+            #        )
                     
-                    tabs_name["Visitas"].plotly_chart(fig, use_container_width=True)
+            #        tabs_name["Visitas"].plotly_chart(fig, use_container_width=True)
 
 
             if "Localização" in tabs_name.keys():
