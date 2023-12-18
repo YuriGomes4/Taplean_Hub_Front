@@ -8,6 +8,10 @@ import plotly.express as px
 
 def page():
 
+    from .base import base
+
+    base()
+
     anun_id = st.session_state.anuncio
     anun = anuncio.ver_anuncio(anun_id)
 

@@ -159,99 +159,129 @@ def page():
     operacoes = []
 
     if st.session_state.regra == "create":
+        tipo_regra = "Customizada"
         ref_id = product_id
         coluna_obj = ""
         operador = ""
         valor_obj = ""
         coluna_new = ""
         valor_new = ""
+        valor_max = 0.0
+        valor_min = 0.0
+        valor_dif = 0.0
     else:
         id_regra = st.session_state.regra
         regra = services.produtos.get_regra(id_regra)
-
 
         inverted_colunas = {v: k for k, v in colunas_dict.items()}
         inverted_colunas_anuncio = {v: k for k, v in colunas_dict_anuncio.items()}
         inverted_operacoes = {v: k for k, v in operacoes_dict.items()}
 
+        if regra['funcao'] != "seguir_preco_anuncio":
 
-        ref_id = regra['ref_id_obj']
-        coluna_obj = inverted_colunas[regra['coluna_obj']] if regra['tabela_obj'] == "produtos" else inverted_colunas_anuncio[regra['coluna_obj']]
-        operador = inverted_operacoes[regra['operador']]
-        valor_obj = regra['valor_obj']
-        coluna_new = inverted_colunas[regra['coluna_new']]
-        valor_new = regra['valor_new']
+            ref_id = regra['ref_id_obj']
+            coluna_obj = inverted_colunas[regra['coluna_obj']] if regra['tabela_obj'] == "produtos" else inverted_colunas_anuncio[regra['coluna_obj']]
+            operador = inverted_operacoes[regra['operador']]
+            valor_obj = regra['valor_obj']
+            coluna_new = inverted_colunas[regra['coluna_new']]
+            valor_new = regra['valor_new']
+        
+        else:
+            ref_id = regra['ref_id_obj']
+            tipo_regra = "Seguir preço de um anúncio"
+            oper_dict = {
+                ">": "Manter acima",
+                "<": "Manter abaixo",
+            }
+            operador = regra['operador']
+            valor_split = regra['valor_new'].split("/")
+            valor_min = float(valor_split[0])
+            valor_dif = float(valor_split[1])
+            valor_max = float(valor_split[2])
 
     def controle_dados():
         #global valor_new
         #global valor_obj
 
-        if ref_id != "" and coluna_obj != "" and operador != "" and valor_obj != "" and coluna_new != "" and valor_new != "":
+        if tipo_regra == "Customizada":
+
+            if ref_id != "" and coluna_obj != "" and operador != "" and valor_obj != "" and coluna_new != "" and valor_new != "":
 
 
-            valor1_ver = False
-            valor2_ver = False
+                valor1_ver = False
+                valor2_ver = False
 
-            valor1_type = ""
-            valor2_type = ""
+                valor1_type = ""
+                valor2_type = ""
 
 
-            def ver_valor(texto, nome):
+                def ver_valor(texto, nome):
 
-                e_texto = False
-                
-                espc = 0
-                virg = False
-                for caractere in texto:
-                    if caractere.isdigit():
-                        pass
-                        #return True
-                    elif caractere == '.':
-                        espc += 1
-                        #return True
-                    elif caractere == ',':
-                        espc += 1
-                        virg = True
-                        #return True
-                    else:
-                        e_texto = True
+                    e_texto = False
                     
-                if not(e_texto):
-                    if espc <= 1:
-                        if texto[0].isdigit():
-                            if virg:
-                                st.toast(f"{nome} precisa ser um '.' para separar as casas decimais, e não uma ','")
-                            else:
-                                return True
+                    espc = 0
+                    virg = False
+                    for caractere in texto:
+                        if caractere.isdigit():
+                            pass
+                            #return True
+                        elif caractere == '.':
+                            espc += 1
+                            #return True
+                        elif caractere == ',':
+                            espc += 1
+                            virg = True
+                            #return True
                         else:
-                            st.toast(f"{nome} contém um número inválido.")
+                            e_texto = True
+                        
+                    if not(e_texto):
+                        if espc <= 1:
+                            if texto[0].isdigit():
+                                if virg:
+                                    st.toast(f"{nome} precisa ser um '.' para separar as casas decimais, e não uma ','")
+                                else:
+                                    return True
+                            else:
+                                st.toast(f"{nome} contém um número inválido.")
+                        else:
+                            st.toast(f"{nome} só pode ter apenas um . ou , para números.")
                     else:
-                        st.toast(f"{nome} só pode ter apenas um . ou , para números.")
-                else:
-                    return True
-                
-            valor1_ver = ver_valor(valor_obj, "Campo analisado")
-            valor2_ver = ver_valor(valor_new, "Campo a ser alterado")
+                        return True
+                    
+                valor1_ver = ver_valor(valor_obj, "Campo analisado")
+                valor2_ver = ver_valor(valor_new, "Campo a ser alterado")
 
-            #if valor1_type == "num":
-            #    valor_obj.replace(",", ".")
-            #if valor2_type == "num":
-            #    valor_new.replace(",", ".")
+                #if valor1_type == "num":
+                #    valor_obj.replace(",", ".")
+                #if valor2_type == "num":
+                #    valor_new.replace(",", ".")
+                    
+                if valor1_ver and valor2_ver:
+                    return True
+                    
                 
-            if valor1_ver and valor2_ver:
-                return True
-                
-            
-            #return True
+                #return True
+            else:
+                st.toast("Nenhum campo pode estar vazio")
         else:
-            st.toast("Nenhum campo pode estar vazio")
+            if ref_id != "" and operador != "" and valor_min != "" and valor_dif != "" and valor_max != "":
+                return True
+            else:
+                st.toast("Nenhum campo pode estar vazio")
 
     itens_a_excluir = ["Faturamento total", "ID Categoria", "Taxa de venda", "Custo de frete grátis", "Vendas"]
     list_colunas_new = [item for item in colunas_dict.keys() if item not in itens_a_excluir]
 
     col1, col2 = st.columns(2)
 
-    tipo = col1.selectbox("Analisar", ["O mesmo produto","Um anúncio seguido"], index=["produtos", "anuncio"].index(regra['tabela_obj']) if st.session_state.regra != "create" else 0)
+    tipo_regra = col1.selectbox("Tipo de regra", ["Customizada", "Seguir preço de um anúncio"], index=["Customizada", "Seguir preço de um anúncio"].index(tipo_regra))
+
+    if tipo_regra == "Customizada":
+        tipo = col1.selectbox("Analisar", ["O mesmo produto","Um anúncio seguido"], index=["produtos", "anuncio"].index(regra['tabela_obj']) if st.session_state.regra != "create" else 0)
+    else:
+        tipo = "Um anúncio seguido"
+    
     #ref_id = col1.text_input("ID", value=ref_id, disabled=True if tipo == "O mesmo produto" else False)
     if tipo == "O mesmo produto":
         opcoes = [product_id]
@@ -276,128 +306,153 @@ def page():
             "Desconto" : "desconto",
             "Frete grátis" : "frete_gratis",
         }
-    ref_id = col1.selectbox("ID" if tipo == "O mesmo produto" else "Anúncio", opcoes, disabled=n_editar, index=0 if tipo == "O mesmo produto" else opcoes.index(anun['titulo']))
+
+    ref_id = col1.selectbox("ID" if tipo == "O mesmo produto" else "Anúncio", opcoes, disabled=n_editar, index=0 if tipo == "O mesmo produto" else (opcoes.index(anuns_bd[ref_id]['titulo']) if ref_id in anuns_bd.keys() else 0))
     #st.text_input("Campo analisado", value=coluna_obj]),
-    coluna_obj = col1.selectbox("Campo analisado", colunas_dict.keys() if tipo == "O mesmo produto" else colunas_dict_obj.keys(), index=list(colunas_dict.keys() if regra['tabela_obj'] == "produtos" else colunas_dict_anuncio.keys()).index(coluna_obj) if coluna_obj != "" else 0)
+    if tipo_regra == "Customizada":
+        coluna_obj = col1.selectbox("Campo analisado", colunas_dict.keys() if tipo == "O mesmo produto" else colunas_dict_obj.keys(), index=list(colunas_dict.keys() if regra['tabela_obj'] == "produtos" else colunas_dict_anuncio.keys()).index(coluna_obj) if coluna_obj != "" else 0)
     #st.text_input("Analisador", value=operador]),
-    operador = col1.selectbox("Analisador", operacoes_dict.keys(), index=list(operacoes_dict.keys()).index(operador) if operador != "" else 0)
+    operador = col1.selectbox("Analisador", operacoes_dict.keys() if tipo_regra == "Customizada" else ["Manter acima", "Manter abaixo"], index=(list(operacoes_dict.keys()).index(operador) if tipo_regra == "Customizada" else ["Manter acima", "Manter abaixo"].index(oper_dict[operador])) if operador != "" else 0)
     
-    campo_v_obj = colunas_opcoes[colunas_dict[coluna_obj] if tipo == "O mesmo produto" else colunas_dict_obj[coluna_obj]]
+    if tipo_regra == "Customizada":
+        campo_v_obj = colunas_opcoes[colunas_dict[coluna_obj] if tipo == "O mesmo produto" else colunas_dict_obj[coluna_obj]]
     
-    if campo_v_obj['relative_value']:
-        vo_col1, vo_col2 = col1.columns(2)
-    else:
-        vo_col1 = col1
-    
-    match campo_v_obj['input']:
-        case "int_input":
-            valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=int(0 if valor_obj == '' else valor_obj), step=0, key="obj")
-        case "float_input":
-            valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=float(0 if valor_obj == '' else valor_obj), key="obj")
-        case "selectbox":
-            valor_obj = vo_col1.selectbox(campo_v_obj['name']+" analisado", campo_v_obj['options'], key="obj")
-        case "text_input":
-            valor_obj = vo_col1.text_input(campo_v_obj['name']+" analisado", value=valor_obj, key="obj")
-    
-    if campo_v_obj['relative_value']:
-        vo_col2.write("")
-        vo_col2.write("")
-        v_obj_ck = vo_col2.checkbox("Valor atual +", key="v_obj_ck")
-    else:
-        v_obj_ck = 0
-    
-    #st.text_input("Campo a ser alterado", value=coluna_new),
-    coluna_new = col1.selectbox("Campo a ser alterado", list_colunas_new, index=list_colunas_new.index(coluna_new) if coluna_new != "" else 0)
-    
-    campo_v_new = colunas_opcoes[colunas_dict[coluna_new]]
+        if campo_v_obj['relative_value']:
+            vo_col1, vo_col2 = col1.columns(2)
+        else:
+            vo_col1 = col1
+        
+        match campo_v_obj['input']:
+            case "int_input":
+                valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=int(0 if valor_obj == '' else valor_obj), step=0, key="obj")
+            case "float_input":
+                valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=float(0 if valor_obj == '' else valor_obj), key="obj")
+            case "selectbox":
+                valor_obj = vo_col1.selectbox(campo_v_obj['name']+" analisado", campo_v_obj['options'], key="obj")
+            case "text_input":
+                valor_obj = vo_col1.text_input(campo_v_obj['name']+" analisado", value=valor_obj, key="obj")
+        
+        if campo_v_obj['relative_value']:
+            vo_col2.write("")
+            vo_col2.write("")
+            v_obj_ck = vo_col2.checkbox("Valor atual +", key="v_obj_ck")
+        else:
+            v_obj_ck = 0
+        
+        #st.text_input("Campo a ser alterado", value=coluna_new),
+        coluna_new = col1.selectbox("Campo a ser alterado", list_colunas_new, index=list_colunas_new.index(coluna_new) if coluna_new != "" else 0)
+        
+        campo_v_new = colunas_opcoes[colunas_dict[coluna_new]]
 
-    if campo_v_new['relative_value']:
-        ve_col1, ve_col2 = col1.columns(2)
-    else:
-        ve_col1 = col1
-    
-    #valor_new = ve_col1.text_input("Valor a ser colocado", value=valor_new)
+        if campo_v_new['relative_value']:
+            ve_col1, ve_col2 = col1.columns(2)
+        else:
+            ve_col1 = col1
+        
+        #valor_new = ve_col1.text_input("Valor a ser colocado", value=valor_new)
 
-    match campo_v_new['input']:
-        case "int_input":
-            valor_new = ve_col1.number_input(campo_v_new['name']+" analisado", value=int(0 if valor_new == '' else valor_new), step=0, key="new")
-        case "float_input":
-            valor_new = ve_col1.number_input(campo_v_new['name']+" analisado", value=float(0 if valor_new == '' else valor_new), key="new")
-        case "selectbox":
-            valor_new = ve_col1.selectbox(campo_v_new['name']+" analisado", campo_v_new['options'], key="new")
-        case "text_input":
-            valor_new = ve_col1.text_input(campo_v_new['name']+" analisado", value=valor_new, key="new")
+        match campo_v_new['input']:
+            case "int_input":
+                valor_new = ve_col1.number_input(campo_v_new['name']+" analisado", value=int(0 if valor_new == '' else valor_new), step=0, key="new")
+            case "float_input":
+                valor_new = ve_col1.number_input(campo_v_new['name']+" analisado", value=float(0 if valor_new == '' else valor_new), key="new")
+            case "selectbox":
+                valor_new = ve_col1.selectbox(campo_v_new['name']+" analisado", campo_v_new['options'], key="new")
+            case "text_input":
+                valor_new = ve_col1.text_input(campo_v_new['name']+" analisado", value=valor_new, key="new")
 
-    if campo_v_new['relative_value']:
-        ve_col2.write("")
-        ve_col2.write("")
-        v_new_ck = ve_col2.checkbox("Valor atual +", key="v_new_ck")
+        if campo_v_new['relative_value']:
+            ve_col2.write("")
+            ve_col2.write("")
+            v_new_ck = ve_col2.checkbox("Valor atual +", key="v_new_ck")
+        else:
+            v_new_ck = 0
+
     else:
-        v_new_ck = 0
+        valor_max = col1.number_input("Valor máximo", value=valor_max, key="valormax", min_value=0.0)
+        valor_min = col1.number_input("Valor mínimo", value=valor_min, key="valormin", min_value=0.0)
+        valor_dif = col1.number_input("Valor de diferença", value=valor_dif, key="valordif", min_value=0.0)
 
     produto = st.session_state.produto
     
     cor = "red"
     #st.markdown(f"##### Regra {cont}")
-    st.markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{coluna_obj}</span> do {"produto" if tipo == "O mesmo produto" else "anúncio"} for <span style="color: {cor}">{operador}</span> a <span style="color: {cor}">{f"({produto[colunas_dict[coluna_obj]]}+{valor_obj})" if v_obj_ck else valor_obj}</span>, o campo <span style="color: {cor}">{coluna_new}</span> {"" if tipo == "O mesmo produto" else "do produto"} será alterado para <span style="color: {cor}">{f"({produto[colunas_dict[coluna_new]]}+{valor_new})" if v_new_ck else valor_new}</span></p>""", unsafe_allow_html=True)
-    
+    if tipo_regra == "Customizada":
+        st.markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{coluna_obj}</span> do {"produto" if tipo == "O mesmo produto" else "anúncio"} for <span style="color: {cor}">{operador}</span> a <span style="color: {cor}">{f"({produto[colunas_dict[coluna_obj]]}+{valor_obj})" if v_obj_ck else valor_obj}</span>, o campo <span style="color: {cor}">{coluna_new}</span> {"" if tipo == "O mesmo produto" else "do produto"} será alterado para <span style="color: {cor}">{f"({produto[colunas_dict[coluna_new]]}+{valor_new})" if v_new_ck else valor_new}</span></p>""", unsafe_allow_html=True)
+    else:
+        st.markdown(f"""<p>Se o <span style="color: {cor}">preço</span> do {"produto" if tipo == "O mesmo produto" else "anúncio"} for <span style="color: {cor}">{"Menor" if operador == "Manter abaixo" else "Maior"}</span> que o <span style="color: {cor}">preço</span> do produto, o <span style="color: {cor}">preço</span> {"" if tipo == "O mesmo produto" else "do produto"} será alterado para <span style="color: {cor}">R$ {str(valor_dif).replace(".", ",")} {"mais barato" if operador == "Manter abaixo" else "mais caro"}</span> do que o preço do anúncio</p>""", unsafe_allow_html=True)
+
 
     if st.button("Salvar", type='primary', use_container_width=True):
         if controle_dados():
 
-            if v_obj_ck:
-                e_texto = False
-                for carac in str(valor_obj):
-                    if carac.isdigit():
-                        pass
-                        #return True
-                    elif carac == '.':
-                        pass
-                        #return True
-                    elif carac == ',':
-                        pass
-                        #return True
+            if tipo_regra == "Customizada":
+                if v_obj_ck:
+                    e_texto = False
+                    for carac in str(valor_obj):
+                        if carac.isdigit():
+                            pass
+                            #return True
+                        elif carac == '.':
+                            pass
+                            #return True
+                        elif carac == ',':
+                            pass
+                            #return True
+                        else:
+                            e_texto = True
+
+                    if not(e_texto):
+                        valor_obj = float(produto[colunas_dict[coluna_obj]])+float(valor_obj)
                     else:
-                        e_texto = True
-
-                if not(e_texto):
-                    valor_obj = float(produto[colunas_dict[coluna_obj]])+float(valor_obj)
-                else:
-                    valor_obj = produto[colunas_dict[coluna_obj]]+valor_obj
+                        valor_obj = produto[colunas_dict[coluna_obj]]+valor_obj
 
 
-            if v_new_ck:
-                e_texto = False
-                for carac in str(valor_new):
-                    if carac.isdigit():
-                        pass
-                        #return True
-                    elif carac == '.':
-                        pass
-                        #return True
-                    elif carac == ',':
-                        pass
-                        #return True
+                if v_new_ck:
+                    e_texto = False
+                    for carac in str(valor_new):
+                        if carac.isdigit():
+                            pass
+                            #return True
+                        elif carac == '.':
+                            pass
+                            #return True
+                        elif carac == ',':
+                            pass
+                            #return True
+                        else:
+                            e_texto = True
+
+                    if not(e_texto):
+                        valor_new = float(produto[colunas_dict[coluna_new]])+float(valor_new)
                     else:
-                        e_texto = True
+                        valor_new = produto[colunas_dict[coluna_new]]+valor_new
 
-                if not(e_texto):
-                    valor_new = float(produto[colunas_dict[coluna_new]])+float(valor_new)
-                else:
-                    valor_new = produto[colunas_dict[coluna_new]]+valor_new
-
-            dict_regra = {
-                "ref_id_obj": product_id if tipo == "O mesmo produto" else ops_dict[ref_id],
-                "tabela_obj": "produtos" if tipo == "O mesmo produto" else "anuncio",
-                "coluna_obj": colunas_dict[coluna_obj] if tipo == "O mesmo produto" else colunas_dict_obj[coluna_obj],
-                "valor_obj": valor_obj,
-                "operador": operacoes_dict[operador],
-                "funcao": "alterar_produto",
-                "ref_id_new": product_id,
-                "tabela_new": "produtos",
-                "coluna_new": colunas_dict[coluna_new],
-                "valor_new": valor_new,
-            }
+                dict_regra = {
+                    "ref_id_obj": product_id if tipo == "O mesmo produto" else ops_dict[ref_id],
+                    "tabela_obj": "produtos" if tipo == "O mesmo produto" else "anuncio",
+                    "coluna_obj": colunas_dict[coluna_obj] if tipo == "O mesmo produto" else colunas_dict_obj[coluna_obj],
+                    "valor_obj": valor_obj,
+                    "operador": operacoes_dict[operador],
+                    "funcao": "alterar_produto",
+                    "ref_id_new": product_id,
+                    "tabela_new": "produtos",
+                    "coluna_new": colunas_dict[coluna_new],
+                    "valor_new": valor_new,
+                }
+            else:
+                dict_regra = {
+                    "ref_id_obj": product_id if tipo == "O mesmo produto" else ops_dict[ref_id],
+                    "tabela_obj": "produtos" if tipo == "O mesmo produto" else "anuncio",
+                    "coluna_obj": "preco",
+                    "valor_obj": "comparar_precos",
+                    "operador": "<" if operador == "Manter abaixo" else ">",
+                    "funcao": "seguir_preco_anuncio",
+                    "ref_id_new": product_id,
+                    "tabela_new": "produtos",
+                    "coluna_new": "price",
+                    "valor_new": str(valor_min)+"/"+str(valor_dif)+"/"+str(valor_max),
+                }
 
             if st.session_state.regra == "create":
                 services.produtos.add_regra(dict_regra)

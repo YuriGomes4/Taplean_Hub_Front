@@ -12,6 +12,11 @@ import plotly.express as px
 from services import anuncio
 
 def page():
+
+    from .base import base
+
+    base()
+
     st.title("Seguir anúncio")
 
     col1, col2, col3 = st.columns((8, 8, 3))

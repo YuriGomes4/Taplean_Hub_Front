@@ -137,6 +137,7 @@ def page():
         }
 
         inverted_colunas = {v: k for k, v in colunas_dict.items()}
+        inverted_colunas['price'] = "Preço"
         inverted_operacoes = {v: k for k, v in operacoes_dict.items()}
 
         cont = 1
@@ -147,7 +148,10 @@ def page():
 
                 cor = "red"
                 tabs_name["Regras"].markdown(f"##### Regra {cont}")
-                tabs_name["Regras"].markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{inverted_colunas[regra["coluna_obj"]]}</span> do produto for <span style="color: {cor}">{inverted_operacoes[regra["operador"]]}</span> a <span style="color: {cor}">{regra["valor_obj"]}</span>, o campo <span style="color: {cor}">{inverted_colunas[regra["coluna_new"]]}</span> será alterado para <span style="color: {cor}">{regra["valor_new"]}</span></p>""", unsafe_allow_html=True)
+                if regra["funcao"] != "seguir_preco_anuncio":
+                    tabs_name["Regras"].markdown(f"""<p>Se o valor do campo <span style="color: {cor}">{inverted_colunas[regra["coluna_obj"]]}</span> do produto for <span style="color: {cor}">{inverted_operacoes[regra["operador"]]}</span> a <span style="color: {cor}">{regra["valor_obj"]}</span>, o campo <span style="color: {cor}">{inverted_colunas[regra["coluna_new"]]}</span> será alterado para <span style="color: {cor}">{regra["valor_new"]}</span></p>""", unsafe_allow_html=True)
+                else:
+                    tabs_name["Regras"].markdown(f"""<p>Se o <span style="color: {cor}">{inverted_colunas[regra["coluna_obj"]]}</span> do anúncio for <span style="color: {cor}">{"Menor" if regra["operador"] == "<" else "Maior"}</span> que o <span style="color: {cor}">preço</span> do produto, o <span style="color: {cor}">{inverted_colunas[regra["coluna_new"]]}</span> do produto será alterado para <span style="color: {cor}">R$ {str(regra["valor_new"].split("/")[1]).replace(".", ",")} {"mais barato" if regra["operador"] == "<" else "mais caro"}</span> {f"até o valor mínimo de R$ {str(regra['valor_new'].split('/')[0]).replace('.', ',')}" if regra["operador"] == "<" else f"até o valor máximo de R$ {str(regra['valor_new'].split('/')[2]).replace('.', ',')}"}</p>""", unsafe_allow_html=True)
                 col1, col2 = tabs_name["Regras"].columns(2)
                 if col1.button("Editar regra", use_container_width=True, type='primary'):
                     if st.session_state.page != "12":
