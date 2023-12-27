@@ -249,8 +249,8 @@ def page():
                     else:
                         return True
                     
-                valor1_ver = ver_valor(valor_obj, "Campo analisado")
-                valor2_ver = ver_valor(valor_new, "Campo a ser alterado")
+                valor1_ver = ver_valor(str(valor_obj), "Campo analisado")
+                valor2_ver = ver_valor(str(valor_new), "Campo a ser alterado")
 
                 #if valor1_type == "num":
                 #    valor_obj.replace(",", ".")
