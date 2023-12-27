@@ -310,7 +310,7 @@ Produto elegível para catálogo.""")
     tempo_atual = tabs_name['Gráficos'].selectbox("Período analisado", tempo_opcoes.keys(), index=list(tempo_opcoes.keys()).index(tempo_padrao))
         
     if tempo_atual != "Personalizado":
-        tempo_gf = tempo_opcoes[tempo_atual]['dias']
+        tempo_gf = tempo_opcoes[tempo_atual]['dias']-1
         ending_gf = f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}'
         intervalo_gf = tempo_opcoes[tempo_atual]['intervalo']
     else:
@@ -397,10 +397,13 @@ Produto elegível para catálogo.""")
             hovermode='x unified',
             xaxis=dict(
                 tickmode='array',
-                tickvals=df.index[::intervalo_gf],  # Mostra os dias de 10 em 10
-                ticktext=df['Dia'][::intervalo_gf]  # Usa os textos correspondentes aos dias selecionados
+                tickvals=(df.index[0::intervalo_gf]) if tempo_atual == "Última semana" or tempo_atual == "Personalizado" else df.index[0:int(len(df['Dia'])/3):intervalo_gf].to_list()+[int(len(df['Dia'])/3)-1],  # Mostra os dias de 10 em 10
+                #ticktext=df['Dia'][0:int(len(df['Dia'])/3):intervalo_gf]  # Usa os textos correspondentes aos dias selecionados
             )
         )
+
+        print(list(df.index[0:int(len(df['Dia'])/3):intervalo_gf].to_list())+[29])
+
         fig.update_traces(mode="markers+lines", hovertemplate=None)
         fig.update_xaxes(
             showspikes=True,
