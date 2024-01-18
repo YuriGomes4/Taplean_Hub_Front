@@ -302,7 +302,7 @@ def page():
                         ship = json.loads(fix_json)
                     except:
                         print(str_json)
-                    if not(str(venda['shipping']).__contains__("not_found_shipping_for_order_id")):
+                    if 'receiver_address' in ship.keys():
                         if filtrar:
                             if str(ship['receiver_address']['state']['id']).replace("BR-", "") == estados_brasil[select_map]:
                                 if str(ship['receiver_address'][procura]['name']) in correcao_mapa.keys():
