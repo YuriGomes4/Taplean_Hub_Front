@@ -153,12 +153,12 @@ def page():
                 else:
                     tabs_name["Regras"].markdown(f"""<p>Se o <span style="color: {cor}">{inverted_colunas[regra["coluna_obj"]]}</span> do anúncio for <span style="color: {cor}">{"Menor" if regra["operador"] == "<" else "Maior"}</span> que o <span style="color: {cor}">preço</span> do produto, o <span style="color: {cor}">{inverted_colunas[regra["coluna_new"]]}</span> do produto será alterado para <span style="color: {cor}">R$ {str(regra["valor_new"].split("/")[1]).replace(".", ",")} {"mais barato" if regra["operador"] == "<" else "mais caro"}</span> {f"até o valor mínimo de R$ {str(regra['valor_new'].split('/')[0]).replace('.', ',')}" if regra["operador"] == "<" else f"até o valor máximo de R$ {str(regra['valor_new'].split('/')[2]).replace('.', ',')}"}</p>""", unsafe_allow_html=True)
                 col1, col2 = tabs_name["Regras"].columns(2)
-                if col1.button("Editar regra", use_container_width=True, type='primary'):
+                if col1.button("Editar regra", use_container_width=True, type='primary', key=f"editbt{regra['id']}"):
                     if st.session_state.page != "12":
                         st.session_state.regra = regra['id']
                         st.session_state.page = "12"
                         st.rerun()
-                if col2.button("Deletar regra", use_container_width=True, type='secondary'):
+                if col2.button("Deletar regra", use_container_width=True, type='secondary', key=f"deletebt{regra['id']}"):
                     services.produtos.delete_regra(regra['id'])
                     st.rerun()
 

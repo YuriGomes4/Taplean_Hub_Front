@@ -178,6 +178,7 @@ def page():
         inverted_operacoes = {v: k for k, v in operacoes_dict.items()}
 
         if regra['funcao'] != "seguir_preco_anuncio":
+            tipo_regra = "Customizada"
 
             ref_id = regra['ref_id_obj']
             coluna_obj = inverted_colunas[regra['coluna_obj']] if regra['tabela_obj'] == "produtos" else inverted_colunas_anuncio[regra['coluna_obj']]
