@@ -325,7 +325,7 @@ def page():
         
         match campo_v_obj['input']:
             case "int_input":
-                valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=int(0 if valor_obj == '' else valor_obj), step=0, key="obj")
+                valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=int(0 if valor_obj == '' else float(valor_obj)), step=0, key="obj")
             case "float_input":
                 valor_obj = vo_col1.number_input(campo_v_obj['name']+" analisado", value=float(0 if valor_obj == '' else valor_obj), key="obj")
             case "selectbox":
