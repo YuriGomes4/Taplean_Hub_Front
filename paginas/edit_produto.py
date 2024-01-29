@@ -182,7 +182,8 @@ def page():
 
         # Função para extrair a data de cada mudança
         def extrair_data(mudanca):
-            data = datetime.strptime(mudanca['date'], "%Y-%m-%dT%H:%M:%S.%f")
+            data = datetime.strptime(str(mudanca['date']), "%Y-%m-%dT%H:%M:%S")
+            #data = datetime.strptime(str(mudanca['date']), "%Y-%m-%dT%H:%M:%S.%f")
             return data
 
         # Classifique as mudanças com base na data
@@ -214,7 +215,7 @@ def page():
         print(d[0].year)
 
         for mudanca in mudancas_ordenadas:
-            data = datetime.strptime(mudanca['date'], "%Y-%m-%dT%H:%M:%S.%f")
+            data = extrair_data(mudanca)
 
             text = f"""
     <div>
