@@ -1,0 +1,12 @@
+[Unit]
+Description=Taplean Hub Front
+After=network.target
+
+[Service]
+User=ubuntu
+ExecStart=/home/ubuntu/Taplean_Hub_Front/venv/bin/python3 /home/ubuntu/Taplean_Hub_Front/run.py
+WorkingDirectory=/home/ubuntu/Taplean_Hub_Front
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

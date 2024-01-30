@@ -69,7 +69,7 @@ def page():
                             item += html_content[inicio+ind]
                             ind += 1
 
-                    txt_range_vendas = item.replace('Novo  |  +', '').replace(' vendidos', '').replace('mil', '000').replace('+', '').replace('Novo','')
+                    txt_range_vendas = item.replace('Novo  |  +', '').replace(' vendidos', '').replace('mil', '000').replace('+', '').replace('Novo','').replace('Novo  |  ', '')
 
                     range_vendas = int(txt_range_vendas) if txt_range_vendas != "" else 0
 
