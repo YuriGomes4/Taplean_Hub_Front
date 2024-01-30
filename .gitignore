@@ -3,3 +3,4 @@ personal_prefs.cnf
 *.pyc
 wvenv/
 lvenv/
+venv/

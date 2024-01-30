@@ -10,6 +10,8 @@ def check_for_updates():
 
     subprocess.call(["git", "pull"], cwd=project_directory)
 
+    print(project_directory)
+
 def start():
     # Obter o diretório onde o script está localizado
     script_directory = os.path.dirname(os.path.abspath(__file__))
