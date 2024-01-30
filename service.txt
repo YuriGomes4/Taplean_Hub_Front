@@ -4,9 +4,9 @@ After=network.target
 
 [Service]
 User=ubuntu
-ExecStart=/home/ubuntu/Taplean_Hub_Front/venv/bin/python3 /home/ubuntu/Taplean_Hub_Front/run.py
+ExecStart=/home/ubuntu/Taplean_Hub_Front/venv/bin/streamlit run /home/ubuntu/Taplean_Hub_Front/main.py
 WorkingDirectory=/home/ubuntu/Taplean_Hub_Front
-Restart=always
+Restart=never
 
 [Install]
 WantedBy=multi-user.target
