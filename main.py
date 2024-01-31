@@ -100,6 +100,8 @@ elif st.session_state.page == "00":
     graficos.page()
 elif st.session_state.page == "10":
     verificacoes()
+    st.session_state.prod_pesquisa = ""
+    st.session_state.prod_fitro = "Nenhum"
     produtos.page()
 elif st.session_state.page == "11":
     edit_produto.page()
