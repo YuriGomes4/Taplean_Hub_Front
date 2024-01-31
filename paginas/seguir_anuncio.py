@@ -184,44 +184,49 @@ def page():
 
                         visitas = ml_api.ver_visitas_intervalo(produto['id'], 30, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}')
 
-                        dias = []
-                        visitas_dia = []
+                        if visitas != None:
 
-                        for data in visitas:
-                            date = datetime.strptime(data['date'], "%Y-%m-%dT%H:%M:%SZ").date()
-                            dias.append(f"{date.day}/{date.month}/{date.year}")
-                            visitas_dia.append(data['total'])
+                            dias = []
+                            visitas_dia = []
 
-                        data = {
-                            'Dia': dias,
-                            'Visitas': visitas_dia
-                        }
+                            for data in visitas:
+                                date = datetime.strptime(data['date'], "%Y-%m-%dT%H:%M:%SZ").date()
+                                dias.append(f"{date.day}/{date.month}/{date.year}")
+                                visitas_dia.append(data['total'])
 
-                        df = pd.DataFrame(data)
+                            data = {
+                                'Dia': dias,
+                                'Visitas': visitas_dia
+                            }
 
-                        fig = px.line(df, x='Dia', y='Visitas', title="Visitas dos últimos 30 dias", markers=True, color_discrete_sequence=[st.get_option("theme.primaryColor")])
-                        fig.update_layout(
-                            dragmode=False,
-                            hovermode='x',
-                            xaxis=dict(
-                                tickmode='array',
-                                tickvals=df.index[::10],  # Mostra os dias de 10 em 10
-                                ticktext=df['Dia'][::10]  # Usa os textos correspondentes aos dias selecionados
+                            df = pd.DataFrame(data)
+
+                            fig = px.line(df, x='Dia', y='Visitas', title="Visitas dos últimos 30 dias", markers=True, color_discrete_sequence=[st.get_option("theme.primaryColor")])
+                            fig.update_layout(
+                                dragmode=False,
+                                hovermode='x',
+                                xaxis=dict(
+                                    tickmode='array',
+                                    tickvals=df.index[::10],  # Mostra os dias de 10 em 10
+                                    ticktext=df['Dia'][::10]  # Usa os textos correspondentes aos dias selecionados
+                                )
                             )
-                        )
-                        fig.update_traces(
-                            hovertext=df['Visitas'],
-                            hovertemplate="Visitas: %{hovertext}<extra></extra>"
-                        )
-                        fig.update_xaxes(
-                            showspikes=True,
-                            spikecolor="gray",
-                            spikesnap="data",
-                            spikemode="across",
-                            spikedash="dash",
-                        )
-                        
-                        st.plotly_chart(fig, use_container_width=True)
+                            fig.update_traces(
+                                hovertext=df['Visitas'],
+                                hovertemplate="Visitas: %{hovertext}<extra></extra>"
+                            )
+                            fig.update_xaxes(
+                                showspikes=True,
+                                spikecolor="gray",
+                                spikesnap="data",
+                                spikemode="across",
+                                spikedash="dash",
+                            )
+                            
+                            st.plotly_chart(fig, use_container_width=True)
+
+                        else:
+                            st.write("Não consegui te mostrar o gráfico de visitas T.T")
 
                     def seguir():
                         #print("foi")
