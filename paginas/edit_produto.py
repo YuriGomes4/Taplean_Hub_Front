@@ -424,3 +424,9 @@ Produto elegível para catálogo.""")
     
     except:
         pass
+
+    ######################################### - Promoções
+
+    promocoes = services.produtos.ver_promocoes(produto['id'])
+
+    print(promocoes)

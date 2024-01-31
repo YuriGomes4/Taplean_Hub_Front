@@ -400,3 +400,22 @@ def ver_vendas_intervalo(mlb, dias, termino):
     else:
         print("Falha ao listar as vendas do item.")
         return None
+    
+def ver_promocoes(mlb):
+
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/produto/{mlb}/promocoes"
+
+    response = requests.get(update_url, headers=headers)
+
+    if response.status_code == 200:
+        print("Promoções listados com sucesso!")
+        return response.json()['result']
+    else:
+        print("Falha ao listar as promoções.")
+        return []
