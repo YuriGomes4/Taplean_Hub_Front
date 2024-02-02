@@ -82,7 +82,10 @@ def page():
 
                             det_prod = ml_api.ver_anuncio(prod['id'])
 
-                            titl = det_prod['title']
+                            try:
+                                titl = det_prod['title']
+                            except:
+                                print(det_prod)
 
                             # URL da imagem
                             url = det_prod["pictures"][0]["secure_url"]
@@ -141,16 +144,17 @@ def page():
 
 
                             with st.spinner(f"Carregando visitas do anúncio {det_prod['id']}"):
-                                visitas = ml_api.ver_visitas_intervalo(det_prod['id'], 90, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}', limite=800)
+                                visitas = ml_api.ver_visitas_intervalo(det_prod['id'], 30, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}', limite=800)
                                 
                                 visitas_dia = []
+                                print(len(visitas_dia))
                                 for data in visitas:
                                     visitas_dia.append(data['total'])
 
                                 v_media = round(sum(visitas_dia) / len(visitas_dia))
 
                             # Calcula a variação percentual entre os dias consecutivos
-                            variacao_percentual = [(visitas_dia[i] - visitas_dia[i-1]) / visitas_dia[i-1] for i in range(1, len(visitas_dia))]
+                            variacao_percentual = [(visitas_dia[i] - visitas_dia[i-1]) for i in range(1, len(visitas_dia))]
 
                             # Calcula a média da variação percentual
                             media_variacao_percentual = round((sum(variacao_percentual) / len(variacao_percentual))*100, 2)
@@ -180,8 +184,6 @@ def page():
                             st.session_state.prods_pesquisa = prods
                         else:
                             indx = prods_ids.index(prod['id'])
-
-                        print(prods[indx])
 
                         response = requests.get(prods[indx]['imagem'])
                         img = Image.open(BytesIO(response.content))
