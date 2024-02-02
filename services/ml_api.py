@@ -1,5 +1,9 @@
 from time import sleep
 import requests
+import streamlit as st
+import py_ml
+
+from services import config
 
 BASE_URL = 'https://api.mercadolibre.com'
 
@@ -7,15 +11,7 @@ LIMIT_REQ = 40
 
 def ver_anuncio(mlb):
 
-    params = {
-        "ids": mlb
-    }
-
-    url = f'{BASE_URL}/items'
-
-    response = requests.get(url, params=params)
-
-    return response.json()[0]["body"]
+    return py_ml.anuncio.get().unico(mlb)
 
 def tipos_anuncios():
     url = f'{BASE_URL}/sites/MLB/listing_types'
@@ -46,7 +42,7 @@ def ver_categoria(categoria):
 
     return response.json(), caminho_cat
 
-def ver_visitas_intervalo(mlb, dias, intervalo, termino):
+def ver_visitas_intervalo(mlb, dias, intervalo, termino, limite=None):
     url = f'{BASE_URL}/items/{mlb}/visits/time_window?last={dias}&unit={intervalo}&ending={termino}'
 
     count = 0
@@ -59,7 +55,7 @@ def ver_visitas_intervalo(mlb, dias, intervalo, termino):
             sleep(1)
         count += 1
 
-        if count >= LIMIT_REQ:
+        if count >= (LIMIT_REQ if limite == None else limite):
             break
 
 def ver_visitas(mlb, date_from, date_to):
@@ -141,3 +137,55 @@ def posicao_anuncio(termo, mlb):
                 offset += 50
 
             response = requests.get(url, params=params)
+
+def detalhes_categoria(id_categoria):
+    
+    return py_ml.geral.get().detalhes_categoria(id_categoria)
+
+def mais_vendidos(id_pesquisa, id_categoria):
+    
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
+
+    headers = {
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
+    }
+
+    update_url = f"{url_base}/api/v1/pesquisa_mercado/maisvendidos/{id_categoria}"
+
+    params = {
+        'pesquisa': id_pesquisa
+    }
+
+    response = requests.get(update_url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        return response.json()['result']
+    else:
+        return []
+    
+def filhos_categoria(id_categoria):
+    try:
+        filhos = detalhes_categoria(id_categoria)['children_categories']
+    except:
+        pass
+
+    cat_dict = {}
+    cat_dict_r = {}
+
+    for cat in filhos:
+        cat_dict[cat['id']] = cat['name']
+        cat_dict_r[cat['name']] = cat['id']
+
+    return cat_dict, cat_dict_r
+    
+def categorias():
+    categorias = py_ml.geral.get().categorias()
+
+    cat_dict = {}
+    cat_dict_r = {}
+
+    for cat in categorias:
+        cat_dict[cat['id']] = cat['name']
+        cat_dict_r[cat['name']] = cat['id']
+
+    return cat_dict, cat_dict_r

@@ -33,7 +33,7 @@ def page():
         if acao.button("Detalhes", key=f"Detalhes{pesquisa['id']}"):
             #anuncio.ver_mudanca(anun['id'].split("$")[1])
             if st.session_state.page != "52":
-                st.session_state.pesquisa_m = pesquisa['id']
+                st.session_state.pesquisa_m = pesquisa
                 st.session_state.page = "52"
                 st.rerun()
 

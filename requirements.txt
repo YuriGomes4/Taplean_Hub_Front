@@ -5,3 +5,4 @@ scrapy
 extra-streamlit-components
 secure-smtplib
 Unidecode
+git+https://github.com/YuriGomes4/python_ml_api.git

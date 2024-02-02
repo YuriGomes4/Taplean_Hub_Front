@@ -23,7 +23,7 @@ from services import default_prefs
 #        if key not in sv_personal_prefs.get_all().keys():
 #            sv_personal_prefs.set(key, value)
 
-from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller, reset_senha, verif_email_1, verif_email_2, criar_conta, admin, edit_user, sem_acesso, edit_seller, anuncios, seguir_anuncio, ver_anuncio, pesquisa_mercado
+from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller, reset_senha, ver_pesquisa_m, verif_email_1, verif_email_2, criar_conta, admin, edit_user, sem_acesso, edit_seller, anuncios, seguir_anuncio, ver_anuncio, pesquisa_mercado, add_prod_pm
 
 st.set_page_config(
     page_icon="images/Logo.png",
@@ -129,6 +129,10 @@ elif st.session_state.page == "42":
 elif st.session_state.page == "50":
     verificacoes()
     pesquisa_mercado.page()
+elif st.session_state.page == "52":
+    ver_pesquisa_m.page()
+elif st.session_state.page == "53":
+    add_prod_pm.page()
 elif st.session_state.page == "100":
     verificacoes()
     sem_acesso.page()
