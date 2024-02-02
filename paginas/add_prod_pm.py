@@ -49,9 +49,9 @@ def page():
                 if final:
                     categ = cats[-1][1][cats[-1][0]]
 
-                    gap = (0.7,1,1,1,1,1,1)
+                    gap = (0.7,1,1,1,1,1,1,1)
 
-                    fields = ["Imagem", "Titulo", "Tempo de vida", "R. vendas", "M. vendas mês", "M. visitas diarias", "Adicionar"]
+                    fields = ["Imagem", "Titulo", "Tempo de vida", "R. vendas", "M. vendas mês", "M. visitas diarias", "Variação de visitas", "Adicionar"]
 
 
                     cols = st.columns(gap)
@@ -63,18 +63,127 @@ def page():
 
                     produtos = ml_api.mais_vendidos(pesquisa['id'], categ)['content']
 
-                    prods = []
+                    if "prods_pesquisa" in st.session_state:
+                        prods = st.session_state.prods_pesquisa
+                    else:
+                        prods = []
+
+                    prods_ids = []
+
+                    for prod in prods:
+                        if prod['produtos'] not in prods_ids:
+                            prods_ids.append(prod['produtos'])
 
                     for prod in produtos:
-                        det_prod = ml_api.ver_anuncio(prod['id'])
+                            
+                        imagem, titulo, tempo_vida, r_vendas, m_venda_mes, m_visitas_dia, var_visitas, adicionar = st.columns(gap)
 
-                        imagem, titulo, tempo_vida, r_vendas, m_venda_mes, m_visitas_dia, adicionar = st.columns(gap)
+                        if prod['id'] not in prods_ids:
 
-                        # URL da imagem
-                        url = det_prod["pictures"][0]["secure_url"]
+                            det_prod = ml_api.ver_anuncio(prod['id'])
 
-                        # Baixa a imagem da URL
-                        response = requests.get(url)
+                            titl = det_prod['title']
+
+                            # URL da imagem
+                            url = det_prod["pictures"][0]["secure_url"]
+
+                            # Baixa a imagem da URL
+                            response = requests.get(url)
+                            img = Image.open(BytesIO(response.content))
+
+                            # Redimensiona a imagem para uma altura de 70 pixels mantendo a proporção
+                            largura_original, altura_original = img.size
+                            nova_altura = 60
+                            nova_largura = int(largura_original * nova_altura / altura_original)
+                            img_redimensionada = img.resize((nova_largura, nova_altura), Image.LANCZOS)
+
+                            # Calcula o ponto de corte para cortar na largura para 70 pixels
+                            largura_corte = 70
+                            altura_corte = nova_altura
+                            x1 = (nova_largura - largura_corte) // 2
+                            y1 = 0
+                            x2 = x1 + largura_corte
+                            y2 = altura_corte
+
+                            # Corta a imagem na largura para 70 pixels
+                            img_cortada = img_redimensionada.crop((x1, y1, x2, y2))
+
+
+
+                            data_criacao = datetime.strptime(det_prod['date_created'], "%Y-%m-%dT%H:%M:%S.%fZ").date()
+                            t_vida = (datetime.now().date()-data_criacao).days
+
+
+
+                            while True:
+                                response = requests.get(det_prod['permalink'])
+
+                                if response.status_code == 200:
+                                    # Obtém o conteúdo HTML da página como uma string
+                                    html_content = response.text
+                                    break
+
+                            ind = 0
+                            item = ""
+                            ident = '<span class="ui-pdp-subtitle">'
+                            inicio = int(html_content.index(ident))+len(ident)
+                            while True:
+                                if html_content[inicio+ind] == "<":
+                                    break
+                                else:
+                                    item += html_content[inicio+ind]
+                                    ind += 1
+
+                            txt_range_vendas = item.replace('Novo  |  +', '').replace(' vendidos', '').replace('mil', '000').replace('+', '').replace('Novo','').replace('Novo  |  ', '')
+
+                            range_vendas = int(txt_range_vendas) if txt_range_vendas != "" else 0
+
+
+
+                            with st.spinner(f"Carregando visitas do anúncio {det_prod['id']}"):
+                                visitas = ml_api.ver_visitas_intervalo(det_prod['id'], 90, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}', limite=800)
+                                
+                                visitas_dia = []
+                                for data in visitas:
+                                    visitas_dia.append(data['total'])
+
+                                v_media = round(sum(visitas_dia) / len(visitas_dia))
+
+                            # Calcula a variação percentual entre os dias consecutivos
+                            variacao_percentual = [(visitas_dia[i] - visitas_dia[i-1]) / visitas_dia[i-1] for i in range(1, len(visitas_dia))]
+
+                            # Calcula a média da variação percentual
+                            media_variacao_percentual = round((sum(variacao_percentual) / len(variacao_percentual))*100, 2)
+
+                            prods.append(
+                                {
+                                    "imagem": url,
+                                    "categorias": categ,
+                                    "produtos": det_prod['id'],
+                                    "range_vendas": range_vendas,
+                                    "tempo_vida": t_vida,
+                                    "m_visitas_diarias": v_media,
+                                    "preco_venda": det_prod['price'],
+                                    "tipo_anuncio": det_prod['listing_type_id'],
+                                    "variacao_visitas": media_variacao_percentual,
+                                    #"comissao": None,
+                                    "titulo": titl,
+                                    "link": det_prod['permalink'],
+                                    "frete_gratis": det_prod['shipping']['free_shipping'],
+                                    #"custo_frete": None,
+                                    "adicionar": False,
+                                }
+                            )
+
+                            indx = -1
+
+                            st.session_state.prods_pesquisa = prods
+                        else:
+                            indx = prods_ids.index(prod['id'])
+
+                        print(prods[indx])
+
+                        response = requests.get(prods[indx]['imagem'])
                         img = Image.open(BytesIO(response.content))
 
                         # Redimensiona a imagem para uma altura de 70 pixels mantendo a proporção
@@ -94,85 +203,28 @@ def page():
                         # Corta a imagem na largura para 70 pixels
                         img_cortada = img_redimensionada.crop((x1, y1, x2, y2))
 
-
-
-                        data_criacao = datetime.strptime(det_prod['date_created'], "%Y-%m-%dT%H:%M:%S.%fZ").date()
-                        t_vida = (datetime.now().date()-data_criacao).days
-
-
-
-                        while True:
-                            response = requests.get(det_prod['permalink'])
-
-                            if response.status_code == 200:
-                                # Obtém o conteúdo HTML da página como uma string
-                                html_content = response.text
-                                break
-
-                        ind = 0
-                        item = ""
-                        ident = '<span class="ui-pdp-subtitle">'
-                        inicio = int(html_content.index(ident))+len(ident)
-                        while True:
-                            if html_content[inicio+ind] == "<":
-                                break
-                            else:
-                                item += html_content[inicio+ind]
-                                ind += 1
-
-                        txt_range_vendas = item.replace('Novo  |  +', '').replace(' vendidos', '').replace('mil', '000').replace('+', '').replace('Novo','').replace('Novo  |  ', '')
-
-                        range_vendas = int(txt_range_vendas) if txt_range_vendas != "" else 0
-
-
-
-                        with st.spinner(f"Carregando visitas do anúncio {det_prod['id']}"):
-                            visitas = ml_api.ver_visitas_intervalo(det_prod['id'], 90, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}', limite=800)
-                            
-                            visitas_dia = []
-                            for data in visitas:
-                                visitas_dia.append(data['total'])
-
-                            v_media = round(sum(visitas_dia) / len(visitas_dia))
-
-                        prods.append(
-                            {
-                                "categorias": categ,
-                                "produtos": det_prod['id'],
-                                "range_vendas": range_vendas,
-                                "tempo_vida": t_vida,
-                                "m_visitas_diarias": v_media,
-                                "preco_venda": det_prod['price'],
-                                "tipo_anuncio": det_prod['listing_type_id'],
-                                #"taxa_fixa": None,
-                                #"comissao": None,
-                                "titulo": det_prod['title'],
-                                "link": det_prod['permalink'],
-                                "frete_gratis": det_prod['shipping']['free_shipping'],
-                                #"custo_frete": None,
-                                "adicionar": False,
-                            }
-                        )
-
                         imagem.image(img_cortada, width=70)
 
                         titulo.write("")
-                        titulo.text(det_prod['title'])
+                        titulo.text(prods[indx]['titulo'])
 
                         tempo_vida.write("")
-                        tempo_vida.text(t_vida)
+                        tempo_vida.text(prods[indx]['tempo_vida'])
 
                         r_vendas.write("")
-                        r_vendas.text('+'+str(range_vendas) if range_vendas > 0 else 'Indisponível')
+                        r_vendas.text('+'+str(prods[indx]['range_vendas']) if prods[indx]['range_vendas'] > 0 else 'Indisponível')
 
                         m_venda_mes.write("")
-                        m_venda_mes.text(round((range_vendas/t_vida)*30))
+                        m_venda_mes.text(round((prods[indx]['range_vendas']/prods[indx]['tempo_vida'])*30))
 
                         m_visitas_dia.write("")
-                        m_visitas_dia.text(v_media)
+                        m_visitas_dia.text(prods[indx]['tempo_vida'])
+
+                        var_visitas.write("")
+                        var_visitas.text(prods[indx]['variacao_visitas'])
 
                         adicionar.write("")
-                        prods[-1]["adicionar"] = adicionar.toggle("", prods[-1]["adicionar"], key=f"tg{det_prod['id']}")
+                        prods[indx]["adicionar"] = adicionar.toggle("", prods[indx]["adicionar"], key=f"tg{prods[indx]['produtos']}")
 
 
 

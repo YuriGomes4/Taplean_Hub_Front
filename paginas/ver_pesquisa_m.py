@@ -83,5 +83,6 @@ def page():
 
     if st.button("Adicionar produtos a pesquisa de mercado", type='primary', use_container_width=True):
         if st.session_state.page != "53":
+            st.session_state.prods_pesquisa = []
             st.session_state.page = "53"
             st.rerun()
