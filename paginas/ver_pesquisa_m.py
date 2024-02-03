@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-from services import ml_api
+from services import ml_api, pesquisa_m
 
 def page():
     from .base import base
@@ -14,80 +14,107 @@ def page():
 
     pesq_tab, config_tab = st.tabs(["Pesquisa", "Configurações"])
 
-    try:
+    #try:
 
-        if pesquisa['tipo'] == "categoria":
+    if pesquisa['tipo'] == "categoria":
 
-            categorias = pesquisa['categorias'].split(',')
-            produtos = pesquisa['produtos'].split(',')
-            range_vendas = pesquisa['range_vendas'].split(',')
-            tempo_vida = pesquisa['tempo_vida'].split(',')
-            m_visitas_diarias = pesquisa['m_visitas_diarias'].split(',')
-            preco_venda = pesquisa['preco_venda'].split(',')
-            tipo_anuncio = pesquisa['tipo_anuncio'].split(',')
-            taxa_fixa = pesquisa['taxa_fixa'].split(',')
-            comissao = pesquisa['comissao'].split(',')
-            titulo = pesquisa['titulo'].split('$@$')
-            link = pesquisa['link'].split(',')
-            frete_gratis = pesquisa['frete_gratis'].split(',')
-            custo_frete = pesquisa['custo_frete'].split(',')
+        categorias = pesquisa['categorias'].split(',')
+        produtos = pesquisa['produtos'].split(',')
+        range_vendas = pesquisa['range_vendas'].split(',')
+        tempo_vida = pesquisa['tempo_vida'].split(',')
+        m_visitas_diarias = pesquisa['m_visitas_diarias'].split(',')
+        preco_venda = pesquisa['preco_venda'].split(',')
+        tipo_anuncio = pesquisa['tipo_anuncio'].split(',')
+        taxa_fixa = pesquisa['taxa_fixa'].split(',')
+        comissao = pesquisa['comissao'].split(',')
+        titulo = pesquisa['titulo'].split('$@$')
+        link = pesquisa['link'].split(',')
+        frete_gratis = pesquisa['frete_gratis'].split(',')
+        custo_frete = pesquisa['custo_frete'].split(',')
+
+        cats = {}
+
+        for cat in categorias:
+            if cat not in cats:
+                cat_json, cam_cat = ml_api.ver_categoria(cat)
+                cats[cat] = cat_json['name']
+
+        cat_abas = pesq_tab.tabs(cats.values())
+
+        for cat in list(cats.keys()):
 
             data = [None] * len(produtos)
 
-            cats = {}
+            for i in range(len(produtos)):
 
-            for cat in categorias:
-                if cat not in cats:
-                    cat_json, cam_cat = ml_api.ver_categoria(cat)
-                    cats[cat] = cat_json['name']
+                if categorias[i] == cat:
 
-            cat_abas = pesq_tab.tabs(cats.values())
+                    media_mes_qnt = round((int(range_vendas[i])/int(tempo_vida[i]))*30)
+                    media_mes_valor = media_mes_qnt*float(preco_venda[i])
 
-            for cat in list(cats.keys()):
+                    imposto = round(float(preco_venda[i])*(pesquisa['configuracoes']['imposto']/100), 2)+round(pesquisa['configuracoes']['frete_medio']*(pesquisa['configuracoes']['imposto']/100), 2)
+                    embalagem = pesquisa['configuracoes']['embalagem']
 
-                for i in range(len(produtos)):
+                    liquido = float(preco_venda[i]) - float(comissao[i]) - float(custo_frete[i]) - imposto - float(taxa_fixa[i]) - embalagem
 
-                    if categorias[i] == cat:
+                    lucro_desejado = 0.20*float(preco_venda[i])
 
-                        media_mes_qnt = round((int(range_vendas[i])/int(tempo_vida[i]))*30)
-                        media_mes_valor = media_mes_qnt*float(preco_venda[i])
+                    custo_sug = round(liquido - lucro_desejado, 2)
 
-                        imposto = 0*float(preco_venda[i])
-                        embalagem = 0
+                    lucro = liquido - custo_sug
 
-                        liquido = float(preco_venda[i]) - float(comissao[i]) - float(custo_frete[i]) - imposto - float(taxa_fixa[i]) - embalagem
+                    try:
+                        per_custo = str(round((lucro/custo_sug)*100))+"%"
+                    except: 
+                        per_custo = 0
 
-                        lucro_desejado = 0.20*float(preco_venda[i])
+                    try:
+                        per_venda = str(round((lucro/float(preco_venda[i]))*100))+"%"
+                    except:
+                        per_venda = 0
 
-                        custo_sug = round(liquido - lucro_desejado, 2)
+                    data[i] = {"Anúncio": link[i], "Titulo" : titulo[i], "Custo sugestão": custo_sug, "Média fat. mês": media_mes_valor, "Média qnt mês": media_mes_qnt, "Média visitas diárias": m_visitas_diarias[i], " ": " ", "Preço": preco_venda[i], "Tipo anúncio": ml_api.tipos_anuncios()[tipo_anuncio[i]], "Frete grátis": True if frete_gratis[i] == "true" else False, "Taxa fixa": taxa_fixa[i], "Comissão": comissao[i], "Imposto": imposto, "Frete": custo_frete[i], "Embalagem": embalagem, "Valor líquido": liquido, "Lucro": lucro, "% Custo": per_custo, "% Venda": per_venda}
 
-                        lucro = liquido - custo_sug
+            while True:
+                if None in data:
+                    data.remove(None)
+                else:
+                    break
 
-                        try:
-                            per_custo = str(round((lucro/custo_sug)*100))+"%"
-                        except: 
-                            per_custo = 0
+            df = pd.DataFrame(data)
 
-                        try:
-                            per_venda = str(round((lucro/float(preco_venda[i]))*100))+"%"
-                        except:
-                            per_venda = 0
-
-                        data[i] = {"Anúncio": link[i], "Titulo" : titulo[i], "Custo sugestão": custo_sug, "Média fat. mês": media_mes_valor, "Média qnt mês": media_mes_qnt, "Média visitas diárias": m_visitas_diarias[i], " ": " ", "Preço": preco_venda[i], "Tipo anúncio": ml_api.tipos_anuncios()[tipo_anuncio[i]], "Frete grátis": True if frete_gratis[i] == "true" else False, "Taxa fixa": taxa_fixa[i], "Comissão": comissao[i], "Imposto": imposto, "Frete": custo_frete[i], "Embalagem": embalagem, "Valor líquido": liquido, "Lucro": lucro, "% Custo": per_custo, "% Venda": per_venda}
+            cat_abas[list(cats.keys()).index(cat)].dataframe(df, hide_index=True, use_container_width=True, column_config={
+                "Anúncio": st.column_config.LinkColumn(display_text="Ver anúncio")
+            }
+            )
 
 
-                df = pd.DataFrame(data)
-
-                cat_abas[list(cats.keys()).index(cat)].dataframe(df, hide_index=True, use_container_width=True, column_config={
-                    "Anúncio": st.column_config.LinkColumn(display_text="Ver anúncio")
-                }
-                )
-
-    except:
-        pass
-
-    if st.button("Adicionar produtos a pesquisa de mercado", type='primary', use_container_width=True):
+    if pesq_tab.button("Adicionar produtos a pesquisa de mercado", type='primary', use_container_width=True):
         if st.session_state.page != "53":
             st.session_state.prods_pesquisa = []
             st.session_state.page = "53"
             st.rerun()
+
+    pesquisa_att = pesquisa_m.ver_pesquisas(pesquisa['id'])
+
+    imposto_medio = config_tab.number_input("Imposto médio", value=float(pesquisa_att['configuracoes']['imposto']), step=0.10, key="imposto medio")
+    if imposto_medio != pesquisa_att['configuracoes']['imposto']:
+        pesquisa_att['configuracoes']['imposto'] = round(imposto_medio, 2)
+        #st.session_state.pesquisa_m = pesquisa
+        pesquisa_m.alterar_pesquisa(pesquisa['id'], {"configuracoes": pesquisa_att['configuracoes']})
+        pesquisa = pesquisa_att
+
+    custo_embalagem = config_tab.number_input("Custo de embalagem", value=float(pesquisa_att['configuracoes']['embalagem']), step=0.10, key="embalagem")
+    if custo_embalagem != pesquisa_att['configuracoes']['embalagem']:
+        pesquisa_att['configuracoes']['embalagem'] = round(custo_embalagem, 2)
+        #st.session_state.pesquisa_m = pesquisa
+        pesquisa_m.alterar_pesquisa(pesquisa['id'], {"configuracoes": pesquisa_att['configuracoes']})
+        pesquisa = pesquisa_att
+
+    frete_medio = config_tab.number_input("Frete médio", value=float(pesquisa_att['configuracoes']['frete_medio']), step=0.10, key="Frete medio")
+    config_tab.write(f"Será adicionado {round(pesquisa['configuracoes']['frete_medio']*(pesquisa['configuracoes']['imposto']/100), 2)} ao imposto na tabela")
+    if frete_medio != pesquisa_att['configuracoes']['frete_medio']:
+        pesquisa_att['configuracoes']['frete_medio'] = round(frete_medio, 2)
+        #st.session_state.pesquisa_m = pesquisa
+        pesquisa_m.alterar_pesquisa(pesquisa['id'], {"configuracoes": pesquisa_att['configuracoes']})
+        pesquisa = pesquisa_att

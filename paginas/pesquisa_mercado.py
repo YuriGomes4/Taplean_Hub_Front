@@ -9,8 +9,8 @@ def page():
 
     st.title("Pesquisas de mercado")
 
-    tam_colunas = (8, 1.5)
-    fields = ['Nome', "Ação"]
+    tam_colunas = (8, 2, 1.5)
+    fields = ['Nome', "Ação", ""]
 
     colms = st.columns(tam_colunas)
 
@@ -22,20 +22,25 @@ def page():
 
 
     for pesquisa in pesquisas:
-        nome, acao = st.columns(tam_colunas)
+        nome, acao, apagar = st.columns(tam_colunas)
         #mlb.text(anun['id'].split("$")[1])
-        nome.text(pesquisa['nome'])
+        #nome.text("")
+        nome.write(pesquisa['nome'])
         #styled_text = f'<span style="color: {("green" if anun["status"] == "active" else "orange")};">{("Ativo" if anun["status"] == "active" else "Pausado")}</span>'
         #status.markdown(styled_text, unsafe_allow_html=True)
         #pos.text(anun['posicao'])
         #price.text(f'{str(anun["preco"]).replace(".", ",")}')
 
-        if acao.button("Detalhes", key=f"Detalhes{pesquisa['id']}"):
+        if acao.button("Ver pesquisa", type='primary', key=f"Detalhes{pesquisa['id']}"):
             #anuncio.ver_mudanca(anun['id'].split("$")[1])
             if st.session_state.page != "52":
                 st.session_state.pesquisa_m = pesquisa
                 st.session_state.page = "52"
                 st.rerun()
+
+        if apagar.button("Apagar", type='secondary', key=f"Apagar{pesquisa['id']}"):
+            pesquisa_m.apagar_pesquisa(pesquisa['id'])
+            st.rerun()
 
     if st.button("Criar uma nova pesquisa de mercado", type='primary', use_container_width=True):
         if st.session_state.page != "51":

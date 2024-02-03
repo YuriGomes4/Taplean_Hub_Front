@@ -11,8 +11,6 @@ def login(email, senha):
 
     update_url = f"{url_base}/api/auth/login"
 
-    print(email, senha)
-
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
     }
@@ -62,8 +60,6 @@ def login(email, senha):
 
         response = requests.put(update_url, headers=headers, params=params)
 
-        print(response.json())
-
         #st.rerun()
 
         st.rerun()
@@ -106,7 +102,6 @@ def verify_access():
             if st.session_state.page == "@@":
                 if preferences['vendedor'] != "0" and usuarios.tenho_acesso("graficos_acessar"):
                     st.session_state.page = "00"
-                    print(usuarios.ver_usuario())
                     st.session_state.user_id = usuarios.ver_usuario()['public_id']
                 else:
                     if usuarios.tenho_acesso("configuracoes_acessar"):
