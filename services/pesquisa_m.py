@@ -58,7 +58,13 @@ def adc_prod_pesquisas(id_pesquisa, produtos_list):
     frete_gratis = pesquisa["frete_gratis"]
     custo_frete = pesquisa["custo_frete"]
 
-    if pesquisa["produtos"] != "":
+    prod_list = []
+
+    for prod in produtos_list:
+        if prod['adicionar'] and prod["produtos"] not in produtos:
+            prod_list.append(prod)
+
+    if pesquisa["produtos"] != "" and len(prod_list) > 0:
         categorias += ","
         produtos += ","
         range_vendas += ","
@@ -73,46 +79,39 @@ def adc_prod_pesquisas(id_pesquisa, produtos_list):
         frete_gratis += ","
         custo_frete += ","
 
-    prod_list = []
-
-    for prod in produtos_list:
-        if prod['adicionar']:
-            prod_list.append(prod)
 
     for prod in prod_list:
 
-        if prod["produtos"] not in produtos:
+        comiss, tx_fixa = ml_api.taxa_venda(float(prod["preco_venda"]), prod["tipo_anuncio"], prod["categorias"], True)
 
-            comiss, tx_fixa = ml_api.taxa_venda(float(prod["preco_venda"]), prod["tipo_anuncio"], prod["categorias"], True)
+        categorias += prod["categorias"]
+        produtos += prod["produtos"]
+        range_vendas += str(prod["range_vendas"])
+        tempo_vida += str(prod["tempo_vida"])
+        m_visitas_diarias += str(prod["m_visitas_diarias"])
+        preco_venda += str(prod["preco_venda"])
+        tipo_anuncio += prod["tipo_anuncio"]
+        taxa_fixa += str(tx_fixa)
+        comissao += str(round(comiss, 2))
+        titulo += prod["titulo"]
+        link += prod["link"]
+        frete_gratis += "true" if prod["frete_gratis"] else "false"
+        custo_frete += str(ml_api.custo_frete_gratis(prod["produtos"])) if prod["frete_gratis"] else "0"
 
-            categorias += prod["categorias"]
-            produtos += prod["produtos"]
-            range_vendas += str(prod["range_vendas"])
-            tempo_vida += str(prod["tempo_vida"])
-            m_visitas_diarias += str(prod["m_visitas_diarias"])
-            preco_venda += str(prod["preco_venda"])
-            tipo_anuncio += prod["tipo_anuncio"]
-            taxa_fixa += str(tx_fixa)
-            comissao += str(round(comiss, 2))
-            titulo += prod["titulo"]
-            link += prod["link"]
-            frete_gratis += "true" if prod["frete_gratis"] else "false"
-            custo_frete += str(ml_api.custo_frete_gratis(prod["produtos"])) if prod["frete_gratis"] else "0"
-
-            if len(produtos_list) > 1 and prod != prod_list[-1]:
-                categorias += ","
-                produtos += ","
-                range_vendas += ","
-                tempo_vida += ","
-                m_visitas_diarias += ","
-                preco_venda += ","
-                tipo_anuncio += ","
-                taxa_fixa += ","
-                comissao += ","
-                titulo += "$@$"
-                link += ","
-                frete_gratis += ","
-                custo_frete += ","
+        if len(produtos_list) > 1 and prod != prod_list[-1]:
+            categorias += ","
+            produtos += ","
+            range_vendas += ","
+            tempo_vida += ","
+            m_visitas_diarias += ","
+            preco_venda += ","
+            tipo_anuncio += ","
+            taxa_fixa += ","
+            comissao += ","
+            titulo += "$@$"
+            link += ","
+            frete_gratis += ","
+            custo_frete += ","
 
     data = {
         'nome': pesquisa['nome'],

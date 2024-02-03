@@ -199,3 +199,16 @@ def categorias():
         cat_dict_r[cat['name']] = cat['id']
 
     return cat_dict, cat_dict_r
+
+def pesquisar(termo, somente_id=False):
+    result = py_ml.anuncio.get().pesquisar(termo)
+
+    produtos = []
+
+    if somente_id:
+        for prod in result['result']:
+            produtos.append(prod['id'])
+    else:
+        produtos = result['results']
+
+    return produtos
