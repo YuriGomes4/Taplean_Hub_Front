@@ -80,7 +80,7 @@ def ver_seller(id):
     response = requests.get(url)
     return response.json()
 
-def taxa_venda(price, listing_type_id, category_id):
+def taxa_venda(price, listing_type_id, category_id, taxa_fixa=False):
     url = f'{BASE_URL}/sites/MLB/listing_prices'
 
     params = {
@@ -91,7 +91,10 @@ def taxa_venda(price, listing_type_id, category_id):
 
     response = requests.get(url, params=params)
 
-    return response.json()['sale_fee_amount']
+    if taxa_fixa:
+        return (response.json()['sale_fee_amount']-response.json()['sale_fee_details']['fixed_fee']), response.json()['sale_fee_details']['fixed_fee']
+    else:
+        return response.json()['sale_fee_amount']
 
 def custo_frete_gratis(mlb):
     url = f'{BASE_URL}/items/{mlb}/shipping_options'

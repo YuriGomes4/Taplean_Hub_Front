@@ -6,7 +6,7 @@ import pandas as pd
 from PIL import Image
 from io import BytesIO
 
-from services import ml_api
+from services import ml_api, pesquisa_m
 
 def page():
     from .base import base
@@ -18,7 +18,7 @@ def page():
     st.title(f"Adicionar produtos a pesquisa de mercado {pesquisa['nome']}")
 
     if pesquisa['tipo'] == "categoria":
-        categorias = pesquisa['categorias'].split(',')
+        #categorias = pesquisa['categorias'].split(',')
 
         opt_proc_prod = ["Selecione", "Mais vendido de uma categoria", "Pesquisando"]
 
@@ -151,11 +151,7 @@ def page():
                                     visitas_dia.append(data['total'])
                                 #print(len(visitas_dia))
 
-                                soma_visitas_dia = 0
-                                for valor in visitas_dia:
-                                    soma_visitas_dia += valor
-
-                                v_media = round((soma_visitas_dia / len(visitas_dia)))
+                                v_media = round((sum(visitas_dia) / len(visitas_dia)))
 
                             # Calcula a variação percentual entre os dias consecutivos
                             variacao_percentual = [(visitas_dia[i] - visitas_dia[i-1]) if (visitas_dia[i] - visitas_dia[i-1]) > 0 else (visitas_dia[i] - visitas_dia[i-1])*-1 for i in range(1, len(visitas_dia))]
@@ -163,8 +159,14 @@ def page():
                             # Calcula a média da variação percentual
                             media_variacao_percentual = round((sum(variacao_percentual) / len(variacao_percentual)), 2)
 
+                            try:
+                                pesq_prods = pesquisa['produtos'].split(',')
+                            except:
+                                pesq_prods = []
+
                             prods.append(
                                 {
+                                    "ja_tem": False if det_prod['id'] not in pesq_prods else True,
                                     "imagem": url,
                                     "categorias": categ,
                                     "produtos": det_prod['id'],
@@ -173,13 +175,13 @@ def page():
                                     "m_visitas_diarias": v_media,
                                     "preco_venda": det_prod['price'],
                                     "tipo_anuncio": det_prod['listing_type_id'],
-                                    "variacao_visitas": media_variacao_percentual,
+                                    "variacao_visitas": str(round((media_variacao_percentual/v_media)*100, 2))+"%",
                                     #"comissao": None,
                                     "titulo": titl,
                                     "link": det_prod['permalink'],
                                     "frete_gratis": det_prod['shipping']['free_shipping'],
                                     #"custo_frete": None,
-                                    "adicionar": False,
+                                    "adicionar": False if det_prod['id'] not in pesq_prods else True,
                                 }
                             )
 
@@ -230,7 +232,10 @@ def page():
                         var_visitas.text(prods[indx]['variacao_visitas'])
 
                         adicionar.write("")
-                        prods[indx]["adicionar"] = adicionar.toggle("a", prods[indx]["adicionar"], label_visibility='hidden', key=f"tg{prods[indx]['produtos']}")
+                        prods[indx]["adicionar"] = adicionar.toggle("a", prods[indx]["adicionar"], label_visibility='hidden', disabled=prods[indx]['ja_tem'], key=f"tg{prods[indx]['produtos']}")
+
+                    if st.button("Adicionar produtos escolhidos", type='primary', use_container_width=True):
+                        pesquisa_m.adc_prod_pesquisas(pesquisa['id'], prods)
 
 
 
