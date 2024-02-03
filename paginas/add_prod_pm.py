@@ -151,7 +151,7 @@ def page():
 
 
                                 with st.spinner(f"Carregando visitas do anúncio {det_prod['id']}"):
-                                    visitas = ml_api.ver_visitas_intervalo(det_prod['id'], 30, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}', limite=800)
+                                    visitas = ml_api.ver_visitas_intervalo(det_prod['id'], 30, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}')
                                     
                                     visitas_dia = []
                                     for data in visitas:

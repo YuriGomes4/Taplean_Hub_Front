@@ -42,21 +42,28 @@ def ver_categoria(categoria):
 
     return response.json(), caminho_cat
 
-def ver_visitas_intervalo(mlb, dias, intervalo, termino, limite=None):
-    url = f'{BASE_URL}/items/{mlb}/visits/time_window?last={dias}&unit={intervalo}&ending={termino}'
+def ver_visitas_intervalo(mlb, dias, intervalo, termino):
 
-    count = 0
-    while True:
-        response = requests.get(url)
+    url_base = config.get('url_base')  # http://127.0.0.1:5000
 
-        if response.status_code == 200:
-            return response.json()['results']
-        else:
-            sleep(1)
-        count += 1
+    headers = {
+        'x-access-token' : st.session_state.cookie_manager.get('token'),
+    }
 
-        if count >= (LIMIT_REQ if limite == None else limite):
-            break
+    url = f'{url_base}/api/v1/produto/{mlb}/visits/time_window'
+
+    params = {
+        'last': dias,
+        'unit': intervalo,
+        'ending': termino,
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        return response.json()['result']
+    else:
+        return []
 
 def ver_visitas(mlb, date_from, date_to):
     url = f'{BASE_URL}/items/visits?ids={mlb}&date_from={date_from}T00:00:00Z&date_to={date_to}T23:59:59Z'
