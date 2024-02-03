@@ -147,17 +147,21 @@ def page():
                                 visitas = ml_api.ver_visitas_intervalo(det_prod['id'], 30, "day", f'{(datetime.now() - timedelta(days=1)).year}-{(datetime.now() - timedelta(days=1)).month}-{(datetime.now() - timedelta(days=1)).day}', limite=800)
                                 
                                 visitas_dia = []
-                                print(len(visitas_dia))
                                 for data in visitas:
                                     visitas_dia.append(data['total'])
+                                #print(len(visitas_dia))
 
-                                v_media = round(sum(visitas_dia) / len(visitas_dia))
+                                soma_visitas_dia = 0
+                                for valor in visitas_dia:
+                                    soma_visitas_dia += valor
+
+                                v_media = round((soma_visitas_dia / len(visitas_dia)))
 
                             # Calcula a variação percentual entre os dias consecutivos
-                            variacao_percentual = [(visitas_dia[i] - visitas_dia[i-1]) for i in range(1, len(visitas_dia))]
+                            variacao_percentual = [(visitas_dia[i] - visitas_dia[i-1]) if (visitas_dia[i] - visitas_dia[i-1]) > 0 else (visitas_dia[i] - visitas_dia[i-1])*-1 for i in range(1, len(visitas_dia))]
 
                             # Calcula a média da variação percentual
-                            media_variacao_percentual = round((sum(variacao_percentual) / len(variacao_percentual))*100, 2)
+                            media_variacao_percentual = round((sum(variacao_percentual) / len(variacao_percentual)), 2)
 
                             prods.append(
                                 {
@@ -220,13 +224,13 @@ def page():
                         m_venda_mes.text(round((prods[indx]['range_vendas']/prods[indx]['tempo_vida'])*30))
 
                         m_visitas_dia.write("")
-                        m_visitas_dia.text(prods[indx]['tempo_vida'])
+                        m_visitas_dia.text(prods[indx]['m_visitas_diarias'])
 
                         var_visitas.write("")
                         var_visitas.text(prods[indx]['variacao_visitas'])
 
                         adicionar.write("")
-                        prods[indx]["adicionar"] = adicionar.toggle("", prods[indx]["adicionar"], key=f"tg{prods[indx]['produtos']}")
+                        prods[indx]["adicionar"] = adicionar.toggle("a", prods[indx]["adicionar"], label_visibility='hidden', key=f"tg{prods[indx]['produtos']}")
 
 
 
