@@ -14,6 +14,7 @@ def page():
     base()
 
     pesquisa = st.session_state.pesquisa_m
+    produtos = []
 
     st.title(f"Adicionar produtos a pesquisa de mercado {pesquisa['nome']}")
 
@@ -23,6 +24,9 @@ def page():
         opt_proc_prod = ["Selecione", "Mais vendido de uma categoria", "Pesquisando", "Por link do anúncio"]
 
         sb_proc_prod = st.selectbox("Como você quer adicionar so produtos?", opt_proc_prod, key="sb_proc_prod")
+        if st.session_state.tipo_pesquisa != sb_proc_prod:
+            st.session_state.tipo_pesquisa = sb_proc_prod
+            st.session_state.prods_pesquisa = []
 
         final = False
 
@@ -46,8 +50,10 @@ def page():
                         else:
                             final = True
 
-                categ = cats[-1][1][cats[-1][0]]
-                produtos = ml_api.mais_vendidos(pesquisa['id'], categ)['content']
+                if final:
+
+                    categ = cats[-1][1][cats[-1][0]]
+                    produtos = ml_api.mais_vendidos(pesquisa['id'], categ)['content']
 
             case "Pesquisando":
                 termo = st.text_input("Pesquise o seu produto como se fosse no Mercado Livre")
@@ -57,17 +63,46 @@ def page():
                     final = True
 
             case "Por link do anúncio":
+                for prod in st.session_state.prods_pesquisa:
+                    produtos.append({'id': prod['produtos']})
 
-                def txt_link():
-                    emp = st.empty()
-                    link_anuncio = emp.text_input("Cole o link do anúncio aqui", value="", placeholder="https://produto.mercadolivre.com.br/MLB-2222222222-titulo-do-produto-_JM", key=random.randrange(1111, 9999))
-                    if link_anuncio != "":
-                        emp.empty()
-                        txt_link()
-                        #emp = st.empty()
-                        #link_anuncio = emp.text_input("Cole o link do anúncio aqui", value="", placeholder="https://produto.mercadolivre.com.br/MLB-2222222222-titulo-do-produto-_JM", key=count)
+                emp = st.empty()
+                link_anuncio = emp.text_input("Cole o link do anúncio aqui", placeholder="https://produto.mercadolivre.com.br/MLB-2222222222-titulo-do-produto-_JM", key="link_anuncio")
+                if link_anuncio != "":
+                    try:
+                        response = requests.get(link_anuncio)
 
-                txt_link()
+                        if response.status_code == 200:
+                            # Obtém o conteúdo HTML da página como uma string
+                            html_content = response.text
+
+                            ind = 0
+                            item = ""
+                            ident = '"item_id":'
+                            inicio = int(html_content.index(ident))+len(ident)
+                            while True:
+                                if html_content[inicio+ind] == ",":
+                                    break
+                                else:
+                                    item += html_content[inicio+ind]
+                                    ind += 1
+
+                            mlb = item.replace('"', '')
+
+                            if {'id': mlb} not in produtos:
+                                produtos.append({'id': mlb})
+                            else:
+                                st.toast("Este produto já esta na lista")
+                            final = True
+                        else:
+                            st.toast("Cole um link válido")
+                    except:
+                        st.toast("Cole um link válido")
+
+                else:
+                    if len(produtos) > 0:
+                        final = True
+
 
 
         if final:
@@ -124,33 +159,8 @@ def page():
                             # URL da imagem
                             url = det_prod["pictures"][0]["secure_url"]
 
-                            # Baixa a imagem da URL
-                            response = requests.get(url)
-                            img = Image.open(BytesIO(response.content))
-
-                            # Redimensiona a imagem para uma altura de 70 pixels mantendo a proporção
-                            largura_original, altura_original = img.size
-                            nova_altura = 60
-                            nova_largura = int(largura_original * nova_altura / altura_original)
-                            img_redimensionada = img.resize((nova_largura, nova_altura), Image.LANCZOS)
-
-                            # Calcula o ponto de corte para cortar na largura para 70 pixels
-                            largura_corte = 70
-                            altura_corte = nova_altura
-                            x1 = (nova_largura - largura_corte) // 2
-                            y1 = 0
-                            x2 = x1 + largura_corte
-                            y2 = altura_corte
-
-                            # Corta a imagem na largura para 70 pixels
-                            img_cortada = img_redimensionada.crop((x1, y1, x2, y2))
-
-
-
                             data_criacao = datetime.strptime(det_prod['date_created'], "%Y-%m-%dT%H:%M:%S.%fZ").date()
                             t_vida = (datetime.now().date()-data_criacao).days
-
-
 
                             while True:
                                 response = requests.get(link)
@@ -275,10 +285,10 @@ def page():
                         prods[indx]["adicionar"] = adicionar.toggle("a", prods[indx]["adicionar"], label_visibility='hidden', disabled=prods[indx]['ja_tem'], key=f"tg{prods[indx]['produtos']}")
 
                     else:
-                        st.text(f"Anúncio {prod['id']} de catálogo")
+                        st.text(f"Anúncio não será mostrado por ser de catálogo - {prod['id']}")
                 
                 except:
-                    st.text(f"Anúncio {prod['id']} de catálogo")
+                    st.text(f"Anúncio não será mostrado por ser de catálogo - {prod['id']}")
 
 
 
