@@ -38,13 +38,20 @@ def page():
 
                 for cat in cats:
                 
-                    cat[0] = st.selectbox("Escolha a categoria", ["Selecione"]+list(cat[1].keys()))
+                    try:
+                        opts_cat = list(cat[1].keys())
+                    except:
+                        opts_cat = []
+                    cat[0] = st.selectbox("Escolha a categoria", (["Selecione", "Pare aqui"] if len(cats) > 1 else ["Selecione"])+(opts_cat.remove("Pare aqui") if "Pare aqui" in opts_cat else opts_cat))
 
                     if cat[0] != "Selecione":
 
+                            
                         catA_childs, catA_childs_r = ml_api.filhos_categoria(cat[1][cat[0]])
+                        if len(catA_childs_r.keys()) > 0:
+                            catA_childs_r["Pare aqui"] = cat[1][cat[0]]
 
-                        if len(catA_childs_r) > 0:
+                        if len(catA_childs_r) > 0 and cat[0] != "Pare aqui":
 
                             cats.append([None, catA_childs_r])
                         else:
