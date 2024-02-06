@@ -132,9 +132,9 @@ def page():
                         tempo_vida = (datetime.now().date()-data_criacao).days
                         st.write(f"Tempo de vida: {tempo_vida} dias")
 
-                        st.write(f"Média de vendas por dia: {str(round(range_vendas/tempo_vida))+' vendas' if range_vendas > 0 else 'Indisponível'}")
+                        st.write(f"Média de vendas por dia: {str(round(range_vendas/tempo_vida, 2))+' vendas' if range_vendas > 0 else 'Indisponível'}")
 
-                        st.write(f"Média de vendas por mês: {str(round(round(range_vendas/tempo_vida)*30))+' vendas' if range_vendas > 0 else 'Indisponível'}")
+                        st.write(f"Média de vendas por mês: {str(round(round(range_vendas/tempo_vida, 2)*30))+' vendas' if range_vendas > 0 else 'Indisponível'}")
 
                         visitas_totais = int(ml_api.ver_visitas(mlb, data_criacao, datetime.now().date())[0]['total_visits']) if tempo_vida <= 365 else 0
                         st.write(f"Total de visitas: {visitas_totais if visitas_totais > 0 else 'Indisponível'}")

@@ -38,11 +38,17 @@ def page():
 
                 for cat in cats:
                 
-                    try:
-                        opts_cat = list(cat[1].keys())
-                    except:
-                        opts_cat = []
-                    cat[0] = st.selectbox("Escolha a categoria", (["Selecione", "Pare aqui"] if len(cats) > 1 else ["Selecione"])+(opts_cat.remove("Pare aqui") if "Pare aqui" in opts_cat else opts_cat))
+                    opts_cat = []
+                    temp_opts = list(cat[1].keys())
+                    if "Pare aqui" in list(cat[1].keys()):
+                        temp_opts.remove("Pare aqui")
+
+                    if len(cats) > 1:
+                        opts_cat = ["Selecione", "Pare aqui"]+temp_opts
+                    else:
+                        opts_cat = ["Selecione"]+temp_opts
+
+                    cat[0] = st.selectbox("Escolha a categoria", opts_cat)
 
                     if cat[0] != "Selecione":
 
@@ -60,7 +66,12 @@ def page():
                 if final:
 
                     categ = cats[-1][1][cats[-1][0]]
-                    produtos = ml_api.mais_vendidos(pesquisa['id'], categ)['content']
+                    cat_resp = ml_api.mais_vendidos(pesquisa['id'], categ)
+                    if "content" in cat_resp:
+                        produtos = cat_resp['content']
+                    else:
+                        st.write(f"A categoria {cats[-2][0] if cats[-1][0] == 'Pare aqui' else cats[-1][0]} ({categ}) não possui mais vendidos")
+                        final = False
 
             case "Pesquisando":
                 termo = st.text_input("Pesquise o seu produto como se fosse no Mercado Livre")
