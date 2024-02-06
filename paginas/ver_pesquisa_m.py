@@ -19,7 +19,7 @@ def page():
     if pesquisa['tipo'] == "categoria":
 
         categorias = pesquisa['categorias'].split(',')
-        produtos = pesquisa['produtos'].split(',')
+        produtos = pesquisa['produtos'].split(',') if pesquisa['produtos'].__contains__(",") else []
         range_vendas = pesquisa['range_vendas'].split(',')
         tempo_vida = pesquisa['tempo_vida'].split(',')
         m_visitas_diarias = pesquisa['m_visitas_diarias'].split(',')

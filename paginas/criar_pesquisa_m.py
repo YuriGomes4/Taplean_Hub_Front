@@ -38,6 +38,8 @@ def page():
 
             if st.session_state.page != "53":
                 st.session_state.pesquisa_m = pesquisa
+                st.session_state.prods_pesquisa = []
+                st.session_state.tipo_pesquisa = ""
                 st.session_state.page = "53"
                 st.rerun()
         else:
