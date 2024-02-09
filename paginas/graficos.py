@@ -14,6 +14,7 @@ import plotly.graph_objects as go
 from urllib.request import urlopen
 
 import json
+import difflib
 
 
 def page():
@@ -305,15 +306,31 @@ def page():
                     if 'receiver_address' in ship.keys():
                         if filtrar:
                             if str(ship['receiver_address']['state']['id']).replace("BR-", "") == estados_brasil[select_map]:
-                                if str(ship['receiver_address'][procura]['name']) in correcao_mapa.keys():
-                                    div_vendas[correcao_mapa[str(ship['receiver_address'][procura]['name'])]] += 1
+                                estado = str(ship['receiver_address'][procura]['name'])
+                                if estado in correcao_mapa.keys():
+                                    div_vendas[correcao_mapa[estado]] += 1
                                 else:
-                                    div_vendas[str(ship['receiver_address'][procura]['name'])] += 1
+                                    if estado in div_vendas:
+                                        div_vendas[estado] += 1
+                                    else:
+                                        try:
+                                            nearest_string = difflib.get_close_matches(estado, div_vendas, n=1)
+                                            div_vendas[nearest_string[0]]
+                                        except:
+                                            div_vendas[estado] = 1
                         else:
-                            if str(ship['receiver_address'][procura]['name']) in correcao_mapa.keys():
-                                div_vendas[correcao_mapa[str(ship['receiver_address'][procura]['name'])]] += 1
+                            estado = str(ship['receiver_address'][procura]['name'])
+                            if estado in correcao_mapa.keys():
+                                div_vendas[correcao_mapa[estado]] += 1
                             else:
-                                div_vendas[str(ship['receiver_address'][procura]['name'])] += 1
+                                if estado in div_vendas:
+                                    div_vendas[estado] += 1
+                                else:
+                                    try:
+                                        nearest_string = difflib.get_close_matches(estado, div_vendas, n=1)
+                                        div_vendas[nearest_string[0]]
+                                    except:
+                                        div_vendas[estado] = 1
 
                 data = {
                     "Estados": div_vendas.keys(),

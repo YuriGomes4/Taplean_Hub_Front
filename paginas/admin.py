@@ -21,13 +21,13 @@ def page():
         exp.write(f"Nome: {user['name']}")
         exp.write(f"Email: {user['email']}")
         txt_perm = """Permissões:\n"""
-        if user['permissions'] != None and user['permissions'] != "":
-            permissions = json.loads(str(user['permissions']).replace("'", '"'))
+        if user['conta'] != None and user['conta'] != "":
+            permissions = user['conta']['assinatura']['permissoes']
             for key,value in permissions.items():
                 txt_perm = txt_perm + f" - {key}: {value}\n"
         exp.write(txt_perm)
         exp.write("")
-        exp.write(f"Sellers: {user['sellers']}")
+        exp.write(f"Sellers: {user['vendedores']}")
         col1, col2 = exp.columns(2)
         if col1.button("Editar", type='primary', use_container_width=True, key=f"editar{user['public_id']}"):
             st.session_state.usuario = user['public_id']

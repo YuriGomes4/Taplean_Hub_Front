@@ -44,6 +44,7 @@ def ver_usuario(usuario=None):
         return response.json()['result']
     else:
         print("Falha ao listar o usuário.")
+        return {}
 
 def pegar_permissoes(usuario=None):
 
@@ -193,7 +194,7 @@ def ver_sellers(usuario=None):
 
     if response.status_code == 200:
         if str(response.json()['result']) != "":
-            return str(response.json()['result']).split(",")
+            return response.json()['result']
         else:
             return []
     else:

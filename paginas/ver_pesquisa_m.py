@@ -18,19 +18,36 @@ def page():
 
     if pesquisa['tipo'] == "categoria":
 
-        categorias = pesquisa['categorias'].split(',')
-        produtos = pesquisa['produtos'].split(',') if pesquisa['produtos'].__contains__(",") else []
-        range_vendas = pesquisa['range_vendas'].split(',')
-        tempo_vida = pesquisa['tempo_vida'].split(',')
-        m_visitas_diarias = pesquisa['m_visitas_diarias'].split(',')
-        preco_venda = pesquisa['preco_venda'].split(',')
-        tipo_anuncio = pesquisa['tipo_anuncio'].split(',')
-        taxa_fixa = pesquisa['taxa_fixa'].split(',')
-        comissao = pesquisa['comissao'].split(',')
-        titulo = pesquisa['titulo'].split('$@$')
-        link = pesquisa['link'].split(',')
-        frete_gratis = pesquisa['frete_gratis'].split(',')
-        custo_frete = pesquisa['custo_frete'].split(',')
+        if str(pesquisa['produtos']).__contains__(","):
+            produtos = pesquisa['produtos'].split(',')
+            categorias = pesquisa['categorias'].split(',')
+            range_vendas = pesquisa['range_vendas'].split(',')
+            tempo_vida = pesquisa['tempo_vida'].split(',')
+            m_visitas_diarias = pesquisa['m_visitas_diarias'].split(',')
+            preco_venda = pesquisa['preco_venda'].split(',')
+            tipo_anuncio = pesquisa['tipo_anuncio'].split(',')
+            taxa_fixa = pesquisa['taxa_fixa'].split(',')
+            comissao = pesquisa['comissao'].split(',')
+            titulo = pesquisa['titulo'].split('$@$')
+            link = pesquisa['link'].split(',')
+            frete_gratis = pesquisa['frete_gratis'].split(',')
+            custo_frete = pesquisa['custo_frete'].split(',')
+        elif pesquisa['produtos'] != "" and pesquisa['produtos'] != "None" and pesquisa['produtos'] != None:
+            produtos = [pesquisa['produtos']]
+            categorias = [pesquisa['categorias']]
+            range_vendas = [pesquisa['range_vendas']]
+            tempo_vida = [pesquisa['tempo_vida']]
+            m_visitas_diarias = [pesquisa['m_visitas_diarias']]
+            preco_venda = [pesquisa['preco_venda']]
+            tipo_anuncio = [pesquisa['tipo_anuncio']]
+            taxa_fixa = [pesquisa['taxa_fixa']]
+            comissao = [pesquisa['comissao']]
+            titulo = [pesquisa['titulo']]
+            link = [pesquisa['link']]
+            frete_gratis = [pesquisa['frete_gratis']]
+            custo_frete = [pesquisa['custo_frete']]
+        else:
+            produtos = []
 
         if len(produtos) > 0:
 

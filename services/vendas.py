@@ -12,17 +12,18 @@ def get_all(seller_id, date_from=None, date_to=None):
         'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
-    update_url = f"{url_base}/api/v1/vendas/all/{seller_id}"
+    update_url = f"{url_base}/api/v1/vendas/all"
 
     params = {
-        "date_from": date_from,
-        "date_to": date_to,
+        "seller_id": seller_id,
     }
 
     if date_from and date_to:
+        params["date_from"] = date_from,
+        params["date_to"] = date_to,
         response = requests.get(update_url, headers=headers, params=params)
     else:
-        response = requests.get(update_url, headers=headers)
+        response = requests.get(update_url, headers=headers, params=params)
 
     if response.status_code == 200:
         print("Vendas listadas com sucesso!")

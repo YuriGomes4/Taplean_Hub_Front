@@ -166,9 +166,9 @@ def prods_sort(new_sort):
 
     produtos = get_all()
 
-    if sort != new_sort or seller != int(personal_prefs.get('vendedor')) or st.session_state.produto_alterado == True:
+    if sort != new_sort or seller != personal_prefs.get('vendedor') or st.session_state.produto_alterado == True:
         sort = new_sort
-        seller = int(personal_prefs.get('vendedor'))
+        seller = personal_prefs.get('vendedor')
 
         if sort == "Curva ABC":
 
@@ -177,7 +177,7 @@ def prods_sort(new_sort):
 
             temp_prods = []
             for produto in produtos:
-                if int(produto['seller']) == int(personal_prefs.get('vendedor')):
+                if produto['seller'] == personal_prefs.get('vendedor'):
                     #produto['icone'] = "hdr_auto_outlined"
                     temp_prods.append(produto)
                     total_inv = total_inv + produto['invoicing']
@@ -212,7 +212,7 @@ def prods_sort(new_sort):
         elif sort == "Normal":
             temp_prods = []
             for produto in produtos:
-                if int(produto['seller']) == int(personal_prefs.get('vendedor')):
+                if produto['seller'] == personal_prefs.get('vendedor'):
                     produto['icone'] = "➕"
                     produto['color'] = "amber"
                     temp_prods.append(produto)

@@ -35,7 +35,7 @@ def load_prods(produtos):
         col.write(field_name)
 
     for produto in produtos:
-        if int(produto['seller']) == int(sv_personal_prefs.get('vendedor')):
+        if produto['seller'] == sv_personal_prefs.get('vendedor'):
             
             titulo = f"{produto['icone']} {produto['title']}"
 

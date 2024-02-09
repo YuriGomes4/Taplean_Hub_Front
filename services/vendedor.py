@@ -27,16 +27,20 @@ def get_all():
     tudo = response.json()['result']
     return tudo
 
-def get(id):
+def get(id_publico):
     url_base = config.get('url_base')  # http://127.0.0.1:5000
 
-    update_url = f"{url_base}/api/v1/vendedor/{id}"
+    update_url = f"{url_base}/api/v1/vendedor"
 
     headers = {
         'x-access-token' : st.session_state.cookie_manager.get('token'),
     }
 
-    response = requests.get(update_url, headers=headers)
+    params = {
+        'id': id_publico
+    }
+
+    response = requests.get(update_url, headers=headers, params=params)
 
     if response.status_code == 200:
         print("Vendedor listado com sucesso!")
@@ -45,10 +49,10 @@ def get(id):
 
     return response.json()['result']
 
-def get_visitas(id, date_from, date_to):
+def get_visitas(id_publico, date_from, date_to):
     url_base = config.get('url_base')  # http://127.0.0.1:5000
 
-    update_url = f"{url_base}/api/v1/vendedor/{id}/visitas"
+    update_url = f"{url_base}/api/v1/vendedor/{id_publico}/visitas"
 
     headers = {
         'x-access-token' : st.session_state.cookie_manager.get('token'),

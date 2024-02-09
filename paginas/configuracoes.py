@@ -1,33 +1,33 @@
 import streamlit as st
 
-import services
-from services import usuarios
+#import services
+from services import usuarios, vendedor, produtos, personal_prefs
 
 def sync_prods():
-    services.produtos.sync_prods()
+    produtos.sync_prods()
 
 # hide all dialogs in overlay
 #page.overlay.extend([pick_files_dialog, save_file_dialog, get_directory_dialog])
 
 def remove_prods():
-    services.produtos.remove_prods()
+    produtos.remove_prods()
 
 opts = []
 
 def list_orders():
-    services.produtos.list_orders()
+    produtos.list_orders()
 
 def remove_orders():
-    services.produtos.remove_orders()
+    produtos.remove_orders()
 
 def sales_prods():
-    services.produtos.sales_prods()
+    produtos.sales_prods()
 
 #def seller_changed(e):
     #print(drop.value)
     #for seller in services.vendedor.get_all():
     #    if seller['nome'] == drop.value:
-    #        services.personal_prefs.set('vendedor', seller['id'])
+    #        personal_prefs.set('vendedor', seller['id'])
             #services.preferences.set('prod_sort', "")
 
 def page():
@@ -39,39 +39,31 @@ def page():
     #    print(selected_seller)
         #for seller in services.vendedor.get_all():
         #    if seller['nome'] == selected_seller:
-        #        services.personal_prefs.set('vendedor', seller['id'])
+        #        personal_prefs.set('vendedor', seller['id'])
                 #services.preferences.set('prod_sort', "")
 
     st.title("Configurações")
 
     if len(usuarios.ver_sellers()) > 0:
 
-        all_sellers = services.vendedor.get_all()
+        #all_sellers = services.vendedor.get_all()
         my_sellers = usuarios.ver_sellers()
-        dict_sellers = {}
+        #dict_sellers = {}
 
         sellers = {}
-
-        for seller in all_sellers:
-            dict_sellers[int(seller['id'])] = seller['nome']
-
+        sellers_r = {}
 
         for seller in my_sellers:
-            sellers[dict_sellers[int(seller)]] = seller
+            vend = vendedor.get(seller)
+            sellers[vend['nome']] = seller
+            sellers_r[seller] = vend['nome']
 
-        print(my_sellers)
-
-        opts = []
-
-        for seller in sellers.keys():
-            opts.append(seller)
-
-        select_seller = st.selectbox("Vendedor", options=opts, index=opts.index(dict_sellers[int(services.personal_prefs.get("vendedor"))]) if str(services.personal_prefs.get("vendedor")) in my_sellers else 0)
-        print(select_seller, services.personal_prefs.get("vendedor"))
-        if services.personal_prefs.get("vendedor") != sellers[select_seller]:
-            services.personal_prefs.set("vendedor", sellers[select_seller])
-            #st.session_state.cookie_manager.set('vendedor', sellers[services.personal_prefs.get("vendedor")])
-            #st.session_state.cookie_manager.set('vendedor', sellers[services.personal_prefs.get("vendedor")])
+        select_seller = st.selectbox("Vendedor", options=sellers.keys(), index=list(sellers.keys()).index(sellers_r[personal_prefs.get("vendedor")]) if str(personal_prefs.get("vendedor")) in my_sellers else 0)
+        print(select_seller, personal_prefs.get("vendedor"))
+        if personal_prefs.get("vendedor") != sellers[select_seller]:
+            personal_prefs.set("vendedor", sellers[select_seller])
+            #st.session_state.cookie_manager.set('vendedor', sellers[personal_prefs.get("vendedor")])
+            #st.session_state.cookie_manager.set('vendedor', sellers[personal_prefs.get("vendedor")])
             #st.session_state.cookie_manager.set('vendedor', "sellers[st.session_state.vendedor]")
             st.rerun()
 
@@ -91,9 +83,9 @@ def page():
                 st.session_state.page = "21"
                 st.rerun()
         #temas = ["Escuro", "Claro"]
-        #tema = st.selectbox("Tema", temas, index=temas.index(services.personal_prefs.get("tema")))
-        #if tema != services.personal_prefs.get("tema"):
-        #    services.personal_prefs.set("tema", tema)
+        #tema = st.selectbox("Tema", temas, index=temas.index(personal_prefs.get("tema")))
+        #if tema != personal_prefs.get("tema"):
+        #    personal_prefs.set("tema", tema)
         #    services.temas.setTema(nomeTema=tema)
         #    st.rerun()
         #    st.rerun()

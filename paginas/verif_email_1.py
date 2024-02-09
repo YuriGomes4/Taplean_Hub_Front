@@ -5,12 +5,15 @@ from services import config
 
 def page():
 
-    if st.session_state.tipo_verif_email == "mudar senha":
-        titulo = "Recuperar senha"
-        texto_botao = "Recuperar"
-    elif st.session_state.tipo_verif_email == "criar conta":
-        titulo = "Email para cadastro"
-        texto_botao = "Verificar"
+    match st.session_state.tipo_verif_email:
+        case "mudar senha":
+            titulo = "Recuperar senha"
+            texto_botao = "Recuperar"
+            caminho = "usuario"
+        case "criar conta":
+            titulo = "Email para cadastro"
+            texto_botao = "Verificar"
+            caminho = "conta"
 
     st.title(titulo)
     email = st.text_input("Email")
@@ -23,7 +26,7 @@ def page():
 
             url_base = config.get('url_base')  # http://127.0.0.1:5000
 
-            update_url = f"{url_base}/api/v1/usuario/verif_email"
+            update_url = f"{url_base}/api/v1/{caminho}/verif_email"
 
             headers = {
                 'Content-Type': 'application/json',

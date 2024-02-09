@@ -37,7 +37,7 @@ def base():
                 st.rerun()
 
     
-    if usuarios.tenho_acesso('admin'):
+    if usuarios.ver_usuario()['conta']['assinatura']['codigo'] == "admin":
         if st.sidebar.button("Administração", use_container_width=True, type="secondary"):
             if st.session_state.page != "30":
                 st.session_state.page = "30"

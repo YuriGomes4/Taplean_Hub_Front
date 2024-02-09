@@ -26,7 +26,7 @@ from services import default_prefs
 from paginas import login, configuracoes, graficos, produtos, edit_produto, add_rule, reg_seller, reset_senha, ver_pesquisa_m, verif_email_1, verif_email_2, criar_conta, admin, edit_user, sem_acesso, edit_seller, anuncios, seguir_anuncio, ver_anuncio, pesquisa_mercado, add_prod_pm, criar_pesquisa_m
 
 st.set_page_config(
-    page_icon="images/Logo.png",
+    page_icon="images/Logo EleveCom redondo.png",
     page_title=f"Tap Hub - {config.get('versao')}"
 )
 

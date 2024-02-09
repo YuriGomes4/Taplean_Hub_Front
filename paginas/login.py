@@ -145,7 +145,12 @@ def verify_access():
 
 def page():
 
-    st.write("# Login")
+    left_co, cent_co,last_co = st.columns((1,4,2.5))
+    with cent_co:
+        st.image('images/Texto EleveCom.png', width=500)
+
+    st.write("#")
+    st.write("#")
     
     email = st.text_input("Email")
     senha = st.text_input("Senha", type="password")

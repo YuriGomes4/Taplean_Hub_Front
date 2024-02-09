@@ -61,78 +61,24 @@ def page():
         }
     }
 
-    if user['permissions'] != None and user['permissions'] != "":
-        permissions = json.loads(str(user['permissions']).replace("'", '"'))
+    if user['conta']['assinatura']['permissoes'] != None and user['conta']['assinatura']['permissoes'] != "":
+        permissions = user['conta']['assinatura']['permissoes']
     else:
         permissions = {}
 
-    novas_permissoes = {}
-
     for key,value in permissions.items():
-        novas_permissoes[key] = value
-
-    for key,value in padrao_permissoes.items():
-        if key not in novas_permissoes.keys():
-            novas_permissoes[key] = value
-        elif type(novas_permissoes[key]) == dict:
-            master_key = key
-            for key,value in padrao_permissoes[key].items():
-                if key not in novas_permissoes[master_key].keys():
-                    novas_permissoes[master_key][key] = value
-
-    #print(novas_permissoes)
-
-    if "permissoes" not in st.session_state or st.session_state.permissoes == "":
-        st.session_state.permissoes = novas_permissoes
-        #print("reset")
-
-    permissoes_atuais = {}
-
-    for key, value in novas_permissoes.items():
-        if type(value) == str:
-            permissoes_atuais[key] = value
-        elif type(value) == dict:
-            permissoes_atuais[key] = "categoria"
-            for chave, valor in value.items():
-                permissoes_atuais[chave] = valor
-
-
-    #print(permissoes_atuais)
-
-    for key,value in permissoes_atuais.items():
-        if value != "categoria":
-            if key == "admin" and eu:
-                checkbx = "sim" if tabs[1].checkbox(key, True if value == "sim" else False, disabled=True) else "nao"
-            else:
-                checkbx = "sim" if tabs[1].checkbox(key, True if value == "sim" else False) else "nao"
-            if permissoes_atuais[key] != checkbx:
-                permissoes_atuais[key] = checkbx
+        if type(value) != dict:
+            tabs[1].checkbox(key, value, disabled=True)
         else:
             tabs[1].write(key)
+            for key2, value2 in value.items():
+                    tabs[1].checkbox(key2, value2, disabled=True)
 
-            #value = st.session_state.permissoes[key]
 
-    permissoes_teste = {}
-
-    for key, value in permissoes_atuais.items():
-        if value != "categoria" and not(key.__contains__("_")):
-            permissoes_teste[key] = value
-        elif key.__contains__("_"):
-            linha = key.split("_")
-            permissoes_teste[linha[0]][key] = value
-        else:
-            permissoes_teste[key] = {}
 
 
     #print(permissoes_teste)
 
-    if tabs[1].button("Atualizar permissões", use_container_width=True, type= 'primary'):
-        if usuarios.mudar_permissoes(user['public_id'], permissoes_teste):
-            st.toast("Permissões atualizadas!")
-            sleep(3)
-            st.rerun()
-        else:
-            st.toast("Falha ao atualizar permissões")
 
     ##################################### - Sellers
 
@@ -145,40 +91,16 @@ def page():
 
     for seller in sellers:
         all_sellers_name.append(seller['nome'])
-        dict_sellers[seller['id']] = seller['nome']
+        dict_sellers[seller['id_publico']] = seller['nome']
 
     try:
         for seller in usuarios.ver_sellers(user['public_id']):
-            actual_sellers.append(dict_sellers[int(seller)])
+            actual_sellers.append(dict_sellers[seller])
     except:
         pass
 
-    multi = tabs[2].multiselect("Seller", all_sellers_name, actual_sellers)
-    if actual_sellers != multi:
-        actual_sellers = multi
-
-    inverted_dict_sellers = {}
-
-    for key, value in dict_sellers.items():
-        inverted_dict_sellers[value] = key
-
-    formated_actual_sellers = ""
-
-    count = 0
-    for seller in actual_sellers:
-        formated_actual_sellers = formated_actual_sellers + str(inverted_dict_sellers[seller])
-
-        count += 1
-
-        if len(actual_sellers) != count:
-            formated_actual_sellers = formated_actual_sellers + ","
-
-    if tabs[2].button("Atualizar sellers", type='primary', use_container_width=True):
-        if usuarios.mudar_sellers(formated_actual_sellers, user["public_id"]):
-            st.toast("Sellers atualizados!")
-        else:
-            st.toast("Falha ao atualizar sellers!")
-        #print(formated_actual_sellers)
+    tabs[2].multiselect("Seller", all_sellers_name, actual_sellers, disabled=True)
+    
 
 
         
