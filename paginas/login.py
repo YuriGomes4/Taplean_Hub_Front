@@ -100,17 +100,14 @@ def verify_access():
                 preferences = json.loads(str(response.json()['result']).replace("'", '"'))
 
             if st.session_state.page == "@@":
-                #if preferences['vendedor'] != "0" and usuarios.tenho_acesso("graficos_acessar"):
-                #    st.session_state.page = "00"
-                #    st.session_state.user_id = usuarios.ver_usuario()['public_id']
-                #else:
-                #    if usuarios.tenho_acesso("configuracoes_acessar"):
-                #        st.session_state.page = "20"
-                #    else:
-                #        st.session_state.page = "100"
-
-                if usuarios.ver_usuario()['conta']['status_pagamento'] != "pago":
-                    st.session_state.page = "100"
+                if preferences['vendedor'] != "0" and usuarios.tenho_acesso("graficos_acessar"):
+                    st.session_state.page = "00"
+                    st.session_state.user_id = usuarios.ver_usuario()['public_id']
+                else:
+                    if usuarios.tenho_acesso("configuracoes_acessar"):
+                        st.session_state.page = "20"
+                    else:
+                        st.session_state.page = "100"
 
             #print(preferences)
 
