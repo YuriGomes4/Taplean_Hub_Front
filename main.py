@@ -85,9 +85,9 @@ def verificacoes():
 
     #usuarios.pegar_permissoes()
         
-#if str(st.session_state.page)[0] != "@":
-#    if usuarios.ver_usuario()['conta']['status_pagamento'] != "pago":
-#        st.session_state.page = "100"
+if str(st.session_state.page)[0] != "@":
+    if usuarios.ver_usuario()['conta']['status_pagamento'] != "pago":
+        st.session_state.page = "100"
 
 if st.session_state.page == "@@":
     login.page()
