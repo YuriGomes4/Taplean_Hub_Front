@@ -31,7 +31,7 @@ def base():
                 st.rerun()
     
     if usuarios.tenho_acesso('configuracoes_acessar'):
-        if st.sidebar.button("Configurações", use_container_width=True, type="secondary"):
+        if st.sidebar.button("Conta", use_container_width=True, type="secondary"):
             if st.session_state.page != "20":
                 st.session_state.page = "20"
                 st.rerun()

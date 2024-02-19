@@ -42,7 +42,7 @@ def page():
         #        personal_prefs.set('vendedor', seller['id'])
                 #services.preferences.set('prod_sort', "")
 
-    st.title("Configurações")
+    st.title("Sobre a conta")
 
     if len(usuarios.ver_sellers()) > 0:
 

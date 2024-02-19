@@ -20,6 +20,8 @@ class auth():
         req_headers = headers if headers != None else {}
         req_data = data if data != None else {}
 
+        req_headers['x-access-token'] = self.access_token
+
         while True:
 
             match method:
