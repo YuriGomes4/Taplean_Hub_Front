@@ -212,8 +212,6 @@ def page():
             format="DD.MM.YYYY",
         )
 
-        print(d[0].year)
-
         for mudanca in mudancas_ordenadas:
             data = extrair_data(mudanca)
 
